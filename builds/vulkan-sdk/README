@@ -1,0 +1,8 @@
+This is a modified vulkan-sdk from slackware.com because there was some
+problems with fetch-sorces.sh there. I took out the git part so its not
+needed for getting the code. It builds Vulkan 1.3.224.1. You can make
+changes in config-versions but run update-tags.sh after.
+
+You might need "pip3 install jsonschema" and multilib
+also compile 32bit version in a virtualbox or if you install
+32bit slackware on a second drive.

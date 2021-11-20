@@ -1,0 +1,52 @@
+This scrip download the source from git
+The generated package will be installed in /opt so that is can be installed
+with another wine in /usr
+
+To integrate with desktop
+/usr/share/applications/wine-tkg-git.desktop
+Remember that if an installer generate a desktop shortcut
+that .desktop file will use the path to the used wine-tkg binary path.
+wine puts those classic windows menu application launchers in:
+~/.local/share/applications/wine/Programs/
+
+Symbolic links to wine64 and wine
+To post install into /usr/bin/ run:
+
+/opt/wine-tkg-staging-fsync-git/symlink_usr_bin.sh
+/opt/wine-tkg-staging-fsync-git/symlink_usr_bin.sh --restore
+/opt/wine-tkg-staging-fsync-git/symlink_usr_bin.sh --force-no-backup
+
+If /usr/bin/wine is a Symbolic link it will overwrite
+else it will backup and hide all wine related binaries
+like /usr/bin/.wine.backup
+
+Build Options:
+Use like this
+PROTONIFY=YES ./wine-tkg-git.SlackBuild
+
+PROTONIFY               Default=NO
+LOCAL_PRESET_PROMPT     Default=NO
+ALLOW_SERVER_RT_PRIO    Default=YES
+
+All this can change so look out for what dependencies you need
+for your applications, some dependencies could be missing and
+it will still build.
+
+Dependencies:
+Install alienbobs multilib for Slackware 15
+https://slackbuilds.org/repository/15.0/system/schedtool/
+http://www.slackware.com/~alien/slackbuilds/MinGW-w64/pkg64/15.0/
+https://mirrors.slackware.com/slackware/slackware-15.0/slackware/x/libXpresent-1.0.0-i586-4.txz
+command:convertpkg-compat32 -i libXpresent-1.0.0-i586-4.txz
+
+OPTIONAL DEPENDENCIES
+
+fontforge: To build tahoma, tahomabd, and marlett fonts.
+http://www.slackware.com/~alien/slackbuilds/fontforge/pkg64/15.0/
+or https://slackbuilds.org/repository/15.0/graphics/fontforge/
+
+webcore-fonts: For MS fonts for the web and Windows Vista.
+https://slackbuilds.org/repository/15.0/system/webcore-fonts/
+
+oss
+libcapi20

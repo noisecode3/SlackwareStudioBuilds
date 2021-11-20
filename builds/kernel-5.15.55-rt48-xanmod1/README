@@ -1,0 +1,78 @@
+kernel-5.15.55-rt48-xanmod1 x86_64
+Only run build-all-kernel-pkgs.sh
+
+This kernel unlock some serious performance improvements
+Install this before wine-tkg
+
+I will add a diff file from this configuration to the generic configuration.
+This configuration is not too far from generic Slackware. You are free to swap
+the configuration before you build, just avoid changing the configs file name
+and make sure you run make oldconfig, don't setting localversion.The script will
+look for any ???-xanmod1.tar.gz in the current directory of build-all-kernel-pkgs.sh
+
+https://xanmod.org/
+
+Only kernel-source and kernel-headers pkgs will conflict. But remember you should have the
+appropriate kernel-headers installed when compiling software drivers or wine that target
+specific kernel functionality. Don't forget to configure you're boot manager.
+The noefi kernel option can be used when you dont need it for it can mess with the kernel.
+
+/boot/vmlinuz-generic
+/boot/vmlinuz-huge
+/boot/vmlinuz-generic-rt-xanmod1
+
+To install:
+upgradepkg --install-new --reinstall /tmp/output-x86_64-5.15.55-rt48-xanmod1/kernel*.txz
+
+Don't forget you're mkinitrd command and lilo/elilo or whatever bootloader you're using!
+
+Initrd command:
+/usr/share/mkinitrd/mkinitrd_command_generator.sh -k 5.15.55-rt48-xanmod1
+
+If you have Intel processor you must load microcode early!
+Add -P /boot/intel-ucode.cpio to the generated mkinitrd command!
+
+You might want to blacklist in "/etc/slackpkg/blacklist":
+kernel-source
+kernel-headers
+
+Note: The current proprietary NVIDIA, VirtualBox, VMware Workstation / Player and some other dkms modules builds do not officially support THIS RT kernel
+
+For building VirtualBox:
+Just build from sbopkg on you're other kernel
+If you get errors like:
+failed to execute '/usr/share/virtualbox/VBoxCreateUSBNode.sh' '/usr/share/virtualbox/VBoxCreateUSBNode.sh 189 0 09 vboxusers': No such file or directory
+You probably have this udev configuration from vbox in initrd when it loads usb drivers you dont need to worry about it.
+If it feels too dirty you could move the file:
+mv /lib/udev/rules.d/10-virtualbox.rules /root
+run:
+/etc/rc.d/rc.udev reload
+run you're mkinitrd and move back the file:
+mkinitrd ........
+mv /root/10-virtualbox.rules /lib/udev/rules.d
+and run:
+/etc/rc.d/rc.udev reload
+lilo
+
+# /etc/rc.d/rc.local
+# Avoid virtualbox startup service for xanmod1
+
+if echo $(uname -a) | grep xanmod1 > /dev/null; then
+    chmod -x /etc/rc.d/rc.vbox*
+else
+    chmod +x /etc/rc.d/rc.vbox*
+fi
+
+if [ -x /etc/rc.d/rc.vboxdrv ]; then
+  /etc/rc.d/rc.vboxdrv start
+fi
+
+blacklist virtualbox-kernel because if you are using another kernel when look
+for updates it want to upgrade the modules on xanmod, it wont work
+remember you must rebuild when there is a kernel update manually!
+
+For building NVIDIA:
+IGNORE_PREEMPT_RT_PRESENCE=1
+
+Don't do this, just use nouveau, if you have nvidia don't game with this kernel, maybe it works for you anyway..
+BTW gaming is nice with this kernel :)

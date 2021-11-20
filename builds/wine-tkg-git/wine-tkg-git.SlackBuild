@@ -1,0 +1,116 @@
+#!/bin/bash
+
+# Slackware build script for wine-tkg-git
+
+# Copyright 2022 Martin Bångens
+# All rights reserved.
+#
+# Redistribution and use of this script, with or without modification, is
+# permitted provided that the following conditions are met:
+#
+# 1. Redistributions of this script must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
+#  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+#  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO
+#  EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+#  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+#  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+#  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+#  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+cd $(dirname $0) ; CWD=$(pwd)
+
+PRGNAM=wine-tkg-git
+VERSION=${VERSION:-1.0}
+BUILD=${BUILD:-1}
+TAG=${TAG:-_SBo}
+PKGTYPE=${PKGTYPE:-tgz}
+PROTONIFY=${PROTONIFY:-NO}
+LOCAL_PRESET_PROMPT=${LOCAL_PRESET_PROMPT:-NO}
+ALLOW_SERVER_RT_PRIO=${ALLOW_SERVER_RT_PRIO:-YES}
+
+if [ -z "$ARCH" ]; then
+  case "$( uname -m )" in
+    i?86) ARCH=i586 ;;
+    arm*) ARCH=arm ;;
+       *) ARCH=$( uname -m ) ;;
+  esac
+fi
+
+TMP=${TMP:-/tmp/SBo}
+PKG=${PKG:-$TMP/package-$PRGNAM-$VERSION}
+OUTPUT=${OUTPUT:-/tmp}
+
+if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
+  echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
+  exit 0
+fi
+
+if [ $ARCH != "x86_64" ]; then
+  echo "This script supports only x86_64 now, "
+  exit 1
+fi
+
+if [ ! -f /var/log/packages/glibc-[0-9]*_multilib-x86_64-*alien ]; then
+    echo "Install glibc-[0-9]*_multilib-x86_64-*alien"
+    exit 1
+fi
+
+set -e
+
+rm -rf $PKG
+mkdir -p $TMP $PKG $OUTPUT
+cd $TMP
+rm -rf wine-tkg-git
+rm -rf /tmp/wine-tkg/
+
+git clone https://github.com/Frogging-Family/wine-tkg-git
+
+cd wine-tkg-git/wine-tkg-git/
+
+if [ $PROTONIFY == "YES" ]; then
+    sed -i '/_protonify=/ s/"false"/"true"/' ./customization.cfg
+fi
+
+if [ $LOCAL_PRESET_PROMPT == "NO" ]; then
+    sed -i '/_LOCAL_PRESET=/ s/""/"none"/' ./customization.cfg
+fi
+
+if [ $ALLOW_SERVER_RT_PRIO == "YES" ]; then
+    sed -i '/_allow_server_rt_prio=/ s/"false"/"true"/' ./wine-tkg-profiles/advanced-customization.cfg
+fi
+
+sed -i '/_nomakepkg_prefix_path=/ s/""/"\/opt"/' ./customization.cfg
+sed -i '/_nomakepkg_nover=/ s/"false"/"true"/' ./wine-tkg-profiles/advanced-customization.cfg
+
+sed -i 's/make install/make install DESTDIR=\/tmp\/SBo\/package-wine-tkg-git-1.0/g' ./wine-tkg-scripts/build.sh
+sed -i 's/local _prefix="${_nomakepkg_prefix_path}\/${_nomakepkg_pkgname}"/local _prefix="\/tmp\/SBo\/package-wine-tkg-git-1.0${_nomakepkg_prefix_path}\/${_nomakepkg_pkgname}"/g' ./wine-tkg-scripts/build.sh
+
+chown -R root:root .
+find -L . \
+ \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \
+  -o -perm 511 \) -exec chmod 755 {} \; -o \
+ \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
+  -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
+
+./non-makepkg-build.sh || { rm -rf /tmp/wine-tkg; exit 1; }
+rm -rf /tmp/wine-tkg
+
+cp $CWD/symlink_usr_bin.sh $PKG/opt/wine-*/
+sed -i "s|/opt/wine-tkg-staging-fsync-git|/opt/$(ls $PKG/opt/)|g" $PKG/opt/wine-*/symlink_usr_bin.sh
+mkdir -p $PKG/usr/share/applications/
+cp $CWD/wine-tkg-git.desktop $PKG/usr/share/applications/
+
+mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM-$VERSION.SlackBuild
+
+mkdir -p $PKG/install
+cat $CWD/slack-desc > $PKG/install/slack-desc
+cat $CWD/doinst.sh > $PKG/install/doinst.sh
+
+cd $PKG
+/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE
