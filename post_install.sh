@@ -33,6 +33,8 @@ if [[ $sbopkg_md5sum == $sbopkg_md5sum_dl ]]
         echo -e "\nsbopkg download okej\n"
     else
         echo -e "\nsbopkg download faild\n"
+        rm ./sbopkg-0.38.1-noarch-1_wsr.tgz
+        rm ./slackpkg+-1.7.10-noarch-1mt.txz
         exit 1
 fi
 
@@ -41,6 +43,8 @@ if [[ $slackpkg_md5sum == $slackpkg_md5sum_dl ]]
         echo -e "\nslackpkg+ download okej\n"
     else
         echo -e "\nslackpkg+ download faild\n"
+        rm ./sbopkg-0.38.1-noarch-1_wsr.tgz
+        rm ./slackpkg+-1.7.10-noarch-1mt.txz
         exit 1
 fi
 
