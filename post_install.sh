@@ -30,25 +30,36 @@ slackpkg_md5sum_dl=$(md5sum slackpkg+-1.7.10-noarch-1mt.txz)
 
 if [[ $sbopkg_md5sum == $sbopkg_md5sum_dl ]]
     then
-        echo -e "\nsbopkg download seem okej"
+        echo -e "\nsbopkg download okej\n"
     else
-        echo -e "\nsbopkg download faild"
+        echo -e "\nsbopkg download faild\n"
         exit 1
 fi
 
 if [[ $slackpkg_md5sum == $slackpkg_md5sum_dl ]]
     then
-        echo -e "\nslackpkg download seem okej"
+        echo -e "\nslackpkg+ download okej\n"
     else
-        echo -e "\nslackpkg download faild"
+        echo -e "\nslackpkg+ download faild\n"
         exit 1
 fi
 
-# Install and move configuration files
-
-
+# Install sbopkg and slackpkg+
+installpkg ./sbopkg-0.38.1-noarch-1_wsr.tgz
+echo -e "\n"
+installpkg ./slackpkg+-1.7.10-noarch-1mt.txz
 
 # Clean up
-rm sbopkg-0.38.1-noarch-1_wsr.tgz
-rm slackpkg+-1.7.10-noarch-1mt.txz
+rm ./sbopkg-0.38.1-noarch-1_wsr.tgz
+rm ./slackpkg+-1.7.10-noarch-1mt.txz
+
+# Copy config files here
+cp ./config_files/mmap_restriction_override.conf /etc/sysctl.d/mmap_restriction_override.conf
+cp ./config_files/cpufreq /etc/default/cpufreq
+cp ./config_files/rc.cpufreq /etc/rc.d/rc.cpufreq
+cp ./config_files/slackpkgplus.conf /etc/slackpkg/slackpkgplus.conf
+cp ./config_files/limits.conf /etc/security/limits.conf
+cp ./config_files/40-timer-permissions.rules /etc/udev/rules.d/40-timer-permissions.rules
+cp ./config_files/daw.conf /etc/sysctl.d/daw.conf
+
 exit 0
