@@ -62,4 +62,24 @@ cp ./config_files/limits.conf /etc/security/limits.conf
 cp ./config_files/40-timer-permissions.rules /etc/udev/rules.d/40-timer-permissions.rules
 cp ./config_files/daw.conf /etc/sysctl.d/daw.conf
 
+# Upgrade system
+echo ""
+echo "*************************************"
+echo "Uncomment only ONE mirror, hit return"
+echo "*************************************"
+read
+vi /etc/slackpkg/mirrors
+
+echo ""
+echo "Upgrading slackware base and apply multilib"
+
+slackpkg update gpg
+slackpkg update
+slackpkg install-new
+slackpkg upgrade-all
+slackpkg install multilib
+echo 'sbopkg' >> /etc/slackpkg/blacklist
+slackpkg clean-system
+
+
 exit 0
