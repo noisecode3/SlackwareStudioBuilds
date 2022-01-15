@@ -78,6 +78,7 @@ echo ""
 echo "Upgrading slackware base and apply multilib"
 
 slackpkg update gpg
+#TODO if the user answers no it must handle it
 slackpkg update
 slackpkg install-new
 slackpkg upgrade-all
