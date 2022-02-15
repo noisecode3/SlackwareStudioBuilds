@@ -18,15 +18,15 @@
 
 # check md5 for pkgs
 sbopkg_md5sum="42e40c32a7aed4c417f1ee852c51c6d0  sbopkg-0.38.1-noarch-1_wsr.tgz"
-slackpkg_md5sum="d80f1d97fa3a2d8abb4cda72664f03c7  slackpkg+-1.7.10-noarch-1mt.txz"
+slackpkg_md5sum="1f3e122fb7b4e21190a7a6a5b4f9e68f  slackpkg+-1.8.0-noarch-1mt.txz"
 
 # Download
 wget https://github.com/sbopkg/sbopkg/releases/download/0.38.1/sbopkg-0.38.1-noarch-1_wsr.tgz
-wget https://sourceforge.net/projects/slackpkgplus/files/slackpkg%2B-1.7.10-noarch-1mt.txz
+wget https://sourceforge.net/projects/slackpkgplus/files/slackpkg%2B-1.8.0-noarch-1mt.txz
 
 # Check
 sbopkg_md5sum_dl=$(md5sum sbopkg-0.38.1-noarch-1_wsr.tgz)
-slackpkg_md5sum_dl=$(md5sum slackpkg+-1.7.10-noarch-1mt.txz)
+slackpkg_md5sum_dl=$(md5sum slackpkg+-1.8.0-noarch-1mt.txz)
 
 if [[ $sbopkg_md5sum == $sbopkg_md5sum_dl ]]
     then
@@ -34,7 +34,7 @@ if [[ $sbopkg_md5sum == $sbopkg_md5sum_dl ]]
     else
         echo -e "\nsbopkg download faild\n"
         rm ./sbopkg-0.38.1-noarch-1_wsr.tgz
-        rm ./slackpkg+-1.7.10-noarch-1mt.txz
+        rm ./slackpkg+-1.8.0-noarch-1mt.txz
         exit 1
 fi
 
@@ -44,27 +44,20 @@ if [[ $slackpkg_md5sum == $slackpkg_md5sum_dl ]]
     else
         echo -e "\nslackpkg+ download faild\n"
         rm ./sbopkg-0.38.1-noarch-1_wsr.tgz
-        rm ./slackpkg+-1.7.10-noarch-1mt.txz
+        rm ./slackpkg+-1.8.0-noarch-1mt.txz
         exit 1
 fi
 
 # Install sbopkg and slackpkg+
 installpkg ./sbopkg-0.38.1-noarch-1_wsr.tgz
 echo -e "\n"
-installpkg ./slackpkg+-1.7.10-noarch-1mt.txz
+installpkg ./slackpkg+-1.8.0-noarch-1mt.txz
 
 # Clean up
 rm ./sbopkg-0.38.1-noarch-1_wsr.tgz
-rm ./slackpkg+-1.7.10-noarch-1mt.txz
+rm ./slackpkg+-1.8.0-noarch-1mt.txz
 
-# Copy config files here
-cp ./config_files/mmap_restriction_override.conf /etc/sysctl.d/mmap_restriction_override.conf
-cp ./config_files/cpufreq /etc/default/cpufreq
-cp ./config_files/rc.cpufreq /etc/rc.d/rc.cpufreq
-cp ./config_files/slackpkgplus.conf /etc/slackpkg/slackpkgplus.conf
-cp ./config_files/limits.conf /etc/security/limits.conf
-cp ./config_files/40-timer-permissions.rules /etc/udev/rules.d/40-timer-permissions.rules
-cp ./config_files/daw.conf /etc/sysctl.d/daw.conf
+# cp ./config_files/slackpkgplus.conf /etc/slackpkg/slackpkgplus.conf
 
 # Upgrade system
 echo ""
@@ -82,9 +75,20 @@ slackpkg update gpg
 slackpkg update
 slackpkg install-new
 slackpkg upgrade-all
-slackpkg install multilib
-echo 'sbopkg' >> /etc/slackpkg/blacklist
+/usr/doc/slackpkg+-1.8.0/setupmultilib.sh
+
 slackpkg clean-system
+
+# Copy config files here
+ehco "vm.mmap_min_addr = 65536"  >> /etc/sysctl.d/mmap_restriction_override.conf
+sed -i 's/#SCALING_GOVERNOR=ondemand/#SCALING_GOVERNOR=performance/g' /etc/default/cpufreq
+sed -i 's/SCALING_GOVERNOR=ondemand/SCALING_GOVERNOR=performance/g' /etc/rc.d/rc.cpufreq
+
+
+
+echo -e "@audio - memlock unlimited\n@audio - rtprio 95\n@audio - nofile 1048576" >> /etc/security/limits.d/audio.conf
+cp ./config_files/40-timer-permissions.rules /etc/udev/rules.d/40-timer-permissions.rules
+cp ./config_files/daw.conf /etc/sysctl.d/daw.conf
 
 
 exit 0
