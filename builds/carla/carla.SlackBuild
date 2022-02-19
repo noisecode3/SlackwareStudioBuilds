@@ -24,7 +24,7 @@
 #
 # Slackware SlackBuild script 
 # ===========================
-# By:          Eric Hameleers <alien@slackware.com>
+# By:          Eric Hameleers <alien@slackware.com> continued by Martin Bånges
 # For:         carla
 # Descr:       audio plugin host
 # URL:         https://kx.studio/Applications:Carla
@@ -40,7 +40,9 @@
 #              * Add X-DAW category to desktop file for liveslak. 
 # 2.3.0-1:     15/jul/2021 by Eric Hameleers <alien@slackware.com>
 #              * Update.
-# 
+# 2.4.2-1      19/feb/2022 by Martin Bångens <marbangens@gmail.com>
+#              * Update.
+#
 # Run 'sh carla.SlackBuild' to build a Slackware package.
 # The package (.t?z) and .txt file as well as build logs are created in /tmp .
 # Install the package using 'installpkg' or 'upgradepkg --install-new'.
@@ -49,7 +51,7 @@
 
 PRGNAM=carla
 SRCNAM=Carla
-VERSION=${VERSION:-2.4.1}
+VERSION=${VERSION:-2.4.2}
 BUILD=${BUILD:-1}
 NUMJOBS=${NUMJOBS:-" -j$(nproc) "}
 TAG=${TAG:-alien}
