@@ -61,26 +61,29 @@ rm ./slackpkg+-1.8.0-noarch-1mt.txz
 
 # Upgrade system
 echo ""
-echo "*************************************"
-echo "Uncomment only ONE mirror, hit return"
-echo "*************************************"
+echo "****************************"
+echo " Upgrade system , hit return"
+echo "****************************"
 read
-vi /etc/slackpkg/mirrors
 
+sed -i 's/"#https://mirrors.slackware.com/slackware/slackware64-15.0/"/"https://mirrors.slackware.com/slackware/slackware64-15.0/"/g' /etc/slackpkg/mirrors
+
+sed -i 's/#PKGS_PRIORITY=( multilib )/PKGS_PRIORITY=( multilib )/g' /etc/slackpkg/slackpkgplus.conf
 echo ""
 echo "Upgrading slackware base and apply multilib"
 
 slackpkg update gpg
-#TODO if the user answers no it must handle it
 slackpkg update
+slackpkg upgrade multilib
+slackpkg install multilib
 slackpkg install-new
 slackpkg upgrade-all
-/usr/doc/slackpkg+-1.8.0/setupmultilib.sh
+
 
 slackpkg clean-system
 
 # Copy config files here
-ehco "vm.mmap_min_addr = 65536"  >> /etc/sysctl.d/mmap_restriction_override.conf
+echo "vm.mmap_min_addr = 65536"  >> /etc/sysctl.d/mmap_restriction_override.conf
 sed -i 's/#SCALING_GOVERNOR=ondemand/#SCALING_GOVERNOR=performance/g' /etc/default/cpufreq
 sed -i 's/SCALING_GOVERNOR=ondemand/SCALING_GOVERNOR=performance/g' /etc/rc.d/rc.cpufreq
 
