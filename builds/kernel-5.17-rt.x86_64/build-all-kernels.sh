@@ -138,6 +138,6 @@ fi
   fi
 
   echo
-  echo "kernel packages done!"
+  echo "Kernel packages done! Path:$OUTPUT"
   echo
 
