@@ -1,0 +1,9 @@
+kernel-5.17-rc8-rt14.x86_64
+Only run build-all-kernels.sh
+
+Right now the configuration is unfinished, it just the normal generic configuration.
+More configuration and patches form the manjaro-rt kernel will be applied to this this kernel.
+
+This is still experimental and unfinished but still somewhat useful
+
+https://gitlab.manjaro.org/packages/community/realtime-kernels

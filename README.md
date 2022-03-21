@@ -1,6 +1,13 @@
 # Slackware Studio Builds
 Configuration scripts and builds for Slackware music productions
 
+# Kernels
+Im planing on having
+
+ - kernel 5.17 with PREEMPT_RT
+ - kernel 5.15 XanMod also with PREEMPT_RT
+ - kernel 5.17 tkg with normal PREEMPT
+
 # How
 Run post_install.sh after installing full slackware 15.
 
