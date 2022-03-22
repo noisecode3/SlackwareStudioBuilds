@@ -24,8 +24,8 @@
 
 cd $(dirname $0) ; CWD=$(pwd)
 
-PRGNAM=wine-tkg-git
-VERSION=${VERSION:-1.0}
+PRGNAM=wine-tkg
+VERSION=${VERSION:-6.17}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SBo}
 PKGTYPE=${PKGTYPE:-tgz}
@@ -73,14 +73,18 @@ rm -rf $PKG
 mkdir -p $TMP $PKG $OUTPUT
 cd $TMP
 rm -rf $PRGNAM-$VERSION
-rm -rf wine-tkg-git
+rm -rf wine-tkg-git-6.17.r0.g5f19a815
 
-git clone https://github.com/Frogging-Family/wine-tkg-git
+tar -xf $CWD/wine-tkg-git-6.17.r0.g5f19a815.tar.gz
 
-cd wine-tkg-git/wine-tkg-git/
+cd wine-tkg-git-6.17.r0.g5f19a815/wine-tkg-git/
 
 # Sed em up
 sed -i '/_nomakepkg_prefix_path=/ s/""/"\/opt"/' ./customization.cfg
+
+sed -i '/_plain_version=/ s/""/"wine-6.17"/' ./customization.cfg
+sed -i '/_staging_version=/ s/""/"v6.17"/' ./customization.cfg
+
 sed -i '/_nomakepkg_nover=/ s/"false"/"true"/' ./wine-tkg-profiles/advanced-customization.cfg
 sed -i '/_allow_server_rt_prio=/ s/"false"/"true"/' ./wine-tkg-profiles/advanced-customization.cfg
 

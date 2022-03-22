@@ -1,5 +1,6 @@
 This scrip download the source from git
-The generated package will be installed in /opt so that is can exist side another wine in /usr
+The generated package will be installed in /opt so that is can be installed
+with another wine in /usr
 
 These are not addressed for now, to integrate with desktop
 symbolic link to wine64 and wine from home should work
@@ -7,6 +8,14 @@ symbolic link to wine64 and wine from home should work
 /usr/bin/
 
 Installing multilib for Slackware 15 is enough to build
+
+you most install 32-bit boots for example from this link:
+https://mirrors.slackware.com/slackware/slackware-15.0/slackware/l/boost-1.78.0-i586-1.txz
+
+and run:
+convertpkg-compat32 -i boost-1.78.0-i586-1.txz
+installpkg /tmp/boost-compat32-1.78.0-x86_64-1compat32.txz
+
 
 This is experimental and incomplete
 default kernel and generic configuration is not recommended
