@@ -1,4 +1,4 @@
-kernel-5.17-rc8-rt14.x86_64
+kernel-5.17-rt-15.x86_64
 Only run build-all-kernels.sh
 
 Right now the configuration is unfinished, it just the normal generic configuration.
@@ -7,3 +7,12 @@ More configuration and patches form the manjaro-rt kernel will be applied to thi
 This is still experimental and unfinished but still somewhat useful
 
 https://gitlab.manjaro.org/packages/community/realtime-kernels
+
+Also upgrade kernel-firmware from here https://mirrors.slackware.com/slackware/slackware64-current/slackware64/a/
+
+You might want to blacklist: /etc/slackpkg/blacklist
+
+kernel-source
+kernel-modules
+kernel-headers
+kernel-firmware

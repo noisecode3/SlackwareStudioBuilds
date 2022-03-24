@@ -1,1 +1,10 @@
+This script will build yabridge with 32bit plugin support and yabridgectl
+This depends on multilib wine compiled with 32-bit boost and must be installed in /use/bin
 
+Remember that if you update boost you have to update the 32-bit manually
+It better to not let that happen by using:
+
+echo "boost" >> /etc/slackpkg/blacklist
+
+# to see if you need to manually update boost
+slackpkg show-changelog
