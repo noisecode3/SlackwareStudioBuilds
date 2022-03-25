@@ -109,36 +109,36 @@ function link
 {
   echo "Creating Symbolic links..."
   cd /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/function_grep.pl     /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/msidb                /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/msiexec              /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/notepad              /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/regedit              /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/regsvr32             /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/widl                 /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/wine                 /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/wine-preloader       /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/wine-tkg             /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/wine-tkg-interactive /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/wine64               /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/wine64-preloader     /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/wine64-tkg           /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/wineboot             /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/winebuild            /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/winecfg              /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/wineconsole          /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/winecpp              /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/winedbg              /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/winedump             /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/winefile             /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/wineg++              /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/winegcc              /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/winemaker            /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/winemine             /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/winepath             /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/wineserver           /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/wmc                  /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git/bin/wrc                  /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/function_grep.pl     /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/msidb                /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/msiexec              /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/notepad              /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/regedit              /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/regsvr32             /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/widl                 /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wine                 /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wine-preloader       /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wine-tkg             /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wine-tkg-interactive /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wine64               /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wine64-preloader     /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wine64-tkg           /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wineboot             /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/winebuild            /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/winecfg              /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wineconsole          /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/winecpp              /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/winedbg              /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/winedump             /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/winefile             /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wineg++              /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/winegcc              /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/winemaker            /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/winemine             /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/winepath             /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wineserver           /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wmc                  /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wrc                  /usr/bin/
 }
 
 if [[ "$1" == '--restore' ]]; then

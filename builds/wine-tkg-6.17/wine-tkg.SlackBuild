@@ -85,11 +85,10 @@ sed -i '/_nomakepkg_prefix_path=/ s/""/"\/opt"/' ./customization.cfg
 sed -i '/_plain_version=/ s/""/"wine-6.17"/' ./customization.cfg
 sed -i '/_staging_version=/ s/""/"v6.17"/' ./customization.cfg
 
-sed -i '/_nomakepkg_nover=/ s/"false"/"true"/' ./wine-tkg-profiles/advanced-customization.cfg
-sed -i '/_allow_server_rt_prio=/ s/"false"/"true"/' ./wine-tkg-profiles/advanced-customization.cfg
+#sed -i '/_allow_server_rt_prio=/ s/"false"/"true"/' ./wine-tkg-profiles/advanced-customization.cfg
 
-sed -i 's/make install/make install DESTDIR=\/tmp\/SBo\/package-wine-tkg-git-1.0/g' ./wine-tkg-scripts/build.sh
-sed -i 's/local _prefix="${_nomakepkg_prefix_path}\/${_nomakepkg_pkgname}"/local _prefix="\/tmp\/SBo\/package-wine-tkg-git-1.0${_nomakepkg_prefix_path}\/${_nomakepkg_pkgname}"/g' ./wine-tkg-scripts/build.sh
+sed -i 's/make install/make install DESTDIR=\/tmp\/SBo\/package-wine-tkg-6.17/g' ./wine-tkg-scripts/build.sh
+sed -i 's/local _prefix="${_nomakepkg_prefix_path}\/${_nomakepkg_pkgname}"/local _prefix="\/tmp\/SBo\/package-wine-tkg-6.17${_nomakepkg_prefix_path}\/${_nomakepkg_pkgname}"/g' ./wine-tkg-scripts/build.sh
 
 chown -R root:root .
 find -L . \
