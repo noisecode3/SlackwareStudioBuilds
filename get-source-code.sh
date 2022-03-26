@@ -12,6 +12,10 @@ cd $SRCDIR/builds/kernel-5.17-rt.x86_64
 wget https://mirrors.edge.kernel.org/pub/linux/kernel/projects/rt/5.17/patch-5.17-rt15.patch.xz
 wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.17.tar.xz
 
+cd $SRCDIR/builds/kernel-5.15-rt-xanmod1
+wget https://github.com/xanmod/linux/archive/5.15.29-rt37-xanmod1.tar.gz
+mv 5.15.29-rt37-xanmod1.tar.gz linux-5.15.29-rt37-xanmod1.tar.gz
+
 cd $SRCDIR/builds/wine-tkg-6.17
 wget https://github.com/Frogging-Family/wine-tkg-git/archive/refs/tags/6.17.r0.g5f19a815.tar.gz
 mv 6.17.r0.g5f19a815.tar.gz wine-tkg-git-6.17.r0.g5f19a815.tar.gz

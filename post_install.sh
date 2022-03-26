@@ -17,24 +17,24 @@
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # check md5 for pkgs
-sbopkg_md5sum="42e40c32a7aed4c417f1ee852c51c6d0  sbopkg-0.38.1-noarch-1_wsr.tgz"
-slackpkg_md5sum="1f3e122fb7b4e21190a7a6a5b4f9e68f  slackpkg+-1.8.0-noarch-1mt.txz"
+sbopkg_md5sum="df40c7c991a30c1129a612a40be9f590  sbopkg-0.38.2-noarch-1_wsr.tgz"
+slackpkg_md5sum="fc0861b1099b620c366a75c707409628  slackpkg+-1.8.0-noarch-2mt.txz"
 
 # Download
-wget https://github.com/sbopkg/sbopkg/releases/download/0.38.1/sbopkg-0.38.1-noarch-1_wsr.tgz
-wget https://sourceforge.net/projects/slackpkgplus/files/slackpkg%2B-1.8.0-noarch-1mt.txz
+wget https://github.com/sbopkg/sbopkg/releases/download/0.38.2/sbopkg-0.38.2-noarch-1_wsr.tgz
+wget https://sourceforge.net/projects/slackpkgplus/files/slackpkg%2B-1.8.0-noarch-2mt.txz
 
 # Check
-sbopkg_md5sum_dl=$(md5sum sbopkg-0.38.1-noarch-1_wsr.tgz)
-slackpkg_md5sum_dl=$(md5sum slackpkg+-1.8.0-noarch-1mt.txz)
+sbopkg_md5sum_dl=$(md5sum sbopkg-0.38.2-noarch-1_wsr.tgz)
+slackpkg_md5sum_dl=$(md5sum slackpkg+-1.8.0-noarch-2mt.txz)
 
 if [[ $sbopkg_md5sum == $sbopkg_md5sum_dl ]]
     then
         echo -e "\nsbopkg download okej\n"
     else
         echo -e "\nsbopkg download faild\n"
-        rm ./sbopkg-0.38.1-noarch-1_wsr.tgz
-        rm ./slackpkg+-1.8.0-noarch-1mt.txz
+        rm ./sbopkg-0.38.2-noarch-1_wsr.tgz
+        rm ./slackpkg+-1.8.0-noarch-2mt.txz
         exit 1
 fi
 
@@ -43,19 +43,19 @@ if [[ $slackpkg_md5sum == $slackpkg_md5sum_dl ]]
         echo -e "\nslackpkg+ download okej\n"
     else
         echo -e "\nslackpkg+ download faild\n"
-        rm ./sbopkg-0.38.1-noarch-1_wsr.tgz
-        rm ./slackpkg+-1.8.0-noarch-1mt.txz
+        rm ./sbopkg-0.38.2-noarch-1_wsr.tgz
+        rm ./slackpkg+-1.8.0-noarch-2mt.txz
         exit 1
 fi
 
 # Install sbopkg and slackpkg+
-installpkg ./sbopkg-0.38.1-noarch-1_wsr.tgz
+installpkg ./sbopkg-0.38.2-noarch-1_wsr.tgz
 echo -e "\n"
-installpkg ./slackpkg+-1.8.0-noarch-1mt.txz
+installpkg ./slackpkg+-1.8.0-noarch-2mt.txz
 
 # Clean up
-rm ./sbopkg-0.38.1-noarch-1_wsr.tgz
-rm ./slackpkg+-1.8.0-noarch-1mt.txz
+rm ./sbopkg-0.38.2-noarch-1_wsr.tgz
+rm ./slackpkg+-1.8.0-noarch-2mt.txz
 
 # cp ./config_files/slackpkgplus.conf /etc/slackpkg/slackpkgplus.conf
 
@@ -66,20 +66,26 @@ echo " Upgrade system , hit return"
 echo "****************************"
 read
 
-sed -i 's/"#https://mirrors.slackware.com/slackware/slackware64-15.0/"/"https://mirrors.slackware.com/slackware/slackware64-15.0/"/g' /etc/slackpkg/mirrors
+sed -i 's/"# https://mirrors.slackware.com/slackware/slackware64-15.0/"/"https://mirrors.slackware.com/slackware/slackware64-15.0/"/g' /etc/slackpkg/mirrors
 
 sed -i 's/#PKGS_PRIORITY=( multilib )/PKGS_PRIORITY=( multilib )/g' /etc/slackpkg/slackpkgplus.conf
+
+sed -i 's/REPOPLUS=( slackpkgplus )/REPOPLUS=( slackpkgplus multilib alienbob restricted )/g' /etc/slackpkg/slackpkgplus.conf
+#sed -i 's/#MIRRORPLUS['multilib']=https:\/\/slackware.nl\/people\/alien\/multilib\/15.0\//MIRRORPLUS['multilib']=https:\/\/slackware.nl\/people\/alien\/multilib\/15.0\//g' /etc/slackpkg/slackpkgplus.conf
+#sed -i 's/#MIRRORPLUS['alienbob']=https:\/\/slackware.nl\/people\/alien\/sbrepos\/15.0\/x86_64/MIRRORPLUS['alienbob']=https:\/\/slackware.nl\/people\/alien\/sbrepos\/15.0\/x86_64/g' /etc/slackpkg/slackpkgplus.conf
+#sed -i 's/#MIRRORPLUS['restricted']=https:\/\/slackware.nl\/people\/alien\/restricted_sbrepos/15.0\/x86_64/MIRRORPLUS['restricted']=https:\/\/slackware.nl\/people\/alien\/restricted_sbrepos/15.0\/x86_64/g' /etc/slackpkg/slackpkgplus.conf
+
 echo ""
 echo "Upgrading slackware base and apply multilib"
+
+read
 
 slackpkg update gpg
 slackpkg update
 slackpkg upgrade multilib
+slackpkg upgrade-all
 slackpkg install multilib
 slackpkg install-new
-slackpkg upgrade-all
-
-
 slackpkg clean-system
 
 # Copy config files here

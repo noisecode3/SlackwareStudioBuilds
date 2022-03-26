@@ -1,0 +1,29 @@
+kernel-5.15-rt-xanmod1 x86_64
+Only run build-all-kernel-pkgs.sh
+
+This kernel unlock some serious performance improvements
+install this before wine-tkg
+
+Right now the configuration is unfinished, it just the normal generic configuration.
+
+This is still experimental and unfinished but still somewhat useful
+
+https://xanmod.org/
+
+Run first time to avoid conflicts with pkgs:
+removepkg kernel-source kernel-generic kernel-modules kernel-headers
+
+To install:
+installpkg /tmp/output-x86_64-5.15.29-rt37-xanmod1/kernel*.txz
+
+Initrd command:
+/usr/share/mkinitrd/mkinitrd_command_generator.sh -k 5.15.29-rt37-xanmod1
+
+You can swap out the configuration file but dont add localversion, it have not been tested
+
+You might want to blacklist: /etc/slackpkg/blacklist
+
+kernel-source
+kernel-modules
+kernel-headers
+kernel-firmware

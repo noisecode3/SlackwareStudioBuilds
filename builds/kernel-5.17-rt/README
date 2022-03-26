@@ -1,0 +1,24 @@
+kernel-5.17-rt-15.x86_64
+Only run build-all-kernels.sh
+
+Right now the configuration is unfinished, it just the normal generic configuration.
+More configuration and patches form the manjaro-rt kernel will be applied to this this kernel.
+
+This is still experimental and unfinished but still somewhat useful
+
+https://gitlab.manjaro.org/packages/community/realtime-kernels/linux517-rt
+
+Also upgrade kernel-firmware from here https://mirrors.slackware.com/slackware/slackware64-current/slackware64/a/
+
+Run first time to avoid conflicts with pkgs:
+removepkg kernel-source kernel-generic kernel-modules kernel-headers
+
+To install:
+installpkg /tmp/output-x86_64-5.17-rt15/kernel*.txz
+
+You might want to blacklist: /etc/slackpkg/blacklist
+
+kernel-source
+kernel-modules
+kernel-headers
+kernel-firmware
