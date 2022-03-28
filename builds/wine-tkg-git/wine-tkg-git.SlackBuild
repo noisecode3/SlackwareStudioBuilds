@@ -79,8 +79,9 @@ cd wine-tkg-git/wine-tkg-git/
 
 # Sed em up
 sed -i '/_nomakepkg_prefix_path=/ s/""/"\/opt"/' ./customization.cfg
+sed -i '/_protonify=/ s/"false"/"true"/'          ./customization.cfg
 sed -i '/_nomakepkg_nover=/ s/"false"/"true"/' ./wine-tkg-profiles/advanced-customization.cfg
-#sed -i '/_allow_server_rt_prio=/ s/"false"/"true"/' ./wine-tkg-profiles/advanced-customization.cfg
+sed -i '/_allow_server_rt_prio=/ s/"false"/"true"/' ./wine-tkg-profiles/advanced-customization.cfg
 
 sed -i 's/make install/make install DESTDIR=\/tmp\/SBo\/package-wine-tkg-git-1.0/g' ./wine-tkg-scripts/build.sh
 sed -i 's/local _prefix="${_nomakepkg_prefix_path}\/${_nomakepkg_pkgname}"/local _prefix="\/tmp\/SBo\/package-wine-tkg-git-1.0${_nomakepkg_prefix_path}\/${_nomakepkg_pkgname}"/g' ./wine-tkg-scripts/build.sh
