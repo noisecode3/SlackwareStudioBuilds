@@ -1,1 +1,6 @@
-
+These are optional dependencies, at least jack2 i recommended:
+MinGW-w64
+jack2
+liblo
+python-pyliblo
+wine

@@ -6,14 +6,14 @@
 # customary to leave one space after the ':' except on otherwise blank lines.
 
         |-----handy-ruler------------------------------------------------------|
-yabridge: appname (short description of app)
+yabridge: Yabridge (Yet Another way to use Windows VST plugins on Linux)
 yabridge:
-yabridge: Long description of appname, wrapped at 71 characters *after* the
-yabridge: colon following "appname" (and the 'handy ruler' should start at
-yabridge: that colon and be exactly 71 characters long).
-yabridge: If there is room, there might be a link to the homepage of the
-yabridge: application on one of these lines, but it's not necessary.
+yabridge: Yabridge seamlessly supports using both 32-bit and 64-bit Windows VST2
+yabridge: and VST3 plugins in a 64-bit Linux VST host as if they were
+yabridge: native VST2 and VST3 plugins, with optional support for plugin groups
+yabridge: to enable inter-plugin communication for VST2 plugins and quick
+yabridge: startup times. Its modern concurrent architecture and focus on
+yabridge: transparency allows yabridge to be both fast and highly compatible,
+yabridge: while also staying easy to debug and maintain.
 yabridge:
-yabridge: The maximum number of lines prefixed by "appname:" is 11.
-yabridge: Lines without any other text should *not* have a space after the :
 yabridge:
