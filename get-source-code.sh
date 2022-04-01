@@ -8,13 +8,13 @@ cd $SRCDIR/builds/carla/
 wget https://github.com/falkTX/Carla/archive/refs/tags/v2.4.2.tar.gz
 mv v2.4.2.tar.gz carla-2.4.2.tar.gz
 
-cd $SRCDIR/builds/kernel-5.17-rt.x86_64
-wget https://mirrors.edge.kernel.org/pub/linux/kernel/projects/rt/5.17/patch-5.17-rt15.patch.xz
-wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.17.tar.xz
+cd $SRCDIR/builds/kernel-5.17-rt
+wget https://mirrors.edge.kernel.org/pub/linux/kernel/projects/rt/5.17/patch-5.17.1-rt16.patch.xz
+wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.17.1.tar.xz
 
 cd $SRCDIR/builds/kernel-5.15-rt-xanmod1
-wget https://github.com/xanmod/linux/archive/5.15.29-rt37-xanmod1.tar.gz
-mv 5.15.29-rt37-xanmod1.tar.gz linux-5.15.29-rt37-xanmod1.tar.gz
+wget https://github.com/xanmod/linux/archive/5.15.31-rt38-xanmod1.tar.gz
+mv 5.15.31-rt38-xanmod1.tar.gz linux-5.15.31-rt38-xanmod1.tar.gz
 
 cd $SRCDIR/builds/wine-tkg-6.17
 wget https://github.com/Frogging-Family/wine-tkg-git/archive/refs/tags/6.17.r0.g5f19a815.tar.gz
@@ -23,7 +23,7 @@ mv 6.17.r0.g5f19a815.tar.gz wine-tkg-git-6.17.r0.g5f19a815.tar.gz
 cd $SRCDIR/builds/yabridge
 git clone https://github.com/robbert-vdh/yabridge
 cd ./yabridge
-git checkout 897afba106e00b45aed0ee69248591057f9e4316
+git checkout 8b78b9283449ad8051e7dfca8921d2d178f2538e
 rm -fr .git/logs/*
 cd ../
 mv yabridge yabridge-3.8.1

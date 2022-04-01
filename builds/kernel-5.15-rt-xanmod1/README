@@ -14,10 +14,10 @@ Run first time to avoid conflicts with pkgs:
 removepkg kernel-source kernel-generic kernel-modules kernel-headers
 
 To install:
-installpkg /tmp/output-x86_64-5.15.29-rt37-xanmod1/kernel*.txz
+installpkg /tmp/output-x86_64-5.15.31-rt38-xanmod1/kernel*.txz
 
 Initrd command:
-/usr/share/mkinitrd/mkinitrd_command_generator.sh -k 5.15.29-rt37-xanmod1
+/usr/share/mkinitrd/mkinitrd_command_generator.sh -k 5.15.31-rt38-xanmod1
 
 You can swap out the configuration file but dont add localversion, it have not been tested
 

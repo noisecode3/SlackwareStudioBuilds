@@ -1,9 +1,7 @@
 kernel-5.17-tkg x86_64
 Only run build-all-kernel-pkg.sh
 
-Right now the configuration is unfinished, it just the normal generic configuration.
-
-This is still experimental and unfinished but still somewhat useful
+This is unfinished
 
 https://github.com/Frogging-Family/linux-tkg
 
