@@ -2,9 +2,10 @@
 Configuration scripts and builds for Slackware music productions
 
 # Kernels
-Im planing on having
+I am focusing on kernel 5.17 with PREEMPT_RT almost done, testing
 
- - kernel 5.17 with PREEMPT_RT
+I planing on configuring those kernels and making the scripts:
+
  - kernel 5.15 XanMod also with PREEMPT_RT
  - kernel 5.17 tkg with normal PREEMPT
 

@@ -42,6 +42,8 @@
 #              * Update.
 # 2.4.2-1      19/feb/2022 by Martin Bångens <marbangens@gmail.com>
 #              * Update.
+# 2.4.3-1      4/may/2022 by Martin Bångens <marbangens@gmail.com>
+#              * Update.
 #
 # Run 'sh carla.SlackBuild' to build a Slackware package.
 # The package (.t?z) and .txt file as well as build logs are created in /tmp .
@@ -51,7 +53,7 @@
 
 PRGNAM=carla
 SRCNAM=Carla
-VERSION=${VERSION:-2.4.2}
+VERSION=${VERSION:-2.4.3}
 BUILD=${BUILD:-1}
 NUMJOBS=${NUMJOBS:-" -j$(nproc) "}
 TAG=${TAG:-alien}

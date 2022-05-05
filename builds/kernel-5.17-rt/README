@@ -4,7 +4,8 @@ Only run build-all-kernels.sh
 Right now the configuration is unfinished, it just the normal generic configuration.
 More configuration and patches form the manjaro-rt kernel will be applied to this this kernel.
 
-This is still experimental and unfinished but still somewhat useful
+This is still experimental and unfinished but still somewhat useful.
+DON'T USE THIS KERNEL UNTIL THE SECURITY PART ABOUT THE CONFIGURATION IS DONE: THEN I WILL REMOVE THIS TEXT
 
 https://gitlab.manjaro.org/packages/community/realtime-kernels/linux517-rt
 
@@ -20,5 +21,6 @@ You might want to blacklist: /etc/slackpkg/blacklist
 
 kernel-source
 kernel-modules
+kernel-generic
 kernel-headers
 kernel-firmware

@@ -4,9 +4,10 @@ Only run build-all-kernel-pkgs.sh
 This kernel unlock some serious performance improvements
 install this before wine-tkg
 
-Right now the configuration is unfinished, it just the normal generic configuration.
-
-This is still experimental and unfinished but still somewhat useful
+"Huge page tables" is a nice performance boost, but can be a minor security risk.
+I might change something about the configuration but this has been working good for me for a long time.
+You are free to swap the configuration before you build, just avoid changing the file name.
+This configuration is not too far from generic Slackware.
 
 https://xanmod.org/
 
@@ -14,16 +15,22 @@ Run first time to avoid conflicts with pkgs:
 removepkg kernel-source kernel-generic kernel-modules kernel-headers
 
 To install:
-installpkg /tmp/output-x86_64-5.15.31-rt38-xanmod1/kernel*.txz
+upgradepkg --install-new --reinstall /tmp/output-x86_64-5.15.36-rt41-xanmod1/kernel*.txz
 
 Initrd command:
-/usr/share/mkinitrd/mkinitrd_command_generator.sh -k 5.15.31-rt38-xanmod1
+/usr/share/mkinitrd/mkinitrd_command_generator.sh -k 5.15.36-rt41-xanmod1
 
-You can swap out the configuration file but dont add localversion, it have not been tested
+You can swap out the configuration file but don't add localversion, it have not been tested with the script.
+And avoid changing the file name of the configuration. If you want to upgrade the kernel yourself, the script
+is really nice for this, just build with the ???-xanmod1.tar.gz you want and put it next to build-all-kernel-pkgs.sh and go.
 
 You might want to blacklist: /etc/slackpkg/blacklist
 
 kernel-source
+kernel-generic
 kernel-modules
 kernel-headers
-kernel-firmware
+
+Don't forget you'r mkinitrd command and lilo/elilo or whatever bootloade you're using!
+It happens like once a year when we had too much to drink right?
+I always keep the huge kernel pkg for this...

@@ -36,7 +36,7 @@ CONFIG_PREEMPT_DEFAULT_MODE=${CONFIG_PREEMPT_DEFAULT_MODE:-voluntary}
 # If a $VERSION is not passed to this script, use the newest linux-*.tar.xz
 # found in this directory:
 VERSION=${VERSION:-$(/bin/ls -t linux-*.tar.?z | head -n 1 | rev | cut -f 3- -d . | cut -f 1 -d - | rev)}
-_RT=-$(/bin/ls patch-5.17-*.patch.xz | head -n 1 | rev | cut -f 3- -d . | cut -f 1 -d - | rev)
+_RT=-$(/bin/ls patch-$VERSION-*.patch.xz | head -n 1 | rev | cut -f 3- -d . | cut -f 1 -d - | rev)
 if ! /bin/ls linux-*.tar.?z 1> /dev/null 2> /dev/null ; then
   echo "Error: kernel source not found. (/bin/ls linux-*.tar.?z)"
 fi
@@ -128,9 +128,15 @@ echo "Untarring $CWD/linux-${VERSION}.tar.?z in $PKG/usr/src..."
 
   cd linux-*
 
-  echo "Applying kernel patch in $CWD/patch-${VERSION}$_RT and copying patches to $PKG/usr/src/linux-${VERSION}$_RT..."
-  xzcat $CWD/patch-${VERSION}$_RT.patch.xz | patch -p1 --verbose --backup --suffix=.orig || exit 1
-  cp -a $CWD/patch-${VERSION}$_RT.patch.xz .
+  echo "Applying kernel patch in $CWD/patch-${VERSION}$_RT..."
+  xzcat $CWD/patch-${VERSION}$_RT.patch.xz | patch -p1 --verbose || exit 1
+
+  echo "Applying kernel manjaro patches..."
+  cat $CWD/0101-ZEN_Add_sysctl_and_CONFIG_to_disallow_unprivileged_CLONE_NEWUSER.patch | patch -p1 --verbose || exit 1
+  cat $CWD/0103-Revert-swiotlb-rework-fix_info_leak_with_DMA_FROM_DEVICE.patch         | patch -p1 --verbose || exit 1
+  cat $CWD/0301-revert-fbcon-remove-now-unusued-softback_lines-cursor-argument.patch   | patch -p1 --verbose || exit 1
+  cat $CWD/0302-revert-fbcon-remove-no-op-fbcon_set_origin.patch                       | patch -p1 --verbose || exit 1
+  cat $CWD/0303-revert-fbcon-remove-soft-scrollback-code.patch                         | patch -p1 --verbose || exit 1
 
   echo "Copying $CWD/kernel-configs/${KERNEL_CONFIG} to .config..."
   cp -a $CWD/kernel-configs/${KERNEL_CONFIG} .config

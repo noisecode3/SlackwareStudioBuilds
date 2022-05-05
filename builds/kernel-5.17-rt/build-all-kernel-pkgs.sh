@@ -39,7 +39,7 @@ if [ -z "$VERSION" ]; then
     VERSION=$(/bin/ls -t linux-*.tar.?z | head -n 1 | rev | cut -f 3- -d . | cut -f 1 -d - | rev)
   fi
 fi
-_RT=-$(/bin/ls patch-5.17-*.patch.xz | head -n 1 | rev | cut -f 3- -d . | cut -f 1 -d - | rev)
+_RT=-$(/bin/ls patch-$VERSION-*.patch.xz | head -n 1 | rev | cut -f 3- -d . | cut -f 1 -d - | rev)
 TMP=${TMP:-/tmp}
 
 # By default, don't install the packages as we build them and don't update the initrd.
