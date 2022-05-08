@@ -25,7 +25,7 @@
 cd $(dirname $0) ; CWD=$(pwd)
 
 PRGNAM=yabridge
-VERSION=${VERSION:-3.8.1}
+VERSION=${VERSION:-4.0}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SBo}
 PKGTYPE=${PKGTYPE:-tgz}
@@ -92,11 +92,11 @@ find -L . \
 
   meson setup \
     build \
-    --cross-file cross-wine.conf \
+    --cross-file=cross-wine.conf \
     --buildtype=release \
     --unity=on \
     --unity-size=1000 \
-    -Dwith-bitbridge=true
+    -Dbitbridge=true
 
   # The unity build takes can take up to 2 GB of RAM per target, so if the
   # system does not have enough RAM to build everything at once we'll limit the
@@ -114,12 +114,13 @@ find -L . \
 
 
   install -dm755 "$PKG/usr/bin"
-  install yabridge-{host,group}.exe{,.so} "$PKG/usr/bin"
-  install yabridge-{host,group}-32.exe{,.so} "$PKG/usr/bin"
+  install yabridge-host.exe{,.so} "$PKG/usr/bin"
+  install yabridge-host-32.exe{,.so} "$PKG/usr/bin"
   install ../tools/yabridgectl/target/release/yabridgectl "$PKG/usr/bin"
 
   install -dm755 "$PKG/usr/lib"
   install libyabridge-{vst2,vst3}.so "$PKG/usr/lib"
+  install libyabridge-chainloader-{vst2,vst3}.so "$PKG/usr/lib"
 
 cd ..
 
