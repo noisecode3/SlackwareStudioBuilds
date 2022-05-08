@@ -109,36 +109,36 @@ function link
 {
   echo "Creating Symbolic links..."
   cd /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/function_grep.pl     /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/msidb                /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/msiexec              /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/notepad              /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/regedit              /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/regsvr32             /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/widl                 /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wine                 /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wine-preloader       /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wine-tkg             /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wine-tkg-interactive /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wine64               /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wine64-preloader     /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wine64-tkg           /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wineboot             /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/winebuild            /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/winecfg              /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wineconsole          /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/winecpp              /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/winedbg              /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/winedump             /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/winefile             /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wineg++              /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/winegcc              /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/winemaker            /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/winemine             /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/winepath             /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wineserver           /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wmc                  /usr/bin/
-  ln -fsv /opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/bin/wrc                  /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/function_grep.pl     /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/msidb                /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/msiexec              /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/notepad              /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/regedit              /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/regsvr32             /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/widl                 /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/wine                 /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/wine-preloader       /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/wine-tkg             /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/wine-tkg-interactive /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/wine64               /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/wine64-preloader     /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/wine64-tkg           /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/wineboot             /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/winebuild            /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/winecfg              /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/wineconsole          /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/winecpp              /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/winedbg              /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/winedump             /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/winefile             /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/wineg++              /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/winegcc              /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/winemaker            /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/winemine             /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/winepath             /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/wineserver           /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/wmc                  /usr/bin/
+  ln -fsv /opt/wine-tkg-staging-fsync-git-7.6.r0.g539ecd2f/bin/wrc                  /usr/bin/
 }
 
 if [[ "$1" == '--restore' ]]; then
@@ -158,7 +158,7 @@ fi
 
 # lol this if :) but it will be most secure to check all of them before we overwrite here
 
-if [[ ! -L /usr/bin/function_grep.pl && /usr/bin/msidb && /usr/bin/msiexec && /usr/bin/notepad && /usr/bin/regedit && /usr/bin/regsvr32 && /usr/bin/widl && /usr/bin/wine && /usr/bin/wine-preloader && /usr/bin/wine-tkg && /usr/bin/wine-tkg-interactive && /usr/bin/wine64  && /usr/bin/wine64-preloader && /usr/bin/wine64-tkg  && /usr/bin/wineboot && /usr/bin/winebuild && /usr/bin/winecfg && /usr/bin/wineconsole && /usr/bin/winedbg && /usr/bin/winedump && /usr/bin/winefile && /usr/bin/winegcc && /usr/bin/winemaker && /usr/bin/winemine && /usr/bin/winepath && /usr/bin/wineserver && /usr/bin/wmc && /usr/bin/wrc ]]; then
+if [[ ! -L /usr/bin/function_grep.pl && /usr/bin/msidb && /usr/bin/msiexec && /usr/bin/notepad && /usr/bin/regedit && /usr/bin/regsvr32 && /usr/bin/widl && /usr/bin/wine && /usr/bin/wine-preloader && /usr/bin/wine-tkg && /usr/bin/wine-tkg-interactive && /usr/bin/wine64  && /usr/bin/wine64-preloader  && /usr/bin/wine64-tkg  && /usr/bin/wineboot && /usr/bin/winebuild && /usr/bin/winecfg && /usr/bin/wineconsole && /usr/bin/winedbg && /usr/bin/winedump && /usr/bin/winefile && /usr/bin/winegcc && /usr/bin/winemaker && /usr/bin/winemine && /usr/bin/winepath && /usr/bin/wineserver && /usr/bin/wmc && /usr/bin/wrc ]]; then
 
   echo "If there is wine binaries in /usr/bin we back them up"
   backup

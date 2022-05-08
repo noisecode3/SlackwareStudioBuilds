@@ -25,6 +25,10 @@ cd $SRCDIR/builds/wine-tkg-6.17
 wget https://github.com/Frogging-Family/wine-tkg-git/archive/refs/tags/6.17.r0.g5f19a815.tar.gz
 mv 6.17.r0.g5f19a815.tar.gz wine-tkg-git-6.17.r0.g5f19a815.tar.gz
 
+cd $SRCDIR/builds/wine-tkg-7.6
+wget https://github.com/Frogging-Family/wine-tkg-git/archive/refs/tags/7.6.r12.g51472395.tar.gz
+mv 7.6.r12.g51472395.tar.gz wine-tkg-git-7.6.r12.g51472395.tar.gz
+
 cd $SRCDIR/builds/yabridge
 git clone https://github.com/robbert-vdh/yabridge
 cd ./yabridge

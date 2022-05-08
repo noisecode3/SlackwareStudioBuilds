@@ -24,8 +24,8 @@
 
 cd $(dirname $0) ; CWD=$(pwd)
 
-PRGNAM=wine-tkg
-VERSION=${VERSION:-6.17}
+PRGNAM=wine-tkg-6.17
+VERSION=${VERSION:-r0.g5f19a815}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SBo}
 PKGTYPE=${PKGTYPE:-tgz}
@@ -51,7 +51,7 @@ if [ ! -f /var/log/packages/glibc-[0-9]*_multilib-x86_64-5alien ]; then
 fi
 
 TMP=${TMP:-/tmp/SBo}	# For consistency's sake, use this
-PKG=$TMP/package-$PRGNAM-$VERSION
+PKG=$TMP/package-$PRGNAM.$VERSION
 OUTPUT=${OUTPUT:-/tmp}	# Drop the package in /tmp
 
 
@@ -59,7 +59,7 @@ OUTPUT=${OUTPUT:-/tmp}	# Drop the package in /tmp
 # the name of the created package would be, and then exit. This information
 # could be useful to other scripts.
 if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
-  echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
+  echo "$PRGNAM.$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
   exit 0
 fi
 
@@ -72,7 +72,7 @@ set -e # Exit on most errors
 rm -rf $PKG
 mkdir -p $TMP $PKG $OUTPUT
 cd $TMP
-rm -rf $PRGNAM-$VERSION
+rm -rf $PRGNAM.$VERSION
 rm -rf wine-tkg-git-6.17.r0.g5f19a815
 
 tar -xf $CWD/wine-tkg-git-6.17.r0.g5f19a815.tar.gz
@@ -85,10 +85,10 @@ sed -i '/_nomakepkg_prefix_path=/ s/""/"\/opt"/' ./customization.cfg
 sed -i '/_plain_version=/ s/""/"wine-6.17"/' ./customization.cfg
 sed -i '/_staging_version=/ s/""/"v6.17"/' ./customization.cfg
 
-#sed -i '/_allow_server_rt_prio=/ s/"false"/"true"/' ./wine-tkg-profiles/advanced-customization.cfg
+sed -i '/_allow_server_rt_prio=/ s/"false"/"true"/' ./wine-tkg-profiles/advanced-customization.cfg
 
-sed -i 's/make install/make install DESTDIR=\/tmp\/SBo\/package-wine-tkg-6.17/g' ./wine-tkg-scripts/build.sh
-sed -i 's/local _prefix="${_nomakepkg_prefix_path}\/${_nomakepkg_pkgname}"/local _prefix="\/tmp\/SBo\/package-wine-tkg-6.17${_nomakepkg_prefix_path}\/${_nomakepkg_pkgname}"/g' ./wine-tkg-scripts/build.sh
+sed -i 's/make install/make install DESTDIR=\/tmp\/SBo\/package-wine-tkg-6.17.r0.g5f19a815/g' ./wine-tkg-scripts/build.sh
+sed -i 's/local _prefix="${_nomakepkg_prefix_path}\/${_nomakepkg_pkgname}"/local _prefix="\/tmp\/SBo\/package-wine-tkg-6.17.r0.g5f19a815${_nomakepkg_prefix_path}\/${_nomakepkg_pkgname}"/g' ./wine-tkg-scripts/build.sh
 
 chown -R root:root .
 find -L . \
@@ -107,11 +107,11 @@ cp $CWD/wine-tkg-6.17.desktop $PKG/usr/share/applications/
 # The included documentation varies from one application to another, so be sure
 # to adjust your script as needed
 # Also, include the SlackBuild script in the documentation directory
-mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+mkdir -p $PKG/usr/doc/$PRGNAM.$VERSION
 #cp -a \
 #  <documentation> \
 #  $PKG/usr/doc/$PRGNAM-$VERSION
-cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM-$VERSION.SlackBuild
+cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM.$VERSION/$PRGNAM.SlackBuild
 
 # Copy the slack-desc (and a custom doinst.sh if necessary) into ./install
 mkdir -p $PKG/install
@@ -123,4 +123,4 @@ cat $CWD/doinst.sh > $PKG/install/doinst.sh
 # your custom contents of doinst.sh runs, then add the -p switch to
 # the makepkg command below -- see makepkg(8) for details
 cd $PKG
-/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE
+/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM.$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE
