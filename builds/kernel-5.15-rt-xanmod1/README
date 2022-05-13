@@ -37,3 +37,8 @@ It happens like once a year when we had too much to drink right?
 I always keep the huge kernel pkg for this...
 
 Note: The current proprietary NVIDIA, VirtualBox, VMware Workstation / Player and some other dkms modules builds do not officially support THIS RT kernel
+
+IGNORE_PREEMPT_RT_PRESENCE=1
+
+Don't do this just use nouveau, if you have nvidia dont game with this kernel, maybe it works for you anyway..
+BTW gaming is nice with this kernel :)
