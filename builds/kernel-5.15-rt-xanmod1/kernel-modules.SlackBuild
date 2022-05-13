@@ -35,7 +35,7 @@
 
 cd $(dirname $0) ; CWD=$(pwd)
 
-KERNEL_NAME=${KERNEL_NAME:-}
+KERNEL_NAME=${KERNEL_NAME:-rt-xanmod1}
 KERNEL_SOURCE=${KERNEL_SOURCE:-/usr/src/linux}
 KERNEL_CONFIG=${KERNEL_CONFIG:-/usr/src/linux/.config}
 BUILD=${BUILD:-1}
@@ -68,13 +68,13 @@ if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
   make oldconfig 1> /dev/null 2> /dev/null
   make prepare 1> /dev/null 2> /dev/null
   PACKAGE_ARCH=$(cat kernel/bounds.s | grep -w "\-march=.*" | tr " " "\n" | grep -w "\-march=.*" | cut -f 2 -d = | tr - _)
-  echo "kernel${KERNEL_NAME}-modules${LOCALVERSION}-$(echo ${VERSION} | tr - _)$(echo ${LOCALVERSION} | tr - _)-${PACKAGE_ARCH}-$BUILD.txz"
+  echo "kernel-${KERNEL_NAME}-modules${LOCALVERSION}-$(echo ${VERSION} | tr - _)$(echo ${LOCALVERSION} | tr - _)-${PACKAGE_ARCH}-$BUILD.txz"
   exit 0
 fi
 
 NUMJOBS=${NUMJOBS:-" -j$(expr $(nproc) + 1) "}
 TMP=${TMP:-/tmp}
-PKG=$TMP/package-kernel${KERNEL_NAME}-modules
+PKG=$TMP/package-kernel-${KERNEL_NAME}-modules
 
 rm -rf $PKG
 mkdir -p $TMP $PKG
@@ -125,7 +125,7 @@ fi
 ) || exit 1
 
 mkdir $PKG/install
-cat $CWD/slack-desc/slack-desc.kernel-modules-template | sed "s/%PACKAGE_NAME%/kernel${KERNEL_NAME}-modules${LOCALVERSION}/g" > $PKG/install/slack-desc
+cat $CWD/slack-desc/slack-desc.kernel-modules-template | sed "s/%PACKAGE_NAME%/kernel-${KERNEL_NAME}-modules${LOCALVERSION}/g" > $PKG/install/slack-desc
 
 # Fetch the kernel architecture from the source tree:
 cd ${KERNEL_SOURCE}
@@ -133,5 +133,5 @@ PACKAGE_ARCH=$(cat kernel/bounds.s | grep -w "\-march=.*" | tr " " "\n" | grep -
     
 # Make the package:
 cd $PKG
-/sbin/makepkg -l y -c n $TMP/kernel${KERNEL_NAME}-modules${LOCALVERSION}-$(echo ${VERSION} | tr - _)$(echo ${LOCALVERSION} | tr - _)-${PACKAGE_ARCH}-$BUILD.txz
+/sbin/makepkg -l y -c n $TMP/kernel-${KERNEL_NAME}-modules${LOCALVERSION}-$(echo ${VERSION} | tr - _)$(echo ${LOCALVERSION} | tr - _)-${PACKAGE_ARCH}-$BUILD.txz
 

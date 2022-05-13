@@ -15,3 +15,5 @@ https://mirrors.slackware.com/slackware/slackware-15.0/patches/packages/boost-1.
 and run:
 convertpkg-compat32 -i boost-1.78.0-i586-2_slack15.0.txz
 installpkg /tmp/boost-compat32-1.78.0-x86_64-2_slack15.0compat32.txz
+
+backlist wine-tkg to make slackpkg work

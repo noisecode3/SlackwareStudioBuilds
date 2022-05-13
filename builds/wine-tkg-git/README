@@ -35,3 +35,6 @@ installpkg /tmp/boost-compat32-1.78.0-x86_64-2_slack15.0compat32.txz
 This is experimental and incomplete
 default kernel and generic configuration is not recommended
 to get the most performance out of this
+
+
+backlist wine-tkg to make slackpkg work

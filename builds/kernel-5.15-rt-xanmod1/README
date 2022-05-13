@@ -27,10 +27,13 @@ is really nice for this, just build with the ???-xanmod1.tar.gz you want and put
 You might want to blacklist: /etc/slackpkg/blacklist
 
 kernel-source
-kernel-generic
-kernel-modules
 kernel-headers
 
-Don't forget you'r mkinitrd command and lilo/elilo or whatever bootloade you're using!
+Disclaimer you can use kernel-modules without a pkg conflict.
+But remember you should have the appropriate kernel-headers installed when compiling software drivers or wine that target specific kernel functionality
+
+Don't forget you're mkinitrd command and lilo/elilo or whatever bootloader you're using!
 It happens like once a year when we had too much to drink right?
 I always keep the huge kernel pkg for this...
+
+Note: The current proprietary NVIDIA, VirtualBox, VMware Workstation / Player and some other dkms modules builds do not officially support THIS RT kernel
