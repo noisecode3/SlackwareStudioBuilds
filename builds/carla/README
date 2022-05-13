@@ -4,3 +4,5 @@ jack2
 liblo
 python-pyliblo
 wine
+
+blacklist carla

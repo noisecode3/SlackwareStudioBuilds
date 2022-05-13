@@ -98,8 +98,8 @@ fi
 
   # Build kernel-modules (for the just built generic kernel, but most of them
   # will also work with the huge kernel):
-  KERNEL_MODULES_PACKAGE_NAME=$(PRINT_PACKAGE_NAME=YES KERNEL_SOURCE=$TMP/package-kernel-source/usr/src/linux-${VERSION} KERNEL_CONFIG=$TMP/package-kernel-source/usr/src/linux-${VERSION}/.config BUILD=$BUILD ./kernel-modules.SlackBuild)
-  KERNEL_SOURCE=$TMP/package-kernel-source/usr/src/linux-${VERSION} KERNEL_CONFIG=$TMP/package-kernel-source/usr/src/linux-${VERSION}/.config BUILD=$BUILD ./kernel-modules.SlackBuild
+  KERNEL_MODULES_PACKAGE_NAME=$(PRINT_PACKAGE_NAME=YES KERNEL_SOURCE=$TMP/package-kernel-source/usr/src/linux-${VERSION} KERNEL_CONFIG=$TMP/package-kernel-source/usr/src/linux-${VERSION}/.config BUILD=$BUILD ./kernel-rt-xanmod1-modules.SlackBuild)
+  KERNEL_SOURCE=$TMP/package-kernel-source/usr/src/linux-${VERSION} KERNEL_CONFIG=$TMP/package-kernel-source/usr/src/linux-${VERSION}/.config BUILD=$BUILD ./kernel-rt-xanmod1-modules.SlackBuild
   if [ -r ${TMP}/${KERNEL_MODULES_PACKAGE_NAME} ]; then
     mv ${TMP}/${KERNEL_MODULES_PACKAGE_NAME} $OUTPUT
   else
