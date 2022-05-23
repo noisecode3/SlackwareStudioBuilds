@@ -4,9 +4,9 @@ with another wine in /usr
 
 To integrate with desktop
 /usr/share/applications/wine-tkg-git.desktop
-Remember that if an installer generate a shortcut
-that .desktop file will use the path to the used wine-tkg binary path
-wine puts those classic windows menu application launchers in.
+Remember that if an installer generate a desktop shortcut
+that .desktop file will use the path to the used wine-tkg binary path.
+wine puts those classic windows menu application launchers in:
 ~/.local/share/applications/wine/Programs/
 
 Symbolic links to wine64 and wine
@@ -22,19 +22,5 @@ like /usr/bin/.wine.backup
 
 Installing multilib for Slackware 15 is enough to build
 
-You most install 32-bit boots for example from this link:
-https://mirrors.slackware.com/slackware/slackware-15.0/patches/packages/boost-1.78.0-i586-2_slack15.0.txz
-For yabridge to compile later
 
-and run:
-convertpkg-compat32 -i boost-1.78.0-i586-2_slack15.0.txz
-installpkg /tmp/boost-compat32-1.78.0-x86_64-2_slack15.0compat32.txz
-
-
-
-This is experimental and incomplete
-default kernel and generic configuration is not recommended
-to get the most performance out of this
-
-
-backlist wine-tkg to make slackpkg work
+backlist wine-tkg to make slackpkg happy

@@ -2,18 +2,26 @@ This scrip download the source from wine-tkg-6.17.r0.g5f19a815 release
 The generated package will be installed in /opt so that is can be installed
 with another wine in /usr
 
-These are not addressed for now, to integrate with desktop
-symbolic link to wine64 and wine from home should work
-/usr/share/applications/
-/usr/bin/
+To integrate with desktop
+/usr/share/applications/wine-tkg-git.desktop
+Remember that if an installer generate a desktop shortcut
+that .desktop file will use the path to the used wine-tkg binary path.
+wine puts those classic windows menu application launchers in:
+~/.local/share/applications/wine/Programs/
+
+Symbolic links to wine64 and wine
+To post install into /usr/bin/ run:
+
+/opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/symlink_usr_bin.sh
+/opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/symlink_usr_bin.sh --restore
+/opt/wine-tkg-staging-fsync-git-6.17.r0.g5f19a815/symlink_usr_bin.sh --force-no-backup
+
+If /usr/bin/wine is a Symbolic link it will overwrite
+else it will backup and hide all wine related binaries
+like /usr/bin/.wine.backup
+
 
 Installing multilib for Slackware 15 is enough to build
 
-You most install 32-bit boots for example from this link:
-https://mirrors.slackware.com/slackware/slackware-15.0/patches/packages/boost-1.78.0-i586-2_slack15.0.txz
 
-and run:
-convertpkg-compat32 -i boost-1.78.0-i586-2_slack15.0.txz
-installpkg /tmp/boost-compat32-1.78.0-x86_64-2_slack15.0compat32.txz
-
-backlist wine-tkg to make slackpkg work
+backlist wine-tkg to make slackpkg happy

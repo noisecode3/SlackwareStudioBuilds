@@ -1,10 +1,18 @@
 This script will build yabridge with 32bit plugin support and yabridgectl
-This depends on multilib wine compiled with 32-bit boost and must be installed in /use/bin
+This depends on wine and multilib
 
-Remember that if you update boost you have to update the 32-bit manually
-It better to not let that happen by using:
 
-echo "boost" >> /etc/slackpkg/blacklist
+WINEFSYNC=1 or priority dose not seem to work if you don't run you're daw from a terminal with xfce
+"export WINEFSYNC=1" in /etc/profile dose not matter, could be some priority bug or security problem in xfce
+Or this is a Renoise problem, but i3 don't have this problem... this is how I don't have xruns.
+Got one or tow from loading a session or plugin.
 
-# to see if you need to manually update boost
-slackpkg show-changelog
+make sure you have configured you're system with real time priority.
+
+Tips: You could install jack2 like this, if you use slackpkg
+
+slackpkg install pulseaudio-jack jack2 zita-resampler zita-alsa-pcmi portaudio qjackctl
+
+pulseaudio/jack don't just work with startxfce4 enabling jack D-bus
+
+Tips: you can look at post_install.sh for configuration inspiration to start with
