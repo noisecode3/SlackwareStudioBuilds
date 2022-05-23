@@ -13,7 +13,3 @@ it will just work with init 4 in /etc/inittab
 Tips: You can look at post_install.sh for configuration inspiration to start with
 This script is not done
 
-Tips: If you have Platform Controller Hub laptop don't select hw:PCH by mistake, lol
-
-Tips: I use a priority of 95 for Renoise works for me with Firefox and everything.
-Something else might work better for you.
