@@ -1,11 +1,6 @@
 This script will build yabridge with 32bit plugin support and yabridgectl
 This depends on wine and multilib
 
-WINEFSYNC=1 or priority dose not seem to work if you don't run you're daw from a terminal with xfce
-"export WINEFSYNC=1" in /etc/profile dose not matter, could be some priority bug or security problem in xfce
-Or this is a Renoise problem, but i3 don't have this problem... this is how I don't have xruns.
-Got one or two from loading a session or plugin.
-
 make sure you have configured you're system with real time priority.
 
 Tips: You could install jack2 like this, if you use slackpkg
