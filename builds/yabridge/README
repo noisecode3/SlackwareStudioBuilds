@@ -14,5 +14,6 @@ Tips: You could install jack2 like this, if you use slackpkg
 slackpkg install pulseaudio-jack jack2 zita-resampler zita-alsa-pcmi portaudio qjackctl
 
 pulseaudio/jack don't just work with startxfce4 enabling jack D-bus
+it will just work with init 4 in /etc/inittab
 
 Tips: you can look at post_install.sh for configuration inspiration to start with
