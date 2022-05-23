@@ -1,6 +1,9 @@
 This script will build yabridge with 32bit plugin support and yabridgectl
 This depends on wine and multilib
 
+With xfce on a nvidia optimus laptop you might get xruns and short (about 1 second) graphical lags from
+lunching you daw from the menu or in thunar. It might have something to do with opengl... I've seen this before...
+
 make sure you have configured you're system with real time priority.
 
 Tips: You could install jack2 like this, if you use slackpkg
@@ -11,3 +14,4 @@ pulseaudio/jack don't just work with startxfce4 enabling jack D-bus
 it will just work with init 4 in /etc/inittab
 
 Tips: you can look at post_install.sh for configuration inspiration to start with
+This script is not done
