@@ -18,15 +18,15 @@
 
 # check md5 for pkgs
 sbopkg_md5sum="df40c7c991a30c1129a612a40be9f590  sbopkg-0.38.2-noarch-1_wsr.tgz"
-slackpkg_md5sum="fc0861b1099b620c366a75c707409628  slackpkg+-1.8.0-noarch-2mt.txz"
+slackpkg_md5sum="16751df70bb703f85028dad5b3bb9ccf  slackpkg+-1.8.0-noarch-6mt.txz"
 
 # Download
 wget https://github.com/sbopkg/sbopkg/releases/download/0.38.2/sbopkg-0.38.2-noarch-1_wsr.tgz
-wget https://sourceforge.net/projects/slackpkgplus/files/slackpkg%2B-1.8.0-noarch-2mt.txz
+wget https://sourceforge.net/projects/slackpkgplus/files/slackpkg%2B-1.8.0-noarch-6mt.txz
 
 # Check
 sbopkg_md5sum_dl=$(md5sum sbopkg-0.38.2-noarch-1_wsr.tgz)
-slackpkg_md5sum_dl=$(md5sum slackpkg+-1.8.0-noarch-2mt.txz)
+slackpkg_md5sum_dl=$(md5sum slackpkg+-1.8.0-noarch-6mt.txz)
 
 if [[ $sbopkg_md5sum == $sbopkg_md5sum_dl ]]
     then
@@ -34,7 +34,7 @@ if [[ $sbopkg_md5sum == $sbopkg_md5sum_dl ]]
     else
         echo -e "\nsbopkg download faild\n"
         rm ./sbopkg-0.38.2-noarch-1_wsr.tgz
-        rm ./slackpkg+-1.8.0-noarch-2mt.txz
+        rm ./slackpkg+-1.8.0-noarch-6mt.txz
         exit 1
 fi
 
@@ -44,18 +44,18 @@ if [[ $slackpkg_md5sum == $slackpkg_md5sum_dl ]]
     else
         echo -e "\nslackpkg+ download faild\n"
         rm ./sbopkg-0.38.2-noarch-1_wsr.tgz
-        rm ./slackpkg+-1.8.0-noarch-2mt.txz
+        rm ./slackpkg+-1.8.0-noarch-6mt.txz
         exit 1
 fi
 
 # Install sbopkg and slackpkg+
 installpkg ./sbopkg-0.38.2-noarch-1_wsr.tgz
 echo -e "\n"
-installpkg ./slackpkg+-1.8.0-noarch-2mt.txz
+installpkg ./slackpkg+-1.8.0-noarch-6mt.txz
 
 # Clean up
 rm ./sbopkg-0.38.2-noarch-1_wsr.tgz
-rm ./slackpkg+-1.8.0-noarch-2mt.txz
+rm ./slackpkg+-1.8.0-noarch-6mt.txz
 
 # cp ./config_files/slackpkgplus.conf /etc/slackpkg/slackpkgplus.conf
 
