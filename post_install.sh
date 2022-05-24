@@ -57,8 +57,6 @@ installpkg ./slackpkg+-1.8.0-noarch-6mt.txz
 rm ./sbopkg-0.38.2-noarch-1_wsr.tgz
 rm ./slackpkg+-1.8.0-noarch-6mt.txz
 
-# cp ./config_files/slackpkgplus.conf /etc/slackpkg/slackpkgplus.conf
-
 # Upgrade system
 echo ""
 echo "****************************"
@@ -66,14 +64,15 @@ echo " Upgrade system , hit return"
 echo "****************************"
 read
 
+# Sed slackpkg
 sed -i 's/"# https://mirrors.slackware.com/slackware/slackware64-15.0/"/"https://mirrors.slackware.com/slackware/slackware64-15.0/"/g' /etc/slackpkg/mirrors
 
 sed -i 's/#PKGS_PRIORITY=( multilib )/PKGS_PRIORITY=( multilib )/g' /etc/slackpkg/slackpkgplus.conf
-
 sed -i 's/REPOPLUS=( slackpkgplus )/REPOPLUS=( slackpkgplus multilib alienbob restricted )/g' /etc/slackpkg/slackpkgplus.conf
-#sed -i 's/#MIRRORPLUS['multilib']=https:\/\/slackware.nl\/people\/alien\/multilib\/15.0\//MIRRORPLUS['multilib']=https:\/\/slackware.nl\/people\/alien\/multilib\/15.0\//g' /etc/slackpkg/slackpkgplus.conf
-#sed -i 's/#MIRRORPLUS['alienbob']=https:\/\/slackware.nl\/people\/alien\/sbrepos\/15.0\/x86_64/MIRRORPLUS['alienbob']=https:\/\/slackware.nl\/people\/alien\/sbrepos\/15.0\/x86_64/g' /etc/slackpkg/slackpkgplus.conf
-#sed -i 's/#MIRRORPLUS['restricted']=https:\/\/slackware.nl\/people\/alien\/restricted_sbrepos/15.0\/x86_64/MIRRORPLUS['restricted']=https:\/\/slackware.nl\/people\/alien\/restricted_sbrepos/15.0\/x86_64/g' /etc/slackpkg/slackpkgplus.conf
+sed -i "s/^#MIRRORPLUS\['multilib'\]/MIRRORPLUS\['multilib'\]/g" /etc/slackpkg/slackpkgplus.conf
+sed -i "s/^#MIRRORPLUS\['alienbob'\]/MIRRORPLUS\['alienbob'\]/g" /etc/slackpkg/slackpkgplus.conf
+sed -i "s/^#MIRRORPLUS\['restricted'\]/MIRRORPLUS\['restricted'\]/g" /etc/slackpkg/slackpkgplus.conf
+
 
 echo ""
 echo "Upgrading slackware base and apply multilib"
@@ -93,11 +92,8 @@ echo "vm.mmap_min_addr = 65536"  >> /etc/sysctl.d/mmap_restriction_override.conf
 sed -i 's/#SCALING_GOVERNOR=ondemand/#SCALING_GOVERNOR=performance/g' /etc/default/cpufreq
 sed -i 's/SCALING_GOVERNOR=ondemand/SCALING_GOVERNOR=performance/g' /etc/rc.d/rc.cpufreq
 
-
-
 echo -e "@audio - memlock unlimited\n@audio - rtprio 95\n@audio - nofile 1048576" >> /etc/security/limits.d/audio.conf
 cp ./config_files/40-timer-permissions.rules /etc/udev/rules.d/40-timer-permissions.rules
 cp ./config_files/daw.conf /etc/sysctl.d/daw.conf
-
 
 exit 0
