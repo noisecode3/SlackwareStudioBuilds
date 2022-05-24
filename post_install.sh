@@ -70,7 +70,7 @@ sed -i 's/"# https://mirrors.slackware.com/slackware/slackware64-15.0/"/"https:/
 sed -i 's/#PKGS_PRIORITY=( multilib )/PKGS_PRIORITY=( multilib )/g' /etc/slackpkg/slackpkgplus.conf
 sed -i 's/REPOPLUS=( slackpkgplus )/REPOPLUS=( slackpkgplus multilib alienbob restricted )/g' /etc/slackpkg/slackpkgplus.conf
 sed -i "s/^#MIRRORPLUS\['multilib'\]/MIRRORPLUS\['multilib'\]/g" /etc/slackpkg/slackpkgplus.conf
-sed -i "s/^#MIRRORPLUS\['alienbob'\]/MIRRORPLUS\['alienbob'\]/g" /etc/slackpkg/slackpkgplus.conf
+sed -i "s/^#MIRRORPLUS\['alienbob'\]\=https/MIRRORPLUS\['alienbob'\]\=https/g" /etc/slackpkg/slackpkgplus.conf
 sed -i "s/^#MIRRORPLUS\['restricted'\]/MIRRORPLUS\['restricted'\]/g" /etc/slackpkg/slackpkgplus.conf
 
 
