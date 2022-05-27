@@ -18,8 +18,8 @@ wget https://gitlab.manjaro.org/packages/community/realtime-kernels/linux517-rt/
 wget https://gitlab.manjaro.org/packages/community/realtime-kernels/linux517-rt/-/raw/main/0303-revert-fbcon-remove-soft-scrollback-code.patch
 
 cd $SRCDIR/builds/kernel-5.15-rt-xanmod1
-wget https://github.com/xanmod/linux/archive/5.15.36-rt41-xanmod1.tar.gz
-mv 5.15.36-rt41-xanmod1.tar.gz linux-5.15.36-rt41-xanmod1.tar.gz
+wget https://github.com/xanmod/linux/archive/5.15.43-rt45-xanmod1.tar.gz
+mv 5.15.43-rt45-xanmod1.tar.gz linux-5.15.43-rt45-xanmod1.tar.gz
 
 cd $SRCDIR/builds/wine-tkg-6.17
 wget https://github.com/Frogging-Family/wine-tkg-git/archive/refs/tags/6.17.r0.g5f19a815.tar.gz
@@ -32,7 +32,7 @@ mv 7.6.r12.g51472395.tar.gz wine-tkg-git-7.6.r12.g51472395.tar.gz
 cd $SRCDIR/builds/yabridge
 git clone https://github.com/robbert-vdh/yabridge
 cd ./yabridge
-git checkout 6818b4fd09623739f41920aae50bdbaf303afe96
+git checkout 65cf9cd78287a51d792a3b611ae6d6559ea95d76
 rm -fr .git/logs/*
 cd ../
 mv yabridge yabridge-4.0

@@ -15,14 +15,15 @@ Run first time to avoid conflicts with pkgs:
 removepkg kernel-source kernel-generic kernel-modules kernel-headers
 
 To install:
-upgradepkg --install-new --reinstall /tmp/output-x86_64-5.15.36-rt41-xanmod1/kernel*.txz
+upgradepkg --install-new --reinstall /tmp/output-x86_64-5.15.43-rt45-xanmod1/kernel*.txz
 
 Initrd command:
-/usr/share/mkinitrd/mkinitrd_command_generator.sh -k 5.15.36-rt41-xanmod1
+/usr/share/mkinitrd/mkinitrd_command_generator.sh -k 5.15.43-rt45-xanmod1
 
 You can swap out the configuration file but don't add localversion, it have not been tested with the script.
-And avoid changing the file name of the configuration. If you want to upgrade the kernel yourself, the script
-is really nice for this, just build with the ???-xanmod1.tar.gz you want and put it next to build-all-kernel-pkgs.sh and go.
+And avoid changing the file name of the configuration, change is to the same version you are building.
+If you want to upgrade the kernel yourself, the script is really nice for this,
+just build with the ???-xanmod1.tar.gz you want and put it next to build-all-kernel-pkgs.sh and go.
 
 You might want to blacklist: /etc/slackpkg/blacklist
 
@@ -40,5 +41,5 @@ Note: The current proprietary NVIDIA, VirtualBox, VMware Workstation / Player an
 
 IGNORE_PREEMPT_RT_PRESENCE=1
 
-Don't do this just use nouveau, if you have nvidia dont game with this kernel, maybe it works for you anyway..
+Don't do this, just use nouveau, if you have nvidia dont game with this kernel, maybe it works for you anyway..
 BTW gaming is nice with this kernel :)
