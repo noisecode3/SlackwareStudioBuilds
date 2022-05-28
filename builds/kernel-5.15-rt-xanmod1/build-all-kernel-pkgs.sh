@@ -89,7 +89,7 @@ fi
   if [[ -r ${TMP}/${KERNEL_GENERIC_PACKAGE_NAME} ]]; then
     mv ${TMP}/${KERNEL_GENERIC_PACKAGE_NAME} $OUTPUT
   else
-    echo "kernel-generic build failed. Unexpected package name or not found, or you need to run this script in a login shell"
+    echo "kernel-generic build failed. Unexpected package name or not found"
     exit 1
   fi
   if [ "${INSTALL_PACKAGES}" = "YES" ]; then

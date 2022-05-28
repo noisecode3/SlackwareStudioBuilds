@@ -21,7 +21,7 @@ Initrd command:
 /usr/share/mkinitrd/mkinitrd_command_generator.sh -k 5.15.43-rt45-xanmod1
 
 You can swap out the configuration file but don't add localversion, it have not been tested with the script.
-And avoid changing the file name of the configuration, change is to the same version you are building.
+the configuration most be the same version name AND you must have run make oldconfig for the version you are compiling.
 If you want to upgrade the kernel yourself, the script is really nice for this,
 just build with the ???-xanmod1.tar.gz you want and put it next to build-all-kernel-pkgs.sh and go.
 
