@@ -15,13 +15,13 @@ Run first time to avoid conflicts with pkgs:
 removepkg kernel-source kernel-generic kernel-modules kernel-headers
 
 To install:
-upgradepkg --install-new --reinstall /tmp/output-x86_64-5.15.43-rt45-xanmod1/kernel*.txz
+upgradepkg --install-new --reinstall /tmp/output-x86_64-5.15.44-rt46-xanmod1/kernel*.txz
 
 Initrd command:
-/usr/share/mkinitrd/mkinitrd_command_generator.sh -k 5.15.43-rt45-xanmod1
+/usr/share/mkinitrd/mkinitrd_command_generator.sh -k 5.15.44-rt46-xanmod1
 
 You can swap out the configuration file but don't add localversion, it have not been tested with the script.
-the configuration most be the same version name AND you must have run make oldconfig for the version you are compiling.
+the configuration must be the same version name AND you must have run make oldconfig for the version you are compiling.
 If you want to upgrade the kernel yourself, the script is really nice for this,
 just build with the ???-xanmod1.tar.gz you want and put it next to build-all-kernel-pkgs.sh and go.
 

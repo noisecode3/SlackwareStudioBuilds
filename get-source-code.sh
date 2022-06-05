@@ -18,8 +18,8 @@ wget https://gitlab.manjaro.org/packages/community/realtime-kernels/linux517-rt/
 wget https://gitlab.manjaro.org/packages/community/realtime-kernels/linux517-rt/-/raw/main/0303-revert-fbcon-remove-soft-scrollback-code.patch
 
 cd $SRCDIR/builds/kernel-5.15-rt-xanmod1
-wget https://github.com/xanmod/linux/archive/5.15.43-rt45-xanmod1.tar.gz
-mv 5.15.43-rt45-xanmod1.tar.gz linux-5.15.43-rt45-xanmod1.tar.gz
+wget https://github.com/xanmod/linux/archive/5.15.44-rt46-xanmod1.tar.gz
+mv 5.15.44-rt46-xanmod1.tar.gz linux-5.15.44-rt46-xanmod1.tar.gz
 
 cd $SRCDIR/builds/wine-tkg-6.17
 wget https://github.com/Frogging-Family/wine-tkg-git/archive/refs/tags/6.17.r0.g5f19a815.tar.gz
