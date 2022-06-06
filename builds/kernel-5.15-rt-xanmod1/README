@@ -39,16 +39,24 @@ I always keep the huge kernel pkg for this...
 
 Note: The current proprietary NVIDIA, VirtualBox, VMware Workstation / Player and some other dkms modules builds do not officially support THIS RT kernel
 
-For VirtualBox with you'r standard kernel you can add in the beginning of /usr/share/virtualbox/VBoxCreateUSBNode.sh:
-if echo $(uname -a) | grep xanmod1 > /dev/null; then
-  exit 0
-fi
+For building VirtualBox:
+You can overide /etc/udev/rules.d/10-virtualbox.rules
+and run: udevadm control --reload-rules
+like this if you want to avoid errors, be free and creative :)
 
-do a: sudo modprobe vboxdrv
-before you use vbox
+        # Avoid virtualbox udev rulse for xanmod1
+        if echo $(uname -a) | grep xanmod1 > /dev/null; then
+          mkdir /etc/udev/rules.d/10-virtualbox.rules
+        else
+          rmdir /etc/udev/rules.d/10-virtualbox.rules
+        fi
+
+it might not be secure to update rulses all the time
 
 and blacklist virtualbox-kernel
 to keep it clean, remember you must rebuild when there is a kernel update manually!
+
+and before you run virtualbox: sudo modprobe vboxdrv
 
 For building NVIDIA:
 IGNORE_PREEMPT_RT_PRESENCE=1
