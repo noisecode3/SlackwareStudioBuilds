@@ -154,11 +154,14 @@ fi
 # Remember:! -L = (NOT symbolic link)
 # if you got a weird or broken installation with a mix of symlinks (exept for wineg++ and winecpp, that's normal)
 # among these files. It will still back that up if one of the selected ones are NOT symlinks or is missing
-# this means that is not directly from this script.
+# this means that is not probably directly from this script.
 
-# lol this if :) but it will be most secure to check all of them before we overwrite here
-
-if [[ ! -L /usr/bin/function_grep.pl && /usr/bin/msidb && /usr/bin/msiexec && /usr/bin/notepad && /usr/bin/regedit && /usr/bin/regsvr32 && /usr/bin/widl && /usr/bin/wine && /usr/bin/wine-preloader && /usr/bin/wine-tkg && /usr/bin/wine-tkg-interactive && /usr/bin/wine64  && /usr/bin/wine64-preloader && /usr/bin/wine64-tkg  && /usr/bin/wineboot && /usr/bin/winebuild && /usr/bin/winecfg && /usr/bin/wineconsole && /usr/bin/winedbg && /usr/bin/winedump && /usr/bin/winefile && /usr/bin/winegcc && /usr/bin/winemaker && /usr/bin/winemine && /usr/bin/winepath && /usr/bin/wineserver && /usr/bin/wmc && /usr/bin/wrc ]]; then
+if [[ ! -L /usr/bin/function_grep.pl && /usr/bin/msidb && /usr/bin/msiexec && /usr/bin/notepad \
+&& /usr/bin/regedit && /usr/bin/regsvr32 && /usr/bin/widl && /usr/bin/wine && /usr/bin/wine-preloader \
+&& /usr/bin/wine-tkg && /usr/bin/wine-tkg-interactive && /usr/bin/wine64  && /usr/bin/wine64-preloader \
+&& /usr/bin/wine64-tkg && /usr/bin/wineboot && /usr/bin/winebuild && /usr/bin/winecfg && /usr/bin/wineconsole \
+&& /usr/bin/winedbg && /usr/bin/winedump && /usr/bin/winefile && /usr/bin/winegcc && /usr/bin/winemaker \
+&& /usr/bin/winemine   && /usr/bin/winepath && /usr/bin/wineserver && /usr/bin/wmc && /usr/bin/wrc ]]; then
 
   echo "If there is wine binaries in /usr/bin we back them up"
   backup
