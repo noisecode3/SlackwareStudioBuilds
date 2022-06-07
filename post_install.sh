@@ -65,7 +65,7 @@ echo "****************************"
 read
 
 # Sed slackpkg
-sed -i 's/"# https://mirrors.slackware.com/slackware/slackware64-15.0/"/"https://mirrors.slackware.com/slackware/slackware64-15.0/"/g' /etc/slackpkg/mirrors
+sed -i 's/# https:\/\/mirrors.slackware.com\/slackware\/slackware64-15.0\//https:\/\/mirrors.slackware.com\/slackware\/slackware64-15.0\//g' /etc/slackpkg/mirrors
 
 sed -i 's/#PKGS_PRIORITY=( multilib )/PKGS_PRIORITY=( multilib )/g' /etc/slackpkg/slackpkgplus.conf
 sed -i 's/REPOPLUS=( slackpkgplus )/REPOPLUS=( slackpkgplus multilib alienbob restricted )/g' /etc/slackpkg/slackpkgplus.conf
@@ -73,11 +73,8 @@ sed -i "s/^#MIRRORPLUS\['multilib'\]/MIRRORPLUS\['multilib'\]/g" /etc/slackpkg/s
 sed -i "s/^#MIRRORPLUS\['alienbob'\]\=https/MIRRORPLUS\['alienbob'\]\=https/g" /etc/slackpkg/slackpkgplus.conf
 sed -i "s/^#MIRRORPLUS\['restricted'\]/MIRRORPLUS\['restricted'\]/g" /etc/slackpkg/slackpkgplus.conf
 
-
 echo ""
 echo "Upgrading slackware base and apply multilib"
-
-read
 
 slackpkg update gpg
 slackpkg update
@@ -85,7 +82,6 @@ slackpkg upgrade multilib
 slackpkg upgrade-all
 slackpkg install multilib
 slackpkg install-new
-slackpkg clean-system
 
 # Copy config files here
 echo "vm.mmap_min_addr = 65536"  >> /etc/sysctl.d/mmap_restriction_override.conf
@@ -94,6 +90,8 @@ sed -i 's/SCALING_GOVERNOR=ondemand/SCALING_GOVERNOR=performance/g' /etc/rc.d/rc
 
 echo -e "@audio - memlock unlimited\n@audio - rtprio 95\n@audio - nofile 1048576" >> /etc/security/limits.d/audio.conf
 cp ./config_files/40-timer-permissions.rules /etc/udev/rules.d/40-timer-permissions.rules
+/etc/rc.d/rc.udev reload
 cp ./config_files/daw.conf /etc/sysctl.d/daw.conf
 
+echo "!!Attention!! run lilo or setup you're boot loader and reboot !!Attention!!"
 exit 0
