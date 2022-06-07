@@ -42,9 +42,9 @@ Note: The current proprietary NVIDIA, VirtualBox, VMware Workstation / Player an
 For building VirtualBox:
 Just build from sbopkg and use link normal on you're other kernel
 If you get errors like: failed to execute '/usr/share/virtualbox/VBoxCreateUSBNode.sh' '/usr/share/virtualbox/VBoxCreateUSBNode.sh 189 0 09 vboxusers': No such file or directory
-You probably have this udev configuration in initrd when it loads usb drivers on you dont need to worry about it.
-if it feels too dirty you could move and /lib/udev/rules.d/.10-virtualbox.rules run:/etc/rc.d/rc.udev reload
-and move back the file.
+You probably have this udev configuration from vbox in initrd when it loads usb drivers you dont need to worry about it.
+If it feels too dirty you could move and /lib/udev/rules.d/.10-virtualbox.rules run:/etc/rc.d/rc.udev reload
+run you're mkinitrd and move back the file and run:/etc/rc.d/rc.udev reload
 
         # Avoid virtualbox startup service early for xanmod1
         if echo $(uname -a) | grep xanmod1 > /dev/null; then
