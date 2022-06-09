@@ -32,12 +32,12 @@ mv 7.6.r12.g51472395.tar.gz wine-tkg-git-7.6.r12.g51472395.tar.gz
 cd $SRCDIR/builds/yabridge
 git clone https://github.com/robbert-vdh/yabridge
 cd ./yabridge
-git checkout 65cf9cd78287a51d792a3b611ae6d6559ea95d76
+git checkout b826f800374d0b6392ac17847fb599e47ec2accc
 rm -fr .git/logs/*
 cd ../
-mv yabridge yabridge-4.0
-tar -czvf yabridge-4.0.tar.gz yabridge-4.0
-rm -fr yabridge-4.0
+mv yabridge yabridge-4.0.0
+tar -czvf yabridge-4.0.0.tar.gz yabridge-4.0.0
+rm -fr yabridge-4.0.0
 
 echo ""
 echo "Done downloading now you can build!"
