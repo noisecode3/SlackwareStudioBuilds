@@ -19,3 +19,5 @@ and include them here, to make life easy for the user
 In the meantime you could read from:
 
 https://github.com/robbert-vdh/yabridge/tree/b826f800374d0b6392ac17847fb599e47ec2accc
+
+OPTIONAL DEPENDENCE: winetricks
