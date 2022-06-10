@@ -12,12 +12,7 @@ wine version and multilib, but wine-tkg is recommended.
 The script depends on a internet connection for meson subprojects.
 
 Make sure you have configured you're system with real-time priority.
-Read the documentation in /usr/doc/yabridge-4.0.0/
-These are Markdown files from github,
-I will convert them to sample text and html soon
-and include them here, to make life easy for the user
-In the meantime you could read from:
+Read the documentation in /usr/doc/yabridge-4.0.0/html/
+Docs tested with lynx, links and firefox
 
-https://github.com/robbert-vdh/yabridge/tree/b826f800374d0b6392ac17847fb599e47ec2accc
-
-OPTIONAL DEPENDENCE: winetricks
+OPTIONAL DEPENDS ON: winetricks
