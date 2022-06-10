@@ -1,0 +1,1792 @@
+<!-- ?xml version='1.0' encoding='UTF-8'? -->
+<link href="./github-markdown-css/github-css.css" rel="stylesheet"/>
+<meta charset="utf-8" content="text/html"/>
+<div class="gist">
+<style class="formula-style">
+        svg.gh-md-to-html-formula {
+            fill: black;
+        }
+    </style>
+<div class="gist-file"> <!-- This is the class that is responsible for the boxing! -->
+<div class="gist-data">
+<div class="js-gist-file-update-container js-task-list-container file-box">
+<div class="file" id="user-content-article-CHANGELOG">
+<div class="Box-body readme blob js-code-block-container p-5 p-xl-6" id="user-content-file-docker-image-pull-md-readme" style="margin-left: 40px; margin-right: 40px; margin-top: 20px; margin-bottom: 20px">
+<article class="markdown-body entry-content container-lg" itemprop="text">
+<h1 id="user-content-changelog">
+<a aria-hidden="true" class="anchor" href="#user-content-changelog" id="user-content-changelog" name="user-content-changelog"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changelog</h1>
+<p>All notable changes to this project will be documented in this file.</p>
+<p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/" rel="nofollow">Keep a Changelog</a>,
+and this project adheres to <a href="https://semver.org/spec/v2.0.0.html" rel="nofollow">Semantic
+Versioning</a>.</p>
+<h2 id="user-content-400---2022-06-09">
+<a aria-hidden="true" class="anchor" href="#user-content-400---2022-06-09" id="user-content-400---2022-06-09" name="user-content-400---2022-06-09"><span aria-hidden="true" class="octicon octicon-link"></span></a>[4.0.0] - 2022-06-09</h2>
+<h3 id="user-content-added">
+<a aria-hidden="true" class="anchor" href="#user-content-added" id="user-content-added" name="user-content-added"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>Yabridge 4.0 completely revamps the way plugin loading works to allow yabridge
+to be updated without breaking existing yabridge'd plugins while saving disk
+space on filesystems that don't support reflinks and speeding up the
+<code>yabridgectl sync</code> process. Up until this point, <code>yabridgectl sync</code> has always
+made copies of yabridge's <code>libyabridge-vst2.so</code> or <code>libyabridge-vst3.so</code>
+plugin libraries for every Windows plugin it sets up. These plugins are
+tightly coupled to the yabridge plugin host binaries, and updating one but not
+the other can thus cause issues. With yabridge 4.0, yabridgectl no longer
+copies the entire plugin libraries. Instead, it now creates copies of these
+new tiny dependencyless shim libraries. When loaded by a plugin host, these
+libraries locate the actual plugin libraries on the system and then
+transparently forward all entry point function calls to them as if the host
+was loading the yabridge plugin library directly. Yabridge internally calls
+these libraries chainloaders due to their similarity to the identically named
+functionality in boot loading process. This allows yabridge to be updated
+independently of these copied chainloading libraries. As such, it is no longer
+possible for yabridge to be out of sync after an update. If you use a distro
+packaged version of yabridge, then that means yabridge can now be updated
+safely without requiring any action from your side.</li>
+<li>Added support for the <code>effBeginLoadBank</code> and <code>effBeginLoadProgram</code> VST2
+opcodes for loading state as a program or a program bank.</li>
+</ul>
+<h3 id="user-content-changed">
+<a aria-hidden="true" class="anchor" href="#user-content-changed" id="user-content-changed" name="user-content-changed"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>Almost the entirety of yabridge's backend has been rewritten to get rid of all
+dependencies on the Boost libraries. As a consequence, the runtime dependency
+on <code>Boost.Filesystem</code> has also been removed. This makes packaging yabridge for
+distros easier, and it makes the packages more reliable by removing the need
+for yabridge to be rebuilt whenever Boost gets updated. Additionally, it also
+makes compiling slightly faster and the binaries are slightly smaller.</li>
+<li>The functionality for the <code>yabridge-group</code> binaries has been merged into the
+<code>yabridge-host</code> binaries to reduce duplication.</li>
+<li>When the user does not have the permissions to lock the shared audio buffers
+into memory, yabridge will now retry mapping the memory without locking it
+instead of immediately terminating the process. An annoying desktop
+notification will still be shown every time you load a plugin until you fix
+this however.</li>
+<li>Yabridge now prints the path to the <code>libyabridge-{vst2,vst3}.so</code> library
+that's being used on startup. This tells you where the chainloader is loading
+the library file from. Because you can never have too much information, right?</li>
+<li>The <code>with-bitbridge</code>, <code>with-vst3</code>, and <code>with-winedbg</code> build options have been
+renamed to <code>bitbridge</code>, <code>vst3</code>, and <code>winedbg</code>.</li>
+<li>
+<code>effProcessEvents</code> VST2 calls are now filtered out from the log when
+<code>YABRIDGE_DEBUG_LEVEL</code> is set to 1.</li>
+</ul>
+<h3 id="user-content-removed">
+<a aria-hidden="true" class="anchor" href="#user-content-removed" id="user-content-removed" name="user-content-removed"><span aria-hidden="true" class="octicon octicon-link"></span></a>Removed</h3>
+<ul>
+<li>Removed the <code>with-static-boost</code> build option since there's no longer a
+dependency on Boost.Filesystem.</li>
+<li>Removed the <code>yabridge-group</code> binaries as they are now part of the
+<code>yabridge-host</code> binaries. This saves precious megabytes.</li>
+</ul>
+<h3 id="user-content-fixed">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed" id="user-content-fixed" name="user-content-fixed"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed manually changing channel counts with supported VST3 plugins in
+<strong>REAPER</strong> not working.</li>
+<li>Fixed an obscure issue with VST3 plugins crashing in <strong>Ardour</strong> on
+Arch/Manjaro because of Ardour's misreported parameter queue lengths.</li>
+<li>Fixed yabridge throwing assertion failures on serialization when using some of
+the <em>Orchestral Tools</em> Kontakt libraries in the VST2 version of Kontakt. Some
+of those libraries would output more than 2048 MIDI events in a single buffer.</li>
+<li>Some of yabridge's socket file names contained extremely aesthetically
+unpleasing trailing underscores. Begone pesky underscores!</li>
+<li>Fixed building with VST3 support disabled.</li>
+</ul>
+<h3 id="user-content-yabridgectl">
+<a aria-hidden="true" class="anchor" href="#user-content-yabridgectl" id="user-content-yabridgectl" name="user-content-yabridgectl"><span aria-hidden="true" class="octicon octicon-link"></span></a>yabridgectl</h3>
+<ul>
+<li>
+<p>VST2 plugins are now set up in <code>~/.vst/yabridge</code> by default. This means that
+you no longer have to add any directory search locations in your DAW. The only
+potential downside is that it's no longer possible for two plugin directories
+(perhaps in different Wine prefixes) to provide the same plugin file, although
+you would not have been able to use both with the same DAW anyways. Like with
+yabridgectl's VST3 support, the subdirectory structure within the plugin
+directory is preserved. You can use <code>yabridgectl set --vst2-location=inline</code>
+to revert back to the old behavior of setting the plugins up right next to the
+VST2 plugin <code>.dll</code> files. Some migration notes:</p>
+<ul>
+<li>Because the plugins are now set up in <code>~/.vst/yabridge</code> by default instead
+of next to the Windows VST2 plugin .dll file, you will see notices about
+leftover <code>.so</code> files the first time you run <code>yabridgectl sync</code> after
+updating. Double check the list to make sure there are no files in there
+that shouldn't be removed, and then run <code>yabridgectl sync --prune</code> as
+instructed to remove the old <code>.so</code> files.</li>
+<li>Make sure your DAW searches for VST2 plugins in <code>~/.vst</code>.</li>
+<li>You can and should remove any entries for VST2 plugin directories you added
+to your DAW's plugin search locations as they will no longer contain any
+relevant files.</li>
+<li>If you were using a <code>yabridge.toml</code> configuration file to configure VST2
+plugins, then you will now need to move that file in <code>~/.vst/yabridge</code>
+instead.</li>
+</ul>
+</li>
+<li>
+<p>As mentioned above, yabridgectl now uses the new chainloading libraries when
+setting up plugins. This means that once you've ran <code>yabridgectl sync</code> after
+updating to yabridge 4.0, yabridge can now be updated without needing to rerun
+<code>yabridgectl sync</code>. This is particularly useful when using a distro packaged
+version of yabridge.</p>
+</li>
+<li>
+<p>Added support for the new VST 3.7.5 <code>moduleinfo.json</code> format to allow VST3
+plugins to replace VST2 and VST3 plugins with different class IDs.</p>
+</li>
+<li>
+<p>Yabridgectl no longer depends on <strong>winedump</strong>. It now parses Windows PE32(+)
+binaries without requiring any external dependencies. Or at least, that's the
+idea. I've come across at least one binary that this new parser can't handle
+(<a href="https://github.com/m4b/goblin/issues/307">https://github.com/m4b/goblin/issues/307</a>), so it will still fall back to
+winedump when that happens.</p>
+</li>
+<li>
+<p>After <code>yabridgectl sync</code> has finished setting up plugins, yabridgectl now also
+checks whether <code>notify-send</code> is installed as part of its post-installation
+verification process. If <code>notify-send</code> is missing, then yabridge won't be able
+to send any notifications when things are going terribly wrong.</p>
+</li>
+<li>
+<p><code>yabridgectl status</code> now shows the locations where bridged VST2 and VST3
+plugins will be set up.</p>
+</li>
+<li>
+<p><code>yabridgectl sync --prune</code> now also considers broken symlinks.</p>
+</li>
+<li>
+<p>The VST3 subdirectory detection has been made more robust and can now handle
+arbitrary plugin directories, not just directories that are called <code>VST3</code>.
+This, of course, should not be needed.</p>
+</li>
+<li>
+<p>The previously deprecated symlink installation method has been removed from
+yabridgectl, along with the <code>yabridgectl set --method</code> option. The terminology
+in <code>yabridgectl status</code> has changed accordingly.</p>
+</li>
+<li>
+<p><code>yabridgectl status</code> now lists the architecture of
+<code>libyabridge-chainloader-vst2.so</code> just like it already did for the VST3
+library.</p>
+</li>
+</ul>
+<h3 id="user-content-packaging-notes">
+<a aria-hidden="true" class="anchor" href="#user-content-packaging-notes" id="user-content-packaging-notes" name="user-content-packaging-notes"><span aria-hidden="true" class="octicon octicon-link"></span></a>Packaging notes</h3>
+<ul>
+<li>
+<code>libyabridge-chainloader-vst2.so</code> and <code>libyabridge-chainloader-vst3.so</code> are
+new files that should be included in the package.</li>
+<li>The <code>yabridge-group</code> binaries no longer exist as they are now part of the
+<code>yabridge-host</code> binaries.</li>
+<li>The <code>with-bitbridge</code> build option has been renamed to just <code>bitbridge</code>.</li>
+<li>Both runtime and compile time dependencies on the Boost libraries have been
+removed.</li>
+<li>There's a new dependency on the headers-only
+<a href="https://github.com/gulrak/filesystem"><code>ghc::filesystem</code></a> library to replace
+Boost.Filesystem. A Meson wrap is included as a fallback for a distro package.</li>
+<li>The headers-only <a href="http://think-async.com/Asio/" rel="nofollow">Asio</a> library now replaces
+Boost.Asio. A Meson wrap is included as a fallback for a distro package.</li>
+<li>Fixed a deprecation warning in the Meson build, causing the minimum supported
+Meson version to be bumped up to <strong>Meson 0.56</strong> from 0.55.</li>
+<li>Yabridge now targets VST3 SDK version 3.7.5 with git tag <code>v3.7.5_build_44-patched</code>.</li>
+</ul>
+<h2 id="user-content-381---2022-03-08">
+<a aria-hidden="true" class="anchor" href="#user-content-381---2022-03-08" id="user-content-381---2022-03-08" name="user-content-381---2022-03-08"><span aria-hidden="true" class="octicon octicon-link"></span></a>[3.8.1] - 2022-03-08</h2>
+<h3 id="user-content-changed-1">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-1" id="user-content-changed-1" name="user-content-changed-1"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>Change the low <code>RLIMIT_RTTIME</code> warning to mention setting up realtime
+priviliges instead of changing PipeWire's config now that PipeWire MRs
+<a href="https://gitlab.freedesktop.org/pipewire/pipewire/-/merge_requests/1118" rel="nofollow">!1118</a>
+and
+<a href="https://gitlab.freedesktop.org/pipewire/pipewire/-/merge_requests/1120" rel="nofollow">!1120</a>
+have been merged and PipeWire can use regular realtime scheduling without
+imposing any resource limits out of the box.</li>
+<li>Prevented yabridge's ad-hoc socket acceptors from inheriting realtime
+scheduling when spawned from audio threads. In practice this should not have
+caused any noticeable effects as these threads are sleeping all the time
+except for under very specific circumstances.</li>
+</ul>
+<h3 id="user-content-fixed-1">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-1" id="user-content-fixed-1" name="user-content-fixed-1"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed the <strong>REAPER</strong>-specific <code>editor_force_dnd</code> option not working correctly
+when using the <code>Track -&gt; Insert virtual instrument on new track...</code> option.
+When using this option REAPER will first embed the plugin in an offscreen
+plugin window and it will only then create the actual FX window and embed the
+other window in it.</li>
+<li>Fixed the VST3 version of <em>IK Multimedia's T-RackS 5</em> producing silent output
+when doing offline rendering. This could happen when exporting or bouncing
+audio in <strong>Bitwig Studio 4.1+</strong>, <strong>Ardour</strong> and in <strong>REAPER</strong>. These plugins
+apparently need to process audio from the main GUI thread when in offline
+rendering mode. If you try to process audio from the...audio thread, then they
+will produce silence and hang afterwards (which a fix in yabridge 3.7.0
+previously addressed).</li>
+<li>Fixed crashes when opening plugin editors under <strong>Crostini</strong> on ChromeOS due
+to non-standard X11 implementations.</li>
+<li>Worked around a bug in the <em>RandARP</em> VST2 plugin where the plugin would report
+that its editor window is 0 by 0 pixels.</li>
+<li>Fixed building under Wine 7.2 and up because of changes to the definitions of
+Wine's numerical types.</li>
+</ul>
+<h3 id="user-content-yabridgectl-1">
+<a aria-hidden="true" class="anchor" href="#user-content-yabridgectl-1" id="user-content-yabridgectl-1" name="user-content-yabridgectl-1"><span aria-hidden="true" class="octicon octicon-link"></span></a>yabridgectl</h3>
+<ul>
+<li>
+<code>yabridgectl status</code> no longer mentions anything about installation methods if
+you're using the regular, copy-based installation method. This is a follow-up
+to the changes made in yabridgectl 3.8.0.</li>
+</ul>
+<h2 id="user-content-380---2022-01-15">
+<a aria-hidden="true" class="anchor" href="#user-content-380---2022-01-15" id="user-content-380---2022-01-15" name="user-content-380---2022-01-15"><span aria-hidden="true" class="octicon octicon-link"></span></a>[3.8.0] - 2022-01-15</h2>
+<h3 id="user-content-added-1">
+<a aria-hidden="true" class="anchor" href="#user-content-added-1" id="user-content-added-1" name="user-content-added-1"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>Added support for VST3 plugins interacting directly with the host's context
+menu items. Most plugins that use VST3's context menu support let the host
+handle drawing the actual menu, but it's also possible for plugins to
+incorporate the host's menu items into their own custom context menu. So far
+this feature has only been tested with <a href="https://github.com/surge-synthesizer/surge">Surge
+XT</a>'s Windows VST3 version since
+very few if any other plugins do this right now, but other plugins may start
+doing this as well in the future.</li>
+</ul>
+<h3 id="user-content-changed-2">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-2" id="user-content-changed-2" name="user-content-changed-2"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>Added support for Wine 6.23's new fixed winedbg command line argument
+handling.</li>
+<li>Changed the build and cross-compilation definitions to allow
+repository-packaged CMake build configurations to be used for the bitsery and
+function2 dependencies.</li>
+</ul>
+<h3 id="user-content-fixed-2">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-2" id="user-content-fixed-2" name="user-content-fixed-2"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed <em>Waves</em> V13 VST3 plugins crashing when opening the GUI. These plugins
+thought it would be a great idea to randomly dereference null pointers if the
+window they're embedded in is already visible. A day's worth of debugging well
+spent. Even after this, the V13 plugins are a bit unstable under Wine in
+general, and they will likely crash when reopening the editor a couple of
+times or when removing them. So as always, if you can avoid Waves, that would
+be for the best.</li>
+<li>Fixed sluggish UIs in <em>Output's Thermal</em> and likely a handful of other
+JUCE-based plugins with a lot of parameters. These plugins would emit hundreds
+to thousands of events when the GUI changes. Yabridge now detects this, and
+relaxes the throttling we have in place to prevent certain other plugins from
+getting stuck in infinite loops.</li>
+<li>Fixed <em>DrumCore 3</em> crashing when trying to drag grooves from the plugin to
+other applications. This happened because of an integer underflow in that
+plugin, causing the number of reported drag-and-drop formats to be magnitudes
+higher than yabridge's indicated maximum.</li>
+<li>Fixed Wine version detection in the build configuration.</li>
+<li>Fixed VST3 connection point proxies not being disconnected properly. The code
+path for this is not being used for any of the current Linux VST3 hosts, so
+this won't have caused any issues.</li>
+<li>Rewritten the VST3 object handling to prevent some theoretical data races when
+the host inserts or removes plug instances while other instances of that
+plugin are processing audio.</li>
+</ul>
+<h3 id="user-content-yabridgectl-2">
+<a aria-hidden="true" class="anchor" href="#user-content-yabridgectl-2" id="user-content-yabridgectl-2" name="user-content-yabridgectl-2"><span aria-hidden="true" class="octicon octicon-link"></span></a>yabridgectl</h3>
+<ul>
+<li>Yabridgectl's help text received some shiny new colors.</li>
+<li>Disallowed adding individual files or symlinks to individual files with
+<code>yabridgectl add</code>. Yabridgectl was never intended to be used that way and
+while it does sort of work, it will lead to a number of surprises down the
+line.</li>
+<li>Deprecated support for the symlink-based installation method in yabridgectl
+and removed all remaining mentions of it from the documentation. This feature
+has for all intents and purposes already been made obselete in yabridge 2.1.0,
+but the option still remained available. Enabling this option would lead to a
+lot of surprises because of the way Linux's dynamic linker works. And with
+modern file systems supporting reflinks and yabridge falling back to searching
+for binaries in <code>~/.local/share/yabridge</code>, there's zero reason to use this
+feature anymore. Yabridgectl will now print a warning upon syncing when the
+symlink installation method has been enabled, and the feature will be removed
+completely in yabridge 4.0.</li>
+<li>Blacklisted symlinks and symlinked directories are now handled correctly when
+syncing.</li>
+</ul>
+<h3 id="user-content-packaging-notes-1">
+<a aria-hidden="true" class="anchor" href="#user-content-packaging-notes-1" id="user-content-packaging-notes-1" name="user-content-packaging-notes-1"><span aria-hidden="true" class="octicon octicon-link"></span></a>Packaging notes</h3>
+<ul>
+<li>The tomlplusplus wrap dependency has been updated to version 3.0.1 because of
+breaking API changes in version 3.0.</li>
+<li>We now target VST3 SDK version 3.7.4 with git tag <code>v3.7.4_build_25-patched</code>.</li>
+<li>Yabridgectl now uses Rust 2021 and requires rustc 1.56 or newer to build.</li>
+</ul>
+<h2 id="user-content-370---2021-11-21">
+<a aria-hidden="true" class="anchor" href="#user-content-370---2021-11-21" id="user-content-370---2021-11-21" name="user-content-370---2021-11-21"><span aria-hidden="true" class="octicon octicon-link"></span></a>[3.7.0] - 2021-11-21</h2>
+<h3 id="user-content-added-2">
+<a aria-hidden="true" class="anchor" href="#user-content-added-2" id="user-content-added-2" name="user-content-added-2"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>Added an environment variable for changing the directory yabridge stores its
+sockets and other temporary files in. This is only useful when running the
+Wine process under a separate namespace. If you don't know what this means,
+then you probably don't need this!</li>
+</ul>
+<h3 id="user-content-changed-3">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-3" id="user-content-changed-3" name="user-content-changed-3"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>Added a workaround for a new
+<a href="https://bugs.winehq.org/show_bug.cgi?id=51919" rel="nofollow">bug</a> in Wine 6.20 that would
+cause compilation to fail by redefining common variable names used in the
+standard library. This issue has since been fixed in Wine 6.21 and up.</li>
+</ul>
+<h3 id="user-content-fixed-3">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-3" id="user-content-fixed-3" name="user-content-fixed-3"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed the VST3 version of <em>IK Multimedia's T-RackS 5</em> causing offline
+rendering to stall indefinitely. This could happen when exporting or bouncing
+audio in <strong>Bitwig Studio 4.1</strong>, <strong>Ardour</strong> and in <strong>REAPER</strong>. Those plugins
+deadlock when they receives timer events while doing offline audio processing,
+so we now prevent that from happening.</li>
+<li>The socket endpoints used by plugin group host processes to accept new
+connections now get removed when those processes shut down. Previously this
+would leave behind a file in the temporary directory.</li>
+</ul>
+<h3 id="user-content-packaging-notes-2">
+<a aria-hidden="true" class="anchor" href="#user-content-packaging-notes-2" id="user-content-packaging-notes-2" name="user-content-packaging-notes-2"><span aria-hidden="true" class="octicon octicon-link"></span></a>Packaging notes</h3>
+<ul>
+<li>All Meson wraps now use <code>wrap-git</code> instead of downloading tarballs from
+GitHub. Previously the bitsery and function2 wraps would use source tarballs.</li>
+<li>The <code>meson.build</code> patch overlays for the bitsery and function2 wraps are no
+longer stored in tarballs committed to yabridge's repository. Instead, they
+are now regular directories in the <code>subprojects/packagefiles</code> directory. This
+means that building yabridge with these wraps now requires <strong>Meson 0.55</strong> or
+later because of the use of <code>patch_directory</code>.</li>
+<li>The bitsery wrap dependency was updated to version 5.2.2.</li>
+<li>The function2 wrap dependency was updated to version 4.2.0.</li>
+<li>The tomlplusplus wrap dependency was updated to slightly after version 2.5.0
+because of an <a href="https://github.com/marzer/tomlplusplus/issues/121">issue</a> with
+their <code>meson.build</code> file that breaks compatibility with Meson 0.60.0 on older
+versions.</li>
+</ul>
+<h2 id="user-content-360---2021-10-15">
+<a aria-hidden="true" class="anchor" href="#user-content-360---2021-10-15" id="user-content-360---2021-10-15" name="user-content-360---2021-10-15"><span aria-hidden="true" class="octicon octicon-link"></span></a>[3.6.0] - 2021-10-15</h2>
+<h3 id="user-content-added-3">
+<a aria-hidden="true" class="anchor" href="#user-content-added-3" id="user-content-added-3" name="user-content-added-3"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>Yabridge will now also show annoying desktop notifications when encountering
+low <code>RLIMIT_RTTIME</code> and <code>RLIMIT_MEMLOCK</code> values. This can happen on systems
+that have not yet been configured for pro audio work or with using an out of
+the box PipeWire configuration. If these issues are not fixed, then certain
+plugins may crash during initialization. Since these configuration issues may
+not immediately cause any obvious problems, it's better to be upfront about it
+so they can't cause mysterious issues later on. We would already print
+warnings about this to the terminal, but those are easily missed when starting
+a DAW from the GUI.</li>
+<li>Added a new <code>editor_coordinate_hack</code> <a href="https://github.com/robbert-vdh/yabridge#compatibility-options">compatibility
+option</a> to
+replace <code>editor_double_embed</code>. This can be useful with buggy plugins that have
+their editor GUIs misaligned after resizing the window. These plugins tend to
+draw their GUI based on (top level) window's absolute screen coordinates
+instead of their own relative position within the parent window. Some known
+plugins that can benefit from this are <em>PSPaudioware E27</em> and <em>Soundtoys
+Crystallizer</em>.</li>
+</ul>
+<h3 id="user-content-removed-1">
+<a aria-hidden="true" class="anchor" href="#user-content-removed-1" id="user-content-removed-1" name="user-content-removed-1"><span aria-hidden="true" class="octicon octicon-link"></span></a>Removed</h3>
+<ul>
+<li>The <code>editor_double_embed</code> option added in yabridge 1.4.0 has been removed as
+the <code>editor_coordinate_hack</code> option supersedes it.</li>
+</ul>
+<h3 id="user-content-changed-4">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-4" id="user-content-changed-4" name="user-content-changed-4"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>The Wine plugin host applications now print their version information before
+the <code>Usage: </code> string when invoked without any command line arguments.</li>
+<li>VST3 Data (SysEx) events now use the same small buffer optimization yabridge
+already used for VST2 SysEx events. This avoids allocations when a VST3 plugin
+sends or receives a small SysEx event.</li>
+</ul>
+<h3 id="user-content-fixed-4">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-4" id="user-content-fixed-4" name="user-content-fixed-4"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Worked around a <a href="https://svn.boost.org/trac10/changeset/72855" rel="nofollow">bug</a> in
+Boost.Process that would cause yabridge to crash with an
+<code>locale::facet::_S_create_c_locale name not valid</code> exception when (part of)
+the current locale is invalid. This could happen on Arch Linux if you skipped
+part of the Arch installation process.</li>
+<li>Fixed New Sonic Arts' <em>Vice</em> plugin freezing when loading the plugin. This
+happened because the plugin interacted with the GUI and tried to spawn new
+threads when the host changes the sample rate or block size from the audio
+thread. These things are now done from the main GUI thread, so please let me
+know if there are any new loading issues with other VST2 plugins after this
+update.</li>
+<li>Fixed the drag-and-drop implementation not sending an <code>XdndStatus</code> message on
+the very first tick. This fixes drag-and-drop from the <em>Samplab</em> plugin which
+has a broken drag-and-drop implementation and only starts the operation after
+the left mouse button has already been released.</li>
+<li>Fixed the drag-and-drop implementation not properly handling errors caused by
+the pointer being grabbed. This would only happen with <em>Samplab</em>.</li>
+<li>Fixed sub 100 millisecond drag-and-drop operations being ignored by certain
+hosts, like <strong>Bitwig Studio</strong>. This would only happen with <em>Samplab</em>. The XDND
+implementation now has a warmup phase to prevent this from happening.</li>
+</ul>
+<h3 id="user-content-yabridgectl-3">
+<a aria-hidden="true" class="anchor" href="#user-content-yabridgectl-3" id="user-content-yabridgectl-3" name="user-content-yabridgectl-3"><span aria-hidden="true" class="octicon octicon-link"></span></a>yabridgectl</h3>
+<ul>
+<li>
+<code>yabridgectl rm</code> and <code>yabridgectl blacklist rm</code> now accept relative paths.</li>
+</ul>
+<h3 id="user-content-packaging-notes-3">
+<a aria-hidden="true" class="anchor" href="#user-content-packaging-notes-3" id="user-content-packaging-notes-3" name="user-content-packaging-notes-3"><span aria-hidden="true" class="octicon octicon-link"></span></a>Packaging notes</h3>
+<ul>
+<li>We now target VST3 SDK version 3.7.3 with git tag <code>v3.7.3_build_20-patched</code>.</li>
+<li>Because of an
+<a href="https://github.com/clap-rs/clap/commit/241d183b9c3fb21ea4ecb6720a9d2118b9533029">update</a>
+to clap, the minimum rustc version required to build yabridgectl is now
+<code>1.54</code>.</li>
+</ul>
+<h2 id="user-content-352---2021-08-08">
+<a aria-hidden="true" class="anchor" href="#user-content-352---2021-08-08" id="user-content-352---2021-08-08" name="user-content-352---2021-08-08"><span aria-hidden="true" class="octicon octicon-link"></span></a>[3.5.2] - 2021-08-08</h2>
+<h3 id="user-content-added-4">
+<a aria-hidden="true" class="anchor" href="#user-content-added-4" id="user-content-added-4" name="user-content-added-4"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>Added support for VST2 plugins sending and receiving SysEx events. Certain
+MIDI controllers like the <em>Arturia MiniLab Mk II</em> output SysEx events when
+changing between octaves, and some hosts like <strong>REAPER</strong> forwards these events
+directly to the plugin. Before this change this might cause crashes with
+plugins that try to handle SysEx events, like the <em>D16 Group</em> plugins.</li>
+</ul>
+<h3 id="user-content-fixed-5">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-5" id="user-content-fixed-5" name="user-content-fixed-5"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed a regression from yabridge 3.5.1 where certain VST3 plugins wouldn't
+resize to their correct size when opening the editor. This affected
+<strong>Kontakt</strong>, and it was caused by reverting just a little bit too much code in
+the regression fix from the previous release.</li>
+<li>Fixed <em>D16 Group</em> plugins crashing when the host tries to send SysEx events.</li>
+</ul>
+<h2 id="user-content-351---2021-07-31">
+<a aria-hidden="true" class="anchor" href="#user-content-351---2021-07-31" id="user-content-351---2021-07-31" name="user-content-351---2021-07-31"><span aria-hidden="true" class="octicon octicon-link"></span></a>[3.5.1] - 2021-07-31</h2>
+<h3 id="user-content-added-5">
+<a aria-hidden="true" class="anchor" href="#user-content-added-5" id="user-content-added-5" name="user-content-added-5"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>You can now directly focus the plugin's editor instead of allowing the host to
+process keyboard events by holding down the <kbd>Shift</kbd> key while
+entering a plugin's GUI with your mouse. Certain hosts like <strong>Bitwig Studio</strong>
+normally still respond to common key presses like <kbd>Space</kbd> for
+play/pause while interacting with a plugin. That in turn can make it
+impossible to type a space character in those hosts, which may become a
+problem when searching for or naming presets. With this feature you can
+temporarily override this behaviour and allow all keyboard input to go
+directly to Wine. This can also be useful for <em>Voxengo</em> plugins, which don't
+grab input focus in their settings and license dialogs.</li>
+</ul>
+<h3 id="user-content-changed-5">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-5" id="user-content-changed-5" name="user-content-changed-5"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>Added more tracing for the input focus handling when using the <code>+editor</code>
+<code>YABRIDGE_DEBUG_LEVEL</code> flag.</li>
+<li>Yabridge will now handle X11 events from within the Win32 message loop. What
+this means is that X11 events are now handled even when the plugin is blocking
+the GUI thread, which can potentially increase responsiveness and help with
+graphical issues in certain situations (although at the moment there aren't
+any known situations where the old approach caused any issues).</li>
+</ul>
+<h3 id="user-content-fixed-6">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-6" id="user-content-fixed-6" name="user-content-fixed-6"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Reverted the workaround for the <em>Nimble Kick</em> plugin freezing added in
+yabridge 3.5.0. This could cause VST3 plugins in <strong>Bitwig Studio</strong> and
+<strong>Ardour</strong> to have frozen, nonfunctional editors when using multiple instances
+of a plugin unless you opened every plugin instance's editor. Since the plugin
+would also cause the native Windows version of Bitwig to crash, we will thus
+simply revert this change.</li>
+<li>Fixed a regression from yabridge 3.5.0 where clicking inside of a plugin GUI
+while the window is already open in the background would not give keyboard
+focus to the plugin.</li>
+<li>Changed how input focus releasing works by more selectively filtering out
+mouse pointer leave events where the pointer is still hovering over a Wine
+window instead of ignoring an entire wider class of events. This should fix
+some edge cases where input focus would not be given back to the host, or
+where dropdown menus could close immediately when hovering over and them
+leaving them with your mouse. The first case would in practice only happen
+when using a touchscreen or drawing tablet, since it would require the mouse
+to instantly move from the plugin GUI to another window without first going
+over the window's borders.</li>
+<li>Similarly, the filter in yabridge 3.5.0's Wine-&gt;X11 drag-and-drop
+implementation for distinguishing between Wine windows and other windows (so
+that we won't interfere with Wine's own internal drag-and-drop mechanism) has
+also been made more specific. Before this change we might use our own
+XDND-based drag-and-drop implementation when dragging files from a plugin to a
+standalone Wine application running within the same Wine prefix.</li>
+</ul>
+<h2 id="user-content-350---2021-07-23">
+<a aria-hidden="true" class="anchor" href="#user-content-350---2021-07-23" id="user-content-350---2021-07-23" name="user-content-350---2021-07-23"><span aria-hidden="true" class="octicon octicon-link"></span></a>[3.5.0] - 2021-07-23</h2>
+<h3 id="user-content-added-6">
+<a aria-hidden="true" class="anchor" href="#user-content-added-6" id="user-content-added-6" name="user-content-added-6"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>Added a warning on startup if yabridge may not be able to lock enough shared
+memory for its audio processing. If you have not yet set up realtime
+priviliges and memory locking limits for your user, then yabridge may not be
+able to map enough shared memory for processing audio with plugins that have a
+lot of inputs or outputs channels.</li>
+<li>When this shared memory mapping fails because of a low value being set for
+<code>RLIMIT_MEMLOCK</code>, yabridge will now print a more specific error message
+telling you about the issue and how to fix it.</li>
+<li>Added a an optional <code>+editor</code> flag to the <code>YABRIDGE_DEBUG_LEVEL</code> environment
+variable that causes debug tracing information about the plugin editor window
+to be printed. This can be useful for diagnosing DAW or window manager
+specific issues.</li>
+</ul>
+<h3 id="user-content-changed-6">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-6" id="user-content-changed-6" name="user-content-changed-6"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>The way editor embedding works has been rewritten. Yabridge now inserts a
+wrapper window between the host's parent window and the embedded Wine window
+instead of embedding the Wine window directly into the host. This should get
+rid of all rare edge cases where the host would ignore the window size
+reported by the plugin and would instead try to detect the plugin's size on
+its own by intercepting configuration events sent to the Wine window. This
+could cause the editor window to grow to fit the entire screen in certain
+hosts under very specific circumstances.</li>
+<li>We now support version 3 and 4 of the XDND specification for the Wine-&gt;X11
+drag-and-drop support. Before this yabridge assumed every application
+supported version 5 from 2002, but JUCE based hosts only support XDND version 3.</li>
+</ul>
+<h3 id="user-content-fixed-7">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-7" id="user-content-fixed-7" name="user-content-fixed-7"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed crashes or freezes when a plugin uses the Windows drag-and-drop system
+to transfer arbitrary, vendor specific data. This prevents <strong>Reaktor</strong> from
+freezing when editing a patch after upgrading to yabridge 3.4.0.</li>
+<li>Fixed yabridge thinking that the Wine plugin host process has died when the
+user doesn't have permissions to access the Wine process's memory. This fixes
+a seemingly very rare regression from yabridge 3.4.0 where the Wine plugin
+host application would immediately be seen as dead when using <em>AppArmor</em>,
+preventing yabridge from starting.</li>
+<li>Fixed a regression from yabridge 3.4.0 where plugins with zero input and
+output audio channels like FrozenPlain <strong>Obelisk</strong> would result in a crash.</li>
+<li>Fixed a regression from yabridge 3.4.0 where JUCE-based VST3 plugins might
+cause <strong>Ardour</strong> or <strong>Mixbus</strong> to freeze in very specific circumstances.</li>
+<li>As mentioned above, it's now no longer possible for hosts to wrongly detect
+the editor window size. This fixes a rare issue with <strong>Ardour</strong> on older XFCE
+versions where the editor window would extend to cover the entire screen. A
+similar issue also exists with <strong>Carla</strong> 2.3.1.</li>
+<li>This same change also fixes VST3 editors in <strong>Ardour</strong> not rendering past
+their original size when resizing them from the plugin (as opposed to resizing
+the actual window).</li>
+<li>Worked around a <strong>REAPER</strong> bug that would cause REAPER to not process any
+keyboard input when the FX window is active but the mouse cursor is positioned
+outside of the window. We now use the same validation used in <code>xprop</code> and
+<code>xwininfo</code> to find the host's window instead of always taking the topmost
+window.</li>
+<li>Fixed Wine-&gt;X11 drag-and-drop in <strong>Tracktion Waveform</strong>. Waveform only
+supports an old 1998 version of the XDND specification, so it was ignoring our
+messages since we assumed every application would support the most recent XDND
+version from 2002.</li>
+<li>Worked around a race condition in <em>Nimble Kick</em>, which would trigger a stack
+overflow when loading the plugin if it wasn't already activated.</li>
+<li>Potentially fixed an obscure issue where the editor would not render at all
+when using multiple displays and the rightmost display was set as the primary
+display. This issue appears to be very rare, and I haven't gotten any response
+back when I asked the people affected by this to test a potential fix, so I'm
+just including it in yabridge anyways in case it helps. If anyone was affected
+by this, please let me know if this update makes any difference!</li>
+</ul>
+<h3 id="user-content-yabridgectl-4">
+<a aria-hidden="true" class="anchor" href="#user-content-yabridgectl-4" id="user-content-yabridgectl-4" name="user-content-yabridgectl-4"><span aria-hidden="true" class="octicon octicon-link"></span></a>yabridgectl</h3>
+<ul>
+<li>
+<code>yabridgectl status</code> now also lists the paths to the <code>yabridge-host.exe</code> and
+<code>yabridge-host-32.exe</code> binaries that yabridge will end up running. This can be
+helpful for diagnosing issues with complex setups.</li>
+</ul>
+<h2 id="user-content-340---2021-07-15">
+<a aria-hidden="true" class="anchor" href="#user-content-340---2021-07-15" id="user-content-340---2021-07-15" name="user-content-340---2021-07-15"><span aria-hidden="true" class="octicon octicon-link"></span></a>[3.4.0] - 2021-07-15</h2>
+<h3 id="user-content-added-7">
+<a aria-hidden="true" class="anchor" href="#user-content-added-7" id="user-content-added-7" name="user-content-added-7"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>Added support for drag-and-drop from Windows plugins running under yabridge to
+native applications, such as your DAW. This makes it much more convenient to
+use plugins like <em>Scaler 2</em> that generate audio or MIDI files. Because of the
+way this is implemented this feature will work with any Wine version.</li>
+<li>When a plugin fails to load or when the Wine plugin host process fails to
+start, yabridge will now show you the error in a desktop notification instead
+of only printing it to the logger. This will make it much faster to quickly
+diagnose issues if you weren't already running your DAW from a terminal. These
+notifications require <code>libnotify</code> and its <code>notify-send</code> application to be
+installed.</li>
+<li>Similarly, yabridge will show you a warning and a desktop notification with a
+reminder to rerun <code>yabridgctl sync</code> when it detects that there's been a
+version mismatch between the plugin and the used Wine plugin host application.</li>
+<li>Added support for building 32-bit versions of the yabridge libraries, allowing
+you to use both 32-bit and 64-bit Windows VST2 and VST3 plugins under 32-bit
+Linux plugin hosts. This should not be needed in any normal situation since
+Desktop Linux has been 64-bit only for a while now, but it could be useful in
+some very specific situations. Building on an actual 32-bit system will also
+work, in which case the 64-bit Wine plugin host applications simply won't be
+built.</li>
+<li>Added the deprecated pre-VST2.4 <code>main</code> entry point for VST2 plugins. This
+allows the above mentioned 32-bit version of yabridge to be used in
+<strong>EnergyXT</strong>, allowing you to use both 32-bit and 64-bit Windows VST2 plugins
+there.</li>
+<li>Added an environment variable to disable the watchdog timer. This is only
+needed when running the Wine process under a separate namespace. If you don't
+know that you need this, then you probably don't need this!</li>
+</ul>
+<h3 id="user-content-changed-7">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-7" id="user-content-changed-7" name="user-content-changed-7"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>The audio processing implementation for both VST2 and VST3 plugins has been
+completely rewritten to use both shared memory and message passing to cut down
+the number of expensive memory copies to a minimum. This reduces the DSP load
+overhead of audio processing even further.</li>
+<li>Respect <code>$XDG_DATA_HOME</code> as a fallback when looking for yabridge's plugin host
+binaries instead of hardcoding this to <code>~/.local/share/yabridge</code>. This matches
+the existing behaviour in yabridgectl.</li>
+<li>Optimized the management of VST3 plugin instances to reduce the overhead when
+using many instances of a single VST3 plugin.</li>
+<li>Slightly optimized the function call dispatch for VST2 plugins.</li>
+<li>Prevented some more potential unnecessary memory operations during yabridge's
+communication. The underlying serialization library was recreating some
+objects even when this wasn't needed, which could result in unnecessary memory
+allocations under certain circumstances. This is related to the similar issue
+that was fixed in yabridge 3.3.0. A fix for this issue has also been
+upstreamed to the library.</li>
+</ul>
+<h3 id="user-content-fixed-8">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-8" id="user-content-fixed-8" name="user-content-fixed-8"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed mouse cursors disappearing when interacting with some plugin GUIs. This
+often happened with <em>JUCE</em> based plugins, such as Sonic Academy's <em>Kick 2</em> and
+<em>Anaglyph</em>. While this is technically a workaround for a bad interaction
+between JUCE and Wine, it should make these plugins much more pleasant to use.</li>
+<li>Fixed <em>Waves</em> VST3 plugins not being able to initialize correctly. These
+plugins would at runtime change their query interface to support more VST3
+interfaces, including the mandatory edit controller interface. Yabridge now
+requeries the supported interfaces at a later stage to work around this.</li>
+<li>Fixed VST2 plugins in <strong>Ardour</strong> not receiving all transport information,
+breaking host sync and LFOs in certain plugins. This was a regression from
+yabridge 3.2.0.</li>
+<li>Fixed input focus handling being broken <strong>REAPER</strong> after reopning a closed FX
+window. Now moving the mouse cursor outside of the plugin's GUI will always
+release input focus, even after closing the window.</li>
+<li>Fixed <em>Insert Piz Here</em>'s <em>midiLooper</em> crashing in <strong>REAPER</strong> when the plugin
+tries to use REAPER's <a href="https://www.reaper.fm/sdk/vst/vst_ext.php#vst_host" rel="nofollow">host function
+API</a>. This currently isn't
+supported by yabridge. We now explicitly ignore these requests.</li>
+<li>Worked around a rare thread safety issue in <em>MeldaProduction</em> VST3 plugins
+where the plugin would deadlock when the host asks for the editor's size while
+plugin is also being initialized form the audio thread at the same time.</li>
+<li>Fixed JUCE VST3 plugins like Tokyo Dawn Records' <em>SlickEQ M</em> causing the host
+to freeze when they send a parameter change from the audio thread using the
+wrong VST3 API while the plugin is also trying to resize the window from the
+GUI thread at the same time. This would happen in <em>SlickEQ M</em> when reopning
+the Smart Ops panel after having used it once. To fix this, yabridge's
+Wine-side VST3 mutual recursion mechanism now only operates when invoked from
+the GUI thread.</li>
+<li>Fixed yabridge's logging seeking the STDERR stream to position 0 every time it
+writes a log message. This would be noticeable when piping the host's STDERR
+stream to a file and <code>YABRIDGE_DEBUG_LEVEL</code> wasn't set.</li>
+<li>When printing the Wine version during initialization, the Wine process used
+for this is now run under the same environment that the Wine plugin host
+process will be run under. This means that if you use a custom <code>WINELOADER</code>
+script to use different Wine versions depending on the prefix,
+the <code>wine version:</code> line in the initialization message will now always match
+the version of Wine the plugin is going to be run under.</li>
+<li>Fixed the plugin-side watchdog timer that allows a yabridge plugin to
+terminate when the Wine plugin host application fails to start treating zombie
+processes as still running, active processes. This could cause plugins to hang
+during scanning if the Wine process crashed in a very specific and likely
+impossible way.</li>
+<li>If a VST3 plugin returns a null pointer from <code>IEditController::createView()</code>,
+then this will now be propagated correctly on the plugin side.</li>
+<li>Fixed VST2 speaker arrangement configurations returned by the plugin not being
+serialized correctly. Very few plugins and hosts seem to actually use these,
+so it should not have caused any issues.</li>
+</ul>
+<h3 id="user-content-yabridgectl-5">
+<a aria-hidden="true" class="anchor" href="#user-content-yabridgectl-5" id="user-content-yabridgectl-5" name="user-content-yabridgectl-5"><span aria-hidden="true" class="octicon octicon-link"></span></a>yabridgectl</h3>
+<ul>
+<li>Added support for setting up merged VST3 bundles when using a 32-bit version
+of <code>libyabridge-vst3.so</code>.</li>
+<li>Fixed the post-installation setup checks when the default Wine prefix over at
+<code>~/.wine</code> was created with <code>WINEARCH=win32</code> set. This would otherwise result
+in an <code>00cc:err:process:exec_process</code> error when running <code>yabridgectl sync</code>
+because yabridgectl would try to run the 64-bit <code>yabridge-host.exe</code> in that
+prefix. Yabridgectl now detects the architecture of the default prefix first
+and then runs the proper Wine plugin host application for that prefix.</li>
+<li>Copies of <code>libyabridge-vst2.so</code> and <code>libyabridge-vst3.so</code> are now reflinked
+when supported by the file system. This speeds up the file coyping process
+while also reducing the amount of disk space used for yabridge when using
+Btrfs or XFS.</li>
+<li>If pruning causes a directory to be empty, then the empty directory will now
+also be removed. This avoids having your plugin directories littered with
+empty directories.</li>
+<li>Fixed incorrect new and total plugin counts. These counts are now always
+correct, even when using multiple versions of the same VST3 plugin or when
+multiple plugin directories overlap because of the use of symlinks.</li>
+<li>Aside from pruning only unmanaged VST3 bundles in <code>~/.vst3/yabridge</code>, yabridge
+will now also prompt you to prune leftover files from within a managed VST3
+bundle. This makes it easy to switch from the 64-bit version of a plugin to
+the 32-bit version, or from a 64-bit version of yabridge to the 32-bit
+version. I don't know why you would want to do either of those things, but now
+you can!</li>
+<li>Yabridgectl now prints a more descriptive error message instead of panicing if
+running <code>$WINELOADER --version</code> during yabridgectl's post-setup verification
+checks does not result in any output. This is only relevant when using a
+custom <code>WINELOADER</code> script that modifies Wine's output.</li>
+</ul>
+<h2 id="user-content-331---2021-06-09">
+<a aria-hidden="true" class="anchor" href="#user-content-331---2021-06-09" id="user-content-331---2021-06-09" name="user-content-331---2021-06-09"><span aria-hidden="true" class="octicon octicon-link"></span></a>[3.3.1] - 2021-06-09</h2>
+<h3 id="user-content-added-8">
+<a aria-hidden="true" class="anchor" href="#user-content-added-8" id="user-content-added-8" name="user-content-added-8"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>Added thread names to all worker threads created by yabridge. This makes it
+easier to debug and profile yabridge.</li>
+</ul>
+<h3 id="user-content-fixed-9">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-9" id="user-content-fixed-9" name="user-content-fixed-9"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed the <code>IPlugView::canResize()</code> cache added in yabridge 3.2.0 sometimes not
+being initialized properly, preventing host-driven resizes in certain
+situations. This was mostly noticeable in <strong>Ardour</strong>.</li>
+<li>Fixed mouse clicks in VST2 editors in <strong>Tracktion Waveform</strong> being offset
+vertically by a small amount because of the way Waveform embeds VST2 editors.</li>
+<li>Fixed <em>Shattered Glass Audio</em> plugins crashing when opening the plugin editor
+because those plugins don't initialize Microsoft COM before trying to use it.
+We now always initialize the Microsoft COM library unconditionally, instead of
+doing it only when a plugin fails to initialize without it.</li>
+<li>Fixed incorrect version strings being reported by yabridge when building from
+a tarball that has been extracted inside of an unrelated git repository. This
+could happen when building the <code>yabridge</code> AUR package with certain AUR
+helpers.</li>
+<li>Fixed the log message for the cached <code>IPlugView::canResize()</code> VST3 function
+calls implemented in yabridge 3.2.0.</li>
+</ul>
+<h2 id="user-content-330---2021-06-03">
+<a aria-hidden="true" class="anchor" href="#user-content-330---2021-06-03" id="user-content-330---2021-06-03" name="user-content-330---2021-06-03"><span aria-hidden="true" class="octicon octicon-link"></span></a>[3.3.0] - 2021-06-03</h2>
+<h3 id="user-content-added-9">
+<a aria-hidden="true" class="anchor" href="#user-content-added-9" id="user-content-added-9" name="user-content-added-9"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>Added a <a href="https://github.com/robbert-vdh/yabridge#compatibility-options">compatibility
+option</a> to
+redirect the Wine plugin host's STDOUT and STDERR output streams directly to a
+file. Enabling this allows <em>ujam</em> plugins and other plugins made with the
+Gorilla Engine, such as the <em>LoopCloud</em> plugins, to function correctly. Those
+plugins crash with a seemingly unrelated error message when their output is
+redirected to a pipe.</li>
+<li>Added a small warning during initialization when <code>RLIMIT_RTTIME</code> is set to
+some small value. This happens when using PipeWire with rtkit, and it can
+cause crashes when loading plugins.</li>
+</ul>
+<h3 id="user-content-changed-8">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-8" id="user-content-changed-8" name="user-content-changed-8"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>Added a timed cache for the <code>IPlugView::canResize()</code> VST3 function so the
+result will be remembered during an active resize. This makes resizing VST3
+plugin editor windows more responsive.</li>
+<li>Added another cache for when the host asks a VST3 plugin whether it supports
+processing 32-bit or 64-bit floating point audio. Some hosts, like <strong>Bitwig
+Studio</strong>, call this function at the start of every processing cycle even
+though the value won't ever change. Caching this can significantly reduce the
+overhead of bridging VST3 plugins under those hosts.</li>
+<li>Redesigned the VST3 audio socket handling to be able to reuse the process data
+objects on both sides. This greatly reduces the overhead of our VST3 bridging
+by getting rid of all potential memory allocations during audio processing.</li>
+<li>VST2 audio processing also received the same optimizations. In a few places
+yabridge would still reallocate heap data during every audio processing cycle.
+We now make sure to always reuse all buffers and heap data used in the audio
+processing process.</li>
+<li>Considerably optimized parts of yabridge's communication infrastructure by
+preventing unnecessary memory operations. As it turned out, the underlying
+binary serialization library used by yabridge would always reinitialize the
+type-safe unions yabridge uses to differentiate between single and double
+precision floating point audio buffers in both VST2 and VST3 plugins, undoing
+all of our efforts at reusing objects and preventing memory allocations in the
+process. A fix for this issue has also been upstreamed to the library.</li>
+<li>VST3 output audio buffers are now no longer zeroed out at the start of every
+audio processing cycle. We've been doing this for VST3 plugins since the
+introduction of VST3 bridging in yabridge 3.0.0, but we never did this for
+VST2 plugins. Since not doing this has never caused any issues with VST2
+plugins, it should also be safe to also skip this for VST3 plugins. This
+further reduces the overhead of VST3 audio processing.</li>
+<li>Optimized VST3 audio processing for instruments by preallocating small vectors
+for event and parameter change queues.</li>
+<li>VST2 MIDI event handling also received the same small vector optimization to
+get rid of any last potential allocations during audio processing.</li>
+<li>This small vector optimization has also been applied across yabridge's entire
+communication and event handling architecture, meaning that most plugin
+function calls and callbacks should no longer produce any allocations for both
+VST2 and VST3 plugins.</li>
+<li>Changed the way mutual recursion in VST3 plugins on the plugin side works to
+counter any potential GUI related timing issues with VST3 plugins when using
+multiple instances of a plugin.</li>
+<li>Changed the way realtime scheduling is used on the Wine side to be less
+aggressive, potentially reducing CPU usage when plugins are idle.</li>
+<li>The deserialization part of yabridge's communication is now slightly faster by
+skipping some unnecessary checks.</li>
+<li>Log messages about VST3 query interfaces are now only printed when
+<code>YABRIDGE_DEBUG_LEVEL</code> is set to 2 or higher, up from 1.</li>
+</ul>
+<h3 id="user-content-fixed-10">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-10" id="user-content-fixed-10" name="user-content-fixed-10"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed a longstanding thread safety issue when hosting a lot of VST2 plugins in
+a plugin group. This could cause plugins to crash or freeze when initializing
+a new instance of a VST2 plugin in a plugin group while another VST2 plugin in
+that same group is currently processing audio.</li>
+<li>Fixed yabridge's Wine processes inheriting file descriptors in some
+situations. This could cause <strong>Ardour</strong> and <strong>Mixbus</strong> to hang when reopening
+the DAW after a crash. The watchdog timer added in yabridge 3.2.0 addressed
+this issue partially, but it should now be completely fixed. This may also
+prevent rare issues where the <strong>JACK</strong> server would hang after the host
+crashes.</li>
+<li>Fixed <em>DMG</em> VST3 plugins freezing in <strong>REAPER</strong> when the plugin resizes itself
+while the host passes channel context information to the plugin.</li>
+<li>Also fixed <em>DMG</em> VST3 plugins freezing in <strong>REAPER</strong> when restoring multiple
+instances of the plugin at once while the FX window is open and the GUI is
+visible.</li>
+<li>Fixed the <em>PG-8X</em> VST2 plugin freezing in <strong>REAPER</strong> when loading the plugin.</li>
+<li>Fixed <em>Voxengo</em> VST2 plugins freezing in <strong>Renoise</strong> when loading a project or
+when otherwise restoring plugin state.</li>
+<li>Fixed logging traces in the VST2 audio processing functions and the VST3 query
+interfaces causing allocations even when <code>YABRIDGE_DEBUG_LEVEL</code> is not set to 2.</li>
+<li>Fixed building on Wine 6.8 after some internal changes to Wine's <code>windows.h</code>
+implementation.</li>
+</ul>
+<h3 id="user-content-yabridgectl-6">
+<a aria-hidden="true" class="anchor" href="#user-content-yabridgectl-6" id="user-content-yabridgectl-6" name="user-content-yabridgectl-6"><span aria-hidden="true" class="octicon octicon-link"></span></a>yabridgectl</h3>
+<ul>
+<li>Improved the warning yabridgectl shows when it cannot run <code>yabridge-host.exe</code>
+as part of the post-installation setup checks.</li>
+<li>Fixed the reported number of new or updated plugins when yabridgectl manages
+both a 32-bit and a 64-bit version of the same VST3 plugin.</li>
+<li>Fixed text wrapping being broken after a dependency update earlier this year.</li>
+</ul>
+<h2 id="user-content-320---2021-05-03">
+<a aria-hidden="true" class="anchor" href="#user-content-320---2021-05-03" id="user-content-320---2021-05-03" name="user-content-320---2021-05-03"><span aria-hidden="true" class="octicon octicon-link"></span></a>[3.2.0] - 2021-05-03</h2>
+<h3 id="user-content-added-10">
+<a aria-hidden="true" class="anchor" href="#user-content-added-10" id="user-content-added-10" name="user-content-added-10"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>During VST2 audio processing, yabridge will now prefetch the current transport
+information and process level before sending the audio buffers over to the
+Windows VST2 plugin. This lets us cache this information on the Wine side
+during the audio processing call, which significantly reduces the overhead of
+bridging VST2 plugins by avoiding one or more otherwise unavoidable back and
+forth function calls between yabridge's native plugin and the Wine plugin
+host. While beneficial to every VST2 plugin, this considerably reduces the
+overhead of bridging <em>MeldaProduction</em> VST2 plugins, and it has an even
+greater impact on plugins like <em>SWAM Cello</em> that request this information
+repeatedly over the course of a single audio processing cycle. Previously
+yabridge had a <code>cache_time_info</code> compatibility option to mitigate the
+performance hit for those plugins, but this new caching behaviour supercedes
+that option.</li>
+<li>We now always force the CPU's flush-to-zero flag to be set when processing
+audio. Most plugins will already do this by themselves, but plugins like <em>Kush
+Audio REDDI</em> and <em>Expressive E Noisy</em> that don't will otherwise suffer from
+extreme DSP usage increases when processing almost silent audio.</li>
+<li>Added a new <a href="https://github.com/robbert-vdh/yabridge#compatibility-options">compatibility
+option</a> to hide
+the name of the DAW you're using. This can be useful with plugins that have
+undesirable or broken DAW-specific behaviour. See the <a href="https://github.com/robbert-vdh/yabridge#known-issues-and-fixes">known
+issues</a>
+section of the readme for more information on when this may be useful.</li>
+<li>Yabridge now uses a watchdog timer to prevent rare instances where Wine
+processes would be left running after the native host has crashed or when it
+got forcefully terminated. By design yabridge would always try to gracefully
+shut down its Wine processes when native host has crashed and the sockets
+become unavailable, but this did not always happen if the crash occurred
+before the bridged plugin has finished initializing because of the way Unix
+Domain Sockets work. In that specific situation the <code>yabridge-host.exe</code>
+process would be left running indefinitely, and depending on your DAW that
+might have also prevented you from actually restarting your DAW without
+running <code>wineserver -k</code> first. To prevent any more dangling processes,
+yabridge's Wine plugin hosts now have a watchdog timer that periodically
+checks whether the original process that spawned the bridges is still running.
+If it detects that the process is no longer alive, yabridge will close the
+sockets and shut down the bridged plugin to prevent any more dangling
+processes from sticking around.</li>
+</ul>
+<h3 id="user-content-changed-9">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-9" id="user-content-changed-9" name="user-content-changed-9"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>Most common VST2 functions that don't have any arguments are now handled
+explicilty. Yabridge could always automatically support most VST2 functions by
+simply inspecting the function arguments and handling those accordingly. This
+works practically everywhere, but <em>Plugsound Free</em> by UVI would sometimes pass
+unreadable function arguments to functions that weren't supposed to have any
+arguments, causing yabridge to crash. Explicitly handling those functions
+should prevent similar situations from happening in the future.</li>
+<li>Yabridge will now try to bypass VST3 connection proxies if possible. Instead
+of connecting two VST3 plugin objects directly, <strong>Ardour</strong> and <strong>Mixbus</strong>
+place a connection proxy between the two plugin objects so that they can only
+interact indirectly through the DAW. In the past yabridge has always honored
+this by proxying the host's connection proxy, but this causes difficult
+situations with plugins that actively communicate over these proxies from the
+GUI thread, like the <em>FabFilter</em> plugins. Whenever possible, yabridge will now
+try to bypass the connection proxies and connect the two objects directly
+instead, only falling back to proxying the proxies when that's not possible.</li>
+<li>Compile times have been slightly lowered by compiling most of the Wine plugin
+host into static libraries first.</li>
+<li>When building the package from source, the targetted Wine version now gets
+printed at configure-time. This can make it a bit easier to diagnose
+Wine-related compilation issues.</li>
+</ul>
+<h3 id="user-content-removed-2">
+<a aria-hidden="true" class="anchor" href="#user-content-removed-2" id="user-content-removed-2" name="user-content-removed-2"><span aria-hidden="true" class="octicon octicon-link"></span></a>Removed</h3>
+<ul>
+<li>The <code>cache_time_info</code> compatibility option has been removed since it's now
+obsolete.</li>
+<li>Removed a message that would show up when loading a VST3 plugin in Ardour,
+warning about potential crashes due to Ardour not supporting multiple input
+and output busses. These crashes have been resolved since yabridge 3.1.0.</li>
+</ul>
+<h3 id="user-content-fixed-11">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-11" id="user-content-fixed-11" name="user-content-fixed-11"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed rare X11 errors that could occur when closing a plugin's editor. In
+certain circumstances, closing a plugin editor would trigger an X11 error and
+crash the Wine plugin host, and with that likely the entire DAW. This happened
+because Wine would try to destroy the window after it had already been
+destroyed. This could happen in Renoise and to a lesser degree in REAPER with
+plugins that take a while to close their editors, such as the <em>iZotope Rx</em>
+plugins. We now explicitly reparent the window to back the root window first
+before deferring the window closing. This should fix the issue, while still
+keeping editor closing nice and snappy.</li>
+<li>Plugin group host processes now shut down by themselves if they don't get a
+request to host any plugins within five seconds. This can happen when the DAW
+gets killed right after starting the group host process but before the native
+yabridge plugin requests the group host process to host a plugin for them.
+Before this change, this would result in a <code>yabridge-group.exe</code> process
+staying around indefinitely.</li>
+<li>Prevented latency introducing VST3 from freezing <strong>Ardour</strong> and <strong>Mixbus</strong>
+when loading the plugin. This stops <em>Neural DSP Darkglass</em> from freezing when
+used under those DAWs.</li>
+<li>Fixed <em>FabFilter</em> VST3 plugins freezing in <strong>Ardour</strong> and <strong>Mixbus</strong> when
+trying to duplicate existing instances of the plugin after the editor GUI has
+been opened.</li>
+<li>Fixed VST3 plugins freezing in <strong>Ardour</strong> and <strong>Mixbus</strong> when the plugin tries
+to automate a parameter while loading a preset.</li>
+<li>Fixed <em>Voxengo</em> VST3 plugins freezing in <strong>Ardour</strong> and <strong>Mixbus</strong> when
+loading a project or when duplicating the plugin instances.</li>
+<li>Fixed potential X11 errors resulting in assertion failures and crashes in
+<strong>Ardour</strong> and <strong>Mixbus</strong> when those hosts hide (unmap) a plugin's editor
+window.</li>
+<li>Fixed saving and loading plugin state for VST3 <em>iZotope Rx</em> plugins in
+<strong>Bitwig Studio</strong>.</li>
+<li>Fixed a regression from yabridge 3.1.0 where <strong>REAPER</strong> would freeze when opening
+a VST3 plugin context menu.</li>
+<li>Fixed a potential freezing issue in <strong>REAPER</strong> that could happen when a VST3
+plugin resizes itself while sending parameter changes to the host when
+REAPER's 'disable saving full plug-in state' option has not been disabled.</li>
+<li>Fixed another potential freeze when loading a VST3 plugin preset while the
+editor is open when the plugin tries to resize itself based on that new
+preset.</li>
+<li>Fixed a potential assertion failure when loading VST3 presets. This would
+depend on the compiler settings and the version of <code>libstdc++</code> used to built
+yabridge with.</li>
+<li>Fixed <em>PSPaudioware InifniStrip</em> failing to initialize. The plugin expects the
+host to always be using Microsoft COM, and it doesn't try to initialize it by
+itself. InfiniStrip loads as expected now.</li>
+<li>Fixed <em>Native Instruments' FM7</em> crashing when processing MIDI. In order to fix
+this, MIDI events are now deallocated later then when they normally would have
+to be.</li>
+<li>Fixed extreme DSP usage increases in <em>Kush Audio REDDI</em> and <em>Expressive E
+Noisy</em> due to denormals.</li>
+<li>Fixed the VST3 version of <em>W. A. Production ImPerfect</em> crashing during audio
+setup.</li>
+<li>Fixed <em>UVI Plugsound Free</em> crashing during initialization.</li>
+<li>Fixed the Wine version detection when using a custom <code>WINELOADER</code>.</li>
+<li>Fixed incorrect logging output for cached VST3 function calls.</li>
+<li>Because of the new VST2 transport information prefetching, the excessive DSP
+usage in <em>SWAM Cello</em> has now been fixed without requiring any manual
+compatibility options.</li>
+</ul>
+<h2 id="user-content-310---2021-04-15">
+<a aria-hidden="true" class="anchor" href="#user-content-310---2021-04-15" id="user-content-310---2021-04-15" name="user-content-310---2021-04-15"><span aria-hidden="true" class="octicon octicon-link"></span></a>[3.1.0] - 2021-04-15</h2>
+<h3 id="user-content-added-11">
+<a aria-hidden="true" class="anchor" href="#user-content-added-11" id="user-content-added-11" name="user-content-added-11"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>Added support for using 32-bit Windows VST3 plugins in 64-bit Linux VST3
+hosts. This had previously been disabled because of a hard to track down
+corruption issue.</li>
+<li>Added an
+<a href="https://github.com/robbert-vdh/yabridge#compatibility-options">option</a> to
+prefer the 32-bit version of a VST3 plugin over the 64-bit version if both are
+installed. This likely won't be necessary, but because of the way VST3 bundles
+work there's no clean way to separate these. So when both are installed, the
+64-bit version gets used by default.</li>
+</ul>
+<h3 id="user-content-fixed-12">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-12" id="user-content-fixed-12" name="user-content-fixed-12"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Worked around a regression in Wine 6.5 that would prevent yabridge from
+shutting down (<a href="https://bugs.winehq.org/show_bug.cgi?id=50869" rel="nofollow">wine bug
+#50869</a>). With Wine 6.5
+terminating a Wine process no longer terminates its threads, which would cause
+yabridge's plugin and host components to wait for each other to shut down.</li>
+<li>Fixed preset/state loading in both the VST2 and VST3 versions of <em>Algonaut
+Atlas 2.0</em> by loading and saving plugin state from the main GUI thread.</li>
+<li>Added a workaround for a bug present in every current <em>Bluecat Audio</em> VST3
+plugin. Those plugins would otherwise crash yabridge because they didn't
+directly expose a core VST3 interface through their query interface.</li>
+<li>Fixed a multithreading related memory error in the VST3 audio processor socket
+management system.</li>
+</ul>
+<h3 id="user-content-yabridgectl-7">
+<a aria-hidden="true" class="anchor" href="#user-content-yabridgectl-7" id="user-content-yabridgectl-7" name="user-content-yabridgectl-7"><span aria-hidden="true" class="octicon octicon-link"></span></a>yabridgectl</h3>
+<ul>
+<li>Added an indexing blacklist, accessible through <code>yabridgectl blacklist</code>. You
+most likely won't ever have to use this, but this lets you skip over files and
+directories in yabridgectl's indexing process.</li>
+<li>Minor spelling fixes.</li>
+</ul>
+<h3 id="user-content-packaging-notes-4">
+<a aria-hidden="true" class="anchor" href="#user-content-packaging-notes-4" id="user-content-packaging-notes-4" name="user-content-packaging-notes-4"><span aria-hidden="true" class="octicon octicon-link"></span></a>Packaging notes</h3>
+<ul>
+<li>The Meson wrap dependencies for <code>bitsery</code>, <code>function2</code> and <code>tomlplusplus</code> are
+now defined using <code>dependency()</code> with a subproject fallback instead of using
+<code>subproject()</code> directly. This should make it easier to package.</li>
+<li>The VST3 SDK Meson wrap dependency and the patches in
+<code>tools/patch-vst3-sdk.sh</code> are now based on version 3.7.2 of the SDK.</li>
+<li>The VST3 SDK Meson wrap now uses a tag (<code>v3.7.2_build_28-patched</code>) instead of
+a commit hash.</li>
+</ul>
+<h2 id="user-content-302---2021-03-07">
+<a aria-hidden="true" class="anchor" href="#user-content-302---2021-03-07" id="user-content-302---2021-03-07" name="user-content-302---2021-03-07"><span aria-hidden="true" class="octicon octicon-link"></span></a>[3.0.2] - 2021-03-07</h2>
+<h3 id="user-content-fixed-13">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-13" id="user-content-fixed-13" name="user-content-fixed-13"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fix bus information queries being performed for the wrong bus index. This
+fixes VST3 sidechaining in <em>Renoise</em>, and prevents a number of VST3 plugins
+with a sidechain input from causing <em>Ardour</em> and <em>Mixbus</em> to freeze or crash.</li>
+</ul>
+<h2 id="user-content-301---2021-02-26">
+<a aria-hidden="true" class="anchor" href="#user-content-301---2021-02-26" id="user-content-301---2021-02-26" name="user-content-301---2021-02-26"><span aria-hidden="true" class="octicon octicon-link"></span></a>[3.0.1] - 2021-02-26</h2>
+<h3 id="user-content-changed-10">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-10" id="user-content-changed-10" name="user-content-changed-10"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>Wine 6.2 introduced a
+<a href="https://bugs.winehq.org/show_bug.cgi?id=50670" rel="nofollow">regression</a> that would cause
+compile errors because some parts of Wine's headers were no longer valid C++.
+Since we do not need the affecting functionality, yabridge now includes a
+small workaround to make sure that the affected code never gets compiled. This
+has been fixed for Wine 6.3.</li>
+</ul>
+<h3 id="user-content-fixed-14">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-14" id="user-content-fixed-14" name="user-content-fixed-14"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Added support for a new ReaSurround related VST2.4 extension that <strong>REAPER</strong>
+recently started using. This would otherwise cause certain plugins to crash
+under REAPER.</li>
+<li>Fixed a regression from yabridge 3.0.0 where log output would no longer
+include timestamps.</li>
+</ul>
+<h3 id="user-content-yabridgectl-8">
+<a aria-hidden="true" class="anchor" href="#user-content-yabridgectl-8" id="user-content-yabridgectl-8" name="user-content-yabridgectl-8"><span aria-hidden="true" class="octicon octicon-link"></span></a>yabridgectl</h3>
+<ul>
+<li>Changed the wording and colors in <code>yabridgectl status</code> for plugins that have
+not yet been setup to look less dramatic and hopefully cause less confusion.</li>
+<li>Aside from the installation status, <code>yabridgectl status</code> now also shows a
+plugin's type and architecture. This is color coded to make it easier to
+visually parse the output.</li>
+<li>Plugin paths printed during <code>yabridgectl status</code> and
+<code>yabridgectl sync --verbose</code> are now always shown relative to the plugin
+directory instead of the same path prefix being repeated for every plugin.</li>
+</ul>
+<h2 id="user-content-300---2021-02-14">
+<a aria-hidden="true" class="anchor" href="#user-content-300---2021-02-14" id="user-content-300---2021-02-14" name="user-content-300---2021-02-14"><span aria-hidden="true" class="octicon octicon-link"></span></a>[3.0.0] - 2021-02-14</h2>
+<h3 id="user-content-added-12">
+<a aria-hidden="true" class="anchor" href="#user-content-added-12" id="user-content-added-12" name="user-content-added-12"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>Yabridge 3.0 introduces the first ever true Wine VST3 bridge, allowing you to
+use Windows VST3 plugins in Linux VST3 hosts with full VST 3.7.1
+compatibility. Simply tell yabridgectl to look for plugins in
+<code>$HOME/.wine/drive_c/Program Files/Common Files/VST3</code>, run <code>yabridgectl sync</code>,
+and your VST3 compatible DAW will pick up the new plugins in
+<code>~/.vst3/yabridge</code> automatically. Even though this feature has been tested
+extensively with a variety of VST3 plugins and hosts, there's still a
+substantial part of the VST 3.7.1 specification that isn't used by any of the
+hosts or plugins we could get our hands on, so please let me know if you run
+into any weird behaviour! There's a list in the readme with all of the tested
+hosts and their current VST3 compatibility status.</li>
+<li>Added an
+<a href="https://github.com/robbert-vdh/yabridge#compatibility-options">option</a> to use
+Wine's XEmbed implementation instead of yabridge's normal window embedding
+method. This can help reduce flickering when dragging the window around with
+certain window managers. Some plugins will have redrawing issues when using
+XEmbed or the editor might not show up at all, so your mileage may very much
+vary.</li>
+<li>Added a <a href="https://github.com/robbert-vdh/yabridge#compatibility-options">compatibilty
+option</a> to
+forcefully enable drag-and-drop support under <em>REAPER</em>. REAPER's FX window
+reports that it supports drag-and-drop itself, which makes it impossible to
+drag files onto a plugin editor embedded there. This option strips the
+drag-and-drop support from the FX window, thus allowing you to drag files onto
+plugin editors again.</li>
+<li>Added a frame rate
+<a href="https://github.com/robbert-vdh/yabridge#compatibility-options">option</a> to
+change the rate at which events are being handled. This usually also controls
+the refresh rate of a plugin's editor GUI. The default 60 updates per second
+may be too high if your computer's cannot keep up, or if you're using a host
+that never closes the editor such as <em>Ardour</em>.</li>
+<li>Added a <a href="https://github.com/robbert-vdh/yabridge#compatibility-options">compatibility
+option</a> to
+disable HiDPI scaling for VST3 plugins. At the moment Wine does not have
+proper fractional HiDPI support, so some plugins may not scale their
+interfaces correctly when the host tells those plugins to scale their GUIs. In
+some cases setting the font DPI in <code>winecfg</code>'s graphics tab to 192 will also
+cause the GUIs to scale correctly at 200%.</li>
+<li>Added the <code>with-vst3</code> compile time option to control whether yabridge should
+be built with VST3 support. This is enabled by default.</li>
+</ul>
+<h3 id="user-content-changed-11">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-11" id="user-content-changed-11" name="user-content-changed-11"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>
+<p><code>libyabridge.so</code> is now called <code>libyabridge-vst2.so</code>. If you're using
+yabridgectl then nothing changes here. <strong>To avoid any potential confusion in
+the future, please remove the old <code>libyabridge.so</code> file before upgrading.</strong></p>
+</li>
+<li>
+<p>The release archives uploaded on GitHub are now repackaged to include
+yabridgectl for your convenience.</p>
+</li>
+<li>
+<p>Window closing is now deferred. This means that when closing the editor
+window, the host no longer has to wait for Wine to fully close the window.
+Most hosts already do something similar themselves, so this may not always
+make a difference in responsiveness.</p>
+</li>
+<li>
+<p>Slightly increased responsiveness when resizing plugin GUIs by preventing
+unnecessary blitting. This also reduces flickering with plugins that don't do
+double buffering.</p>
+</li>
+<li>
+<p>VST2 editor idle events are now handled slightly differently. This should
+result in even more responsive GUIs for VST2 plugins.</p>
+</li>
+<li>
+<p>Win32 and X11 events in the Wine plugin host are now handled with lower
+scheduling priority than other tasks. This might help get rid of potential DSP
+latency spikes when having the editor open while the plugin is doing expensive
+GUI operations.</p>
+</li>
+<li>
+<p>Opening and closing plugin editors is now also no longer done with realtime
+priority. This should get rid of any latency spikes during those operations,
+as this could otherwise steal resources away from the threads that are
+processing audio.</p>
+</li>
+<li>
+<p>The way realtime priorities assigned has been overhauled:</p>
+<ul>
+<li>Realtime scheduling on the plugin side is now a more granular. Instead of
+setting everything to use <code>SCHED_FIFO</code>, only the spawned threads will be
+configured to use realtime scheduling. This prevents changing the scheduling
+policy of your host's GUI thread if your host instantiates plugins from its
+GUI thread like <em>REAPER</em> does.</li>
+<li>Relaying messages printed by the plugin and Wine is now done without
+realtime priority, as this could in theory cause issues with plugins that
+produce a steady stream of fixmes or other output.</li>
+<li>The realtime scheduling priorities of all audio threads in the Wine plugin
+host are now periodically synchronized with those of the host's audio
+threads.</li>
+</ul>
+</li>
+<li>
+<p>When using <code>yabridge.toml</code> config files, the matched section or glob pattern
+is now also printed next to the path to the file to make it a bit easier to
+see where settings are being set from.</p>
+</li>
+<li>
+<p>The architecture document has been updated for the VST3 support and it has
+been rewritten to talk more about the more interesting bits of yabridge's
+implementation.</p>
+</li>
+<li>
+<p>Part of the build process has been changed to account for <a href="https://bugs.winehq.org/show_bug.cgi?id=49138" rel="nofollow">this Wine
+bug</a>. Building with Wine 5.7
+and 5.8 required a change for <code>yabridge-host.exe</code> to continue working, but
+that change now also breaks builds using Wine 6.0 and up. The build process
+now detects which version of Wine is used to build with, and it will then
+apply the change conditionally based on that to be able to support building
+with both older and newer versions of Wine. This does mean that when you
+switch to an older Wine version, you might need to run
+<code>meson setup build --reconfigure</code> before rebuilding to make sure that these
+changes take effect.</p>
+</li>
+<li>
+<p><code>yabridge-host.exe</code> will no longer remove the socket directories if they're
+outside of a temporary directory. This could otherwise cause a very unpleasant
+surprise if someone were to pass random arguments to it when for instance
+trying to write a wrapper around <code>yabridge-host.exe</code>.</p>
+</li>
+<li>
+<p>When <code>YABRIDGE_DEBUG_LEVEL</code> is set to 2 or higher and a plugin asks the host
+for the current position in the song, yabridge will now also print the current
+tempo to help debugging host bugs.</p>
+</li>
+</ul>
+<h3 id="user-content-fixed-15">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-15" id="user-content-fixed-15" name="user-content-fixed-15"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>VST2 plugin editor resizing in <strong>REAPER</strong> would not cause the FX window to be
+resized like it would in every other host. This has now been fixed.</li>
+<li>The function for suspending and resuming audio, <code>effMainsChanged()</code>, is now
+always executed from the GUI thread. This fixes <strong>EZdrummer</strong> not producing
+any sound because the plugin makes the incorrect assumption that
+<code>effMainsChanged()</code> is always called from the GUI thread.</li>
+<li>Event handling is now temporarily disabled while plugins are in a partially
+initialized state. The VST2 versions of <strong>T-RackS 5</strong> would have a chance to
+hang indefinitely if the event loop was being run before those plugins were
+fully initialized because of a race condition within those plugins. This issue
+was only noticeable when using plugin groups.</li>
+<li>Fixed a potential issue where an interaction between <em>Bitwig Studio</em> and
+yabridge's input focus grabbing method could cause delayed mouse events when
+clicking on a plugin's GUI in Bitwig. This issue has not been reported for
+yabridge 2.2.1 and below, but it could in theory also affect older versions of
+yabridge.</li>
+</ul>
+<h3 id="user-content-yabridgectl-9">
+<a aria-hidden="true" class="anchor" href="#user-content-yabridgectl-9" id="user-content-yabridgectl-9" name="user-content-yabridgectl-9"><span aria-hidden="true" class="octicon octicon-link"></span></a>yabridgectl</h3>
+<ul>
+<li>Updated for the changes in yabridge 3.0. Yabridgectl now allows you to set up
+yabridge for VST3 plugins. Since <code>libyabridge.so</code> got renamed to
+<code>libyabridge-vst2.so</code> in this version, it's advised to carefully remove the
+old <code>libyabridge.so</code> and <code>yabridgectl</code> files before upgrading to avoid
+confusing situations.</li>
+<li>Added the <code>yabridgectl set --path-auto</code> option to revert back to automatically
+locating yabridge's files after manually setting a path with
+<code>yabridgectl set --path=&lt;...&gt;</code>.</li>
+<li>Added the <code>yabridgectl set --no-verify={true,false}</code> option to permanently
+disable post-installation setup checks. You can still directly pass the
+<code>--no-verify</code> argument to <code>yabridgectl sync</code> to disable these checks for only
+a single invocation.</li>
+</ul>
+<h2 id="user-content-221---2020-12-12">
+<a aria-hidden="true" class="anchor" href="#user-content-221---2020-12-12" id="user-content-221---2020-12-12" name="user-content-221---2020-12-12"><span aria-hidden="true" class="octicon octicon-link"></span></a>[2.2.1] - 2020-12-12</h2>
+<h3 id="user-content-fixed-16">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-16" id="user-content-fixed-16" name="user-content-fixed-16"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed some plugins, notably the <em>Spitfire Audio</em> plugins, from causing a
+deadlock when using plugin groups in <em>REAPER</em>. Even though this did not seem
+to cause any issues in other hosts, the race condition that caused this issue
+could also occur elsewhere.</li>
+</ul>
+<h2 id="user-content-220---2020-12-11">
+<a aria-hidden="true" class="anchor" href="#user-content-220---2020-12-11" id="user-content-220---2020-12-11" name="user-content-220---2020-12-11"><span aria-hidden="true" class="octicon octicon-link"></span></a>[2.2.0] - 2020-12-11</h2>
+<h3 id="user-content-added-13">
+<a aria-hidden="true" class="anchor" href="#user-content-added-13" id="user-content-added-13" name="user-content-added-13"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>Added an option to cache the time and tempo info returned by the host for the
+current processing cycle. This would normally not be needed since plugins
+should ask the host for this information only once per audio callback, but a
+bug in <em>SWAM Cello</em> causes this to happen repeatedly for every sample,
+resutling in very bad performance. See the <a href="https://github.com/robbert-vdh/yabridge#compatibility-options">compatibility
+options</a>
+section of the readme for more information on how to enable this.</li>
+</ul>
+<h3 id="user-content-changed-12">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-12" id="user-content-changed-12" name="user-content-changed-12"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>When <code>YABRIDGE_DEBUG_LEVEL</code> is set to 2 or higher and a plugin asks the host
+for the current position in the song, yabridge will now print that position in
+quarter notes and samples as part of the debug output.</li>
+<li>
+<code>YABRIDGE_DEBUG_LEVEL</code> 2 will now also cause all audio processing callbacks to
+be logged. This makes recognizing misbheaving plugins a bit easier.</li>
+<li>Symbols in all <code>libyabridge.so</code> and all Winelib <code>.so</code> files are now hidden by
+default.</li>
+</ul>
+<h3 id="user-content-fixed-17">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-17" id="user-content-fixed-17" name="user-content-fixed-17"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed an issue where in certain situations Wine processes were left running
+after the host got forcefully terminated before it got a chance to tell the
+plugin to shut down. This could happen when using Kontakt in Bitwig, as Bitwig
+sets a limit on the amount of time a plugin is allowed to spend closing when
+you close Bitwig, and Kontakt can take a while to shut down.</li>
+<li>Fixed a potential crash or freeze when removing a lot of plugins from a plugin
+group at exactly the same time.</li>
+</ul>
+<h2 id="user-content-210---2020-11-20">
+<a aria-hidden="true" class="anchor" href="#user-content-210---2020-11-20" id="user-content-210---2020-11-20" name="user-content-210---2020-11-20"><span aria-hidden="true" class="octicon octicon-link"></span></a>[2.1.0] - 2020-11-20</h2>
+<h3 id="user-content-added-14">
+<a aria-hidden="true" class="anchor" href="#user-content-added-14" id="user-content-added-14" name="user-content-added-14"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>Added a separate
+<a href="https://aur.archlinux.org/packages/yabridgectl/" rel="nofollow">yabridgectl</a> AUR package for
+Arch and Manjaro. The original idea was that yabridgectl would not require a
+lot of changes and that a single
+<a href="https://aur.archlinux.org/packages/yabridgectl-git/" rel="nofollow">yabridgectl-git</a> package
+would be sufficient, but sometimes changes to yabridgectl will be incompatible
+with the current release so it's nicer to also have a separate regular
+package.</li>
+</ul>
+<h3 id="user-content-changed-13">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-13" id="user-content-changed-13" name="user-content-changed-13"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>Yabridge will now always search for <code>yabridge-host.exe</code> in
+<code>~/.local/share/yabridge</code> even if that directory is not in the search path.
+This should make setup easier, since you no longer have to modify any
+environment variables when installing yabridge to the default location.
+Because of this, the symlink-based installation method does not have a lot of
+advantages over the copy-based method anymore other than the fact that you
+can't forget to rerun <code>yabridgectl sync</code> after an upgrade, so most references
+to it have been removed from the readme.</li>
+</ul>
+<h3 id="user-content-fixed-18">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-18" id="user-content-fixed-18" name="user-content-fixed-18"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed an issue where <em>Renoise</em> would show an error message when trying to load
+a plugin in the mixer.</li>
+</ul>
+<h2 id="user-content-202---2020-11-14">
+<a aria-hidden="true" class="anchor" href="#user-content-202---2020-11-14" id="user-content-202---2020-11-14" name="user-content-202---2020-11-14"><span aria-hidden="true" class="octicon octicon-link"></span></a>[2.0.2] - 2020-11-14</h2>
+<h3 id="user-content-fixed-19">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-19" id="user-content-fixed-19" name="user-content-fixed-19"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Added a workaround for a bug in <em>Ardour 6.3</em> which would cause several plugins
+including MT Power Drumkit to crash when opening the editor.</li>
+<li>Fixed linking error in debug build related to the parallel STL.</li>
+</ul>
+<h2 id="user-content-201---2020-11-08">
+<a aria-hidden="true" class="anchor" href="#user-content-201---2020-11-08" id="user-content-201---2020-11-08" name="user-content-201---2020-11-08"><span aria-hidden="true" class="octicon octicon-link"></span></a>[2.0.1] - 2020-11-08</h2>
+<h3 id="user-content-fixed-20">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-20" id="user-content-fixed-20" name="user-content-fixed-20"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed a regression where <code>yabridge-host.exe</code> would not exit on its own after
+the host crashes or gets terminated without being able to properly close all
+plugins.</li>
+</ul>
+<h2 id="user-content-200---2020-11-08">
+<a aria-hidden="true" class="anchor" href="#user-content-200---2020-11-08" id="user-content-200---2020-11-08" name="user-content-200---2020-11-08"><span aria-hidden="true" class="octicon octicon-link"></span></a>[2.0.0] - 2020-11-08</h2>
+<h3 id="user-content-added-15">
+<a aria-hidden="true" class="anchor" href="#user-content-added-15" id="user-content-added-15" name="user-content-added-15"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>
+<p>The way communication works in yabridge has been completely redesigned to be
+fully concurrent and to use additional threads as necessary. This was needed
+to allow yabridge to handle nested and mutually recursive function calls as
+well as several other edge cases a synchronous non-concurrent implementation
+would fail. What this boils down to is that yabridge became even faster, more
+responsive, and can now handle many scenarios that would previously require
+workarounds. The most noticeable effects of these changes are as follows:</p>
+<ul>
+<li>The <code>hack_reaper_update_display</code> workaround for <em>REAPER</em> and <em>Renoise</em> to
+prevent certain plugins from freezing is no longer needed and has been
+removed.</li>
+<li>Opening and scanning plugins becomes much faster in several VST hosts
+because more work can be done simultaneously.</li>
+<li>Certain plugins, such as Kontakt, no longer interrupt audio playback in
+Bitwig while their editor was being opened.</li>
+<li>Any loading issues in Bitwig Studio 3.3 beta 1 are no longer present.</li>
+<li>Hosting a yabridged plugin inside of the VST2 version of Carla now works as
+expected.</li>
+<li>And probably many more improvements.</li>
+</ul>
+<p>Aside from these more noticeable changes, this has also made it possible to
+remove a lot of older checks and behaviour that existed solely to work around
+the limitations introduced by the old event handling system. I have been
+testing this extensively to make sure that these changes don't not introduce
+any regressions, but please let me know if this did break anything for you.</p>
+</li>
+</ul>
+<h3 id="user-content-changed-14">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-14" id="user-content-changed-14" name="user-content-changed-14"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>The way the Wine process handles threading has also been completely reworked
+as part of the communication rework.</li>
+<li>GUI updates for plugins that don't use hardware acceleration are now run at 60
+Hz instead of 30 Hz. This was kept at 30 updates per second because that
+seemed to be a typical rate for Windows VST hosts and because function calls
+could not be processed while the GUI was being updated, but since that
+limitation now no longer exists we can safely bump this up.</li>
+<li>Sockets are now created in <code>$XDG_RUNTIME_DIR</code> (which is <code>/run/user/&lt;user_id&gt;</code>
+on most systems) instead of <code>/tmp</code> to avoid polluting <code>/tmp</code>.</li>
+</ul>
+<h3 id="user-content-removed-3">
+<a aria-hidden="true" class="anchor" href="#user-content-removed-3" id="user-content-removed-3" name="user-content-removed-3"><span aria-hidden="true" class="octicon octicon-link"></span></a>Removed</h3>
+<ul>
+<li>The now obsolete <code>hack_reaper_update_display</code> option has been removed.</li>
+<li>The previously deprecated <code>use-bitbridge</code> and <code>use-winedbg</code> compilation
+options have been removed. Please use <code>with-bitbridge</code> and <code>with-winedbg</code>
+instead.</li>
+</ul>
+<h3 id="user-content-fixed-21">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-21" id="user-content-fixed-21" name="user-content-fixed-21"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed a very long standing issue with plugins groups where unloading a plugin
+could cause a crash. Now you can host over a hundred plugins in a single
+process without any issues.</li>
+<li>Fixed another edge case with plugin groups when simultaneously opening
+multiple plugins within the same group. The fallover behaviour that would
+cause all of those plugins to eventually connect to a single group host
+process would sometimes not work correctly because the plugins were being
+terminated prematurely.</li>
+<li>Fixed the implementation of the accumulative <code>process()</code> function. As far as
+I'm aware no VST hosts made in the last few decades even use this, but it just
+feels wrong to have an incorrect implementation as part of yabridge.</li>
+</ul>
+<h2 id="user-content-171---2020-10-23">
+<a aria-hidden="true" class="anchor" href="#user-content-171---2020-10-23" id="user-content-171---2020-10-23" name="user-content-171---2020-10-23"><span aria-hidden="true" class="octicon octicon-link"></span></a>[1.7.1] - 2020-10-23</h2>
+<h3 id="user-content-fixed-22">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-22" id="user-content-fixed-22" name="user-content-fixed-22"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed a regression where the <code>editor_double_embed</code> option would cause X11
+errors and crash yabridge.</li>
+<li>Fixed a regression where certain fake dropdown menus such as those used in the
+Tokyo Dawn Records plugins would close immediately when hovering over them.</li>
+<li>Fixed an issue where plugins hosted within a plugin group would not shut down
+properly in certain situations. This would cause the VST host to hang when
+removing such a plugin.</li>
+</ul>
+<h3 id="user-content-yabridgectl-10">
+<a aria-hidden="true" class="anchor" href="#user-content-yabridgectl-10" id="user-content-yabridgectl-10" name="user-content-yabridgectl-10"><span aria-hidden="true" class="octicon octicon-link"></span></a>yabridgectl</h3>
+<ul>
+<li>When running <code>yabridgectl sync</code>, existing .so files will no longer be
+recreated unless necessary. This prevents hosts from rescanning all plugins
+after setting up a single new plugin through yabridgectl. Running
+<code>yabridgectl sync</code> after updating yabridge will still recreate all existing
+.so files as usual.</li>
+<li>Added a <code>--force</code> option to <code>yabridgectl sync</code> to always recreate all existing
+.so files like in previous versions.</li>
+<li>Fixed a regression from yabridgectl 1.6.1 that prevented you from removing
+directories that no longer exist using <code>yabridgectl rm</code>.</li>
+</ul>
+<h2 id="user-content-170---2020-10-13">
+<a aria-hidden="true" class="anchor" href="#user-content-170---2020-10-13" id="user-content-170---2020-10-13" name="user-content-170---2020-10-13"><span aria-hidden="true" class="octicon octicon-link"></span></a>[1.7.0] - 2020-10-13</h2>
+<h3 id="user-content-changed-15">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-15" id="user-content-changed-15" name="user-content-changed-15"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>
+<p>The way keyboard input works has been completely rewritten to be more reliable
+in certain hosts and to provide a more integrated experience. Hovering over
+the plugin's editor while the window provided by the host is active will now
+immediately grab keyboard focus, and yabridge will return input focus to the
+host's window when moving the mouse outside of the plugin's editor when the
+window is still active. This should fix some instances where keyboard input
+was not working in hosts with more complex editor windows like <em>REAPER</em> and
+<em>Ardour</em>, and it also allows things like the comment field in REAPER's FX
+window to still function.</p>
+<p>A consequence of this change is that pressing Space in Bitwig Studio 3.2 will
+now play or pause playback as intended, but this does mean that it can be
+impossible to type the space character in text boxes inside of a plugin editor
+window. Please let me know if this causes any issues for you.</p>
+</li>
+<li>
+<p>Both unrecognized and invalid options are now printed on started to make
+debugging <code>yabridge.toml</code> files easier.</p>
+</li>
+<li>
+<p>Added a note to the message stating that libSwell GUI support has been
+disabled to clarify that this is expected behaviour when using REAPER. The
+message now also contains a suggestion to enable the
+<code>hack_reaper_update_display</code> option when it is not already enabled.</p>
+</li>
+</ul>
+<h3 id="user-content-fixed-23">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-23" id="user-content-fixed-23" name="user-content-fixed-23"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Added a workaround for reparenting issues with the plugin editor GUI on a
+<a href="https://github.com/robbert-vdh/yabridge/issues/40">specific i3 setup</a>.</li>
+</ul>
+<h3 id="user-content-documentation">
+<a aria-hidden="true" class="anchor" href="#user-content-documentation" id="user-content-documentation" name="user-content-documentation"><span aria-hidden="true" class="octicon octicon-link"></span></a>Documentation</h3>
+<ul>
+<li>The documentation on <code>yabridge.toml</code> files and the available options has been
+rewritten in an effort to make it easier to comprehend.</li>
+</ul>
+<h2 id="user-content-161---2020-09-28">
+<a aria-hidden="true" class="anchor" href="#user-content-161---2020-09-28" id="user-content-161---2020-09-28" name="user-content-161---2020-09-28"><span aria-hidden="true" class="octicon octicon-link"></span></a>[1.6.1] - 2020-09-28</h2>
+<h3 id="user-content-fixed-24">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-24" id="user-content-fixed-24" name="user-content-fixed-24"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed a potential crash that could happen if the host would unload a plugin
+immediately after its initialization. This issue affected the plugin scanning
+in <em>REAPER</em>.</li>
+<li>Fixed parsing order of <code>yabridge.toml</code>. Sections were not always read from top
+to bottom like they should be, which could cause incorrect and unexpected
+setting overrides.</li>
+<li>Fixed an initialization error when using plugin groups for plugins that are
+installed outside of a Wine prefix.</li>
+</ul>
+<h3 id="user-content-yabridgectl-11">
+<a aria-hidden="true" class="anchor" href="#user-content-yabridgectl-11" id="user-content-yabridgectl-11" name="user-content-yabridgectl-11"><span aria-hidden="true" class="octicon octicon-link"></span></a>yabridgectl</h3>
+<ul>
+<li>Relative paths now work when adding plugin directories or when setting the
+path to yabridge's files.</li>
+<li>Also search <code>/usr/local/lib</code> for <code>libyabridge.so</code> when no manual path has been
+specified. Note that manually copying yabridge's files to <code>/usr</code> is still not
+recommended.</li>
+</ul>
+<h2 id="user-content-160---2020-09-17">
+<a aria-hidden="true" class="anchor" href="#user-content-160---2020-09-17" id="user-content-160---2020-09-17" name="user-content-160---2020-09-17"><span aria-hidden="true" class="octicon octicon-link"></span></a>[1.6.0] - 2020-09-17</h2>
+<h3 id="user-content-added-16">
+<a aria-hidden="true" class="anchor" href="#user-content-added-16" id="user-content-added-16" name="user-content-added-16"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>Added support for double precision audio processing. This is not very widely
+used, but some plugins running under REAPER make use of this. Without this
+those plugins would cause REAPER's audio engine to crash.</li>
+</ul>
+<h3 id="user-content-fixed-25">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-25" id="user-content-fixed-25" name="user-content-fixed-25"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Increased the limit for the maximum number of audio channels. This could cause
+issues in Renoise when using a lot of output channels.</li>
+</ul>
+<h2 id="user-content-150---2020-08-21">
+<a aria-hidden="true" class="anchor" href="#user-content-150---2020-08-21" id="user-content-150---2020-08-21" name="user-content-150---2020-08-21"><span aria-hidden="true" class="octicon octicon-link"></span></a>[1.5.0] - 2020-08-21</h2>
+<h3 id="user-content-added-17">
+<a aria-hidden="true" class="anchor" href="#user-content-added-17" id="user-content-added-17" name="user-content-added-17"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>Added an option to work around timing issues in <em>REAPER</em> and <em>Renoise</em> where
+the hosts can freeze when plugins call a certain function while the host
+doesn't expect it, see
+<a href="https://github.com/robbert-vdh/yabridge/issues/29">#29</a> and
+<a href="https://github.com/robbert-vdh/yabridge/issues/32">#32</a>. The
+<a href="https://github.com/robbert-vdh/yabridge#known-issues-and-fixes">readme</a>
+contains instructions on how to enable this.</li>
+</ul>
+<h3 id="user-content-changed-16">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-16" id="user-content-changed-16" name="user-content-changed-16"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>Don't print calls to <code>effIdle()</code> when <code>YABRIDGE_DEBUG_LEVEL</code> is set to 1.</li>
+</ul>
+<h3 id="user-content-fixed-26">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-26" id="user-content-fixed-26" name="user-content-fixed-26"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fix Waves plugins from freezing the plugin process by preventing them from
+causing an infinite message loop.</li>
+</ul>
+<h2 id="user-content-141---2020-07-27">
+<a aria-hidden="true" class="anchor" href="#user-content-141---2020-07-27" id="user-content-141---2020-07-27" name="user-content-141---2020-07-27"><span aria-hidden="true" class="octicon octicon-link"></span></a>[1.4.1] - 2020-07-27</h2>
+<h3 id="user-content-yabridgectl-12">
+<a aria-hidden="true" class="anchor" href="#user-content-yabridgectl-12" id="user-content-yabridgectl-12" name="user-content-yabridgectl-12"><span aria-hidden="true" class="octicon octicon-link"></span></a>yabridgectl</h3>
+<ul>
+<li>Fixed regression caused by
+<a href="https://github.com/alexcrichton/toml-rs/issues/256">alexcrichton/toml-rs#256</a>
+where the configuration file failed to parse after running <code>yabridgectl sync</code>.
+If you have already run <code>yabridgectl sync</code> using yabridgectl 1.4.0, then
+you'll have to manually remove the <code>[last_known_config]</code> section from
+<code>~/.config/yabridgectl/config.toml</code>.</li>
+<li>Fixed issue with overwriting broken symlinks during <code>yabridgectl sync</code>.</li>
+</ul>
+<h2 id="user-content-140---2020-07-26">
+<a aria-hidden="true" class="anchor" href="#user-content-140---2020-07-26" id="user-content-140---2020-07-26" name="user-content-140---2020-07-26"><span aria-hidden="true" class="octicon octicon-link"></span></a>[1.4.0] - 2020-07-26</h2>
+<h3 id="user-content-added-18">
+<a aria-hidden="true" class="anchor" href="#user-content-added-18" id="user-content-added-18" name="user-content-added-18"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>Added an alternative editor hosting mode that adds yet another layer of
+embedding. Right now the only known plugins that may need this are
+<em>PSPaudioware</em> plugins with expandable GUIs such as E27. The behaviour can be
+enabled on a per-plugin basis in the plugin configuration. See the
+<a href="https://github.com/robbert-vdh/yabridge#compatibility-options">readme</a>
+for more details.</li>
+</ul>
+<h3 id="user-content-changed-17">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-17" id="user-content-changed-17" name="user-content-changed-17"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>Both parts of yabridge will now run with realtime priority if available. This
+can significantly reduce overall latency and spikes. Wine itself will still
+run with a normal scheduling policy by default, since running wineserver with
+realtime priority can actually increase the audio processing latency although
+it does reduce the amount of latency spikes even further. You can verify that
+yabridge is running with realtime priority by looking for the <code>realtime:</code> line
+in the initialization message. I have not found any downsides to this approach
+in my testing, but please let me know if this does end up causing any issues.</li>
+</ul>
+<h3 id="user-content-fixed-27">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-27" id="user-content-fixed-27" name="user-content-fixed-27"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed rare plugin location detection issue on Debian based distros related to
+the plugin and host detection fix in yabridge 1.2.0.</li>
+</ul>
+<h3 id="user-content-yabridgectl-13">
+<a aria-hidden="true" class="anchor" href="#user-content-yabridgectl-13" id="user-content-yabridgectl-13" name="user-content-yabridgectl-13"><span aria-hidden="true" class="octicon octicon-link"></span></a>yabridgectl</h3>
+<ul>
+<li>
+<p>Added a check to <code>yabridgectl sync</code> that verifies that the currently installed
+versions of Wine and yabridge are compatible. This check will only be repeated
+after updating either Wine or yabridge.</p>
+</li>
+<li>
+<p>Added a <code>--no-verify</code> option to <code>yabridgectl sync</code> to skip the
+post-installation setup checks. This option will skip both the login shell
+search path check for the copy-based installation method as well as the new
+Wine compatibility check.</p>
+</li>
+</ul>
+<h2 id="user-content-130---2020-07-17">
+<a aria-hidden="true" class="anchor" href="#user-content-130---2020-07-17" id="user-content-130---2020-07-17" name="user-content-130---2020-07-17"><span aria-hidden="true" class="octicon octicon-link"></span></a>[1.3.0] - 2020-07-17</h2>
+<h3 id="user-content-added-19">
+<a aria-hidden="true" class="anchor" href="#user-content-added-19" id="user-content-added-19" name="user-content-added-19"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>By somewhat popular demand yabridge now comes with yabridgectl, a utility that
+can automatically set up and manage yabridge for you. It also performs some
+basic checks to ensure that everything has been set up correctly so you can
+get up and running faster. Yabridgectl can be downloaded separately from the
+GitHub releases page and its use is completely optional, so you don't have to
+use it if you don't want to. Check out the
+<a href="https://github.com/robbert-vdh/yabridge/tree/master/tools/yabridgectl">readme</a>
+for more information on how it works.</li>
+</ul>
+<h3 id="user-content-deprecated">
+<a aria-hidden="true" class="anchor" href="#user-content-deprecated" id="user-content-deprecated" name="user-content-deprecated"><span aria-hidden="true" class="octicon octicon-link"></span></a>Deprecated</h3>
+<ul>
+<li>The <code>use-bitbridge</code> and <code>use-winedbg</code> options have been deprecated in favour
+of the new <code>with-bitbridge</code> and <code>with-winedbg</code> options. The old options will
+continue to work until they are removed in yabridge 2.0.0.</li>
+</ul>
+<h2 id="user-content-121---2020-06-20">
+<a aria-hidden="true" class="anchor" href="#user-content-121---2020-06-20" id="user-content-121---2020-06-20" name="user-content-121---2020-06-20"><span aria-hidden="true" class="octicon octicon-link"></span></a>[1.2.1] - 2020-06-20</h2>
+<h3 id="user-content-changed-18">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-18" id="user-content-changed-18" name="user-content-changed-18"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>When building from source, only statically link Boost when the
+<code>with-static-boost</code> option is enabled.</li>
+<li>The <code>use-bitbridge</code> and <code>use-winedbg</code> options have been replaced by
+<code>with-bitbridge</code> and <code>with-winedbg</code> for consistency's sake. The old options
+will be marked as deprecated in the next minor release.</li>
+</ul>
+<h3 id="user-content-fixed-28">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-28" id="user-content-fixed-28" name="user-content-fixed-28"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed memory error that would cause crashing on playback with some buffer
+sizes in Mixbus6.</li>
+<li>Opening a plugin would override the Wine prefix for all subsequent plugins
+opened from within the same process. This prevented the use of multiple Wine
+prefixes in hosts that do not sandbox their plugins, such as Ardour.</li>
+<li>Manual Wine prefix overides through the <code>WINEPREFIX</code> environment were not
+reflected in the output shown on startup.</li>
+<li>Fixed plugin group socket name generation. This would have prevented plugin
+groups with the same name from being used simultaneously in different Wine
+prefixes.</li>
+<li>Distinguish between active processes and zombies when checking whether a group
+host process is still running during initialization.</li>
+</ul>
+<h2 id="user-content-120---2020-05-29">
+<a aria-hidden="true" class="anchor" href="#user-content-120---2020-05-29" id="user-content-120---2020-05-29" name="user-content-120---2020-05-29"><span aria-hidden="true" class="octicon octicon-link"></span></a>[1.2.0] - 2020-05-29</h2>
+<h3 id="user-content-added-20">
+<a aria-hidden="true" class="anchor" href="#user-content-added-20" id="user-content-added-20" name="user-content-added-20"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>Added the ability to host multiple plugins within a single Wine process
+through <em>plugin groups</em>. A plugin group is a user-defined set of plugins that
+will be hosted together in the same Wine process. This allows multiple
+instances of plugins to share data and communicate with each other. Examples
+of plugins that can benefit from this are FabFilter Pro-Q 3, MMultiAnalyzer,
+and the iZotope mixing plugins. See the readme for instructions on how to set
+this up.</li>
+</ul>
+<h3 id="user-content-changed-19">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-19" id="user-content-changed-19" name="user-content-changed-19"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>Changed architecture to use one fewer socket.</li>
+<li>GUI events are now always handled on a steady timer rather than being
+interleaved as part of the event loop. This change was made to unify the event
+handling logic for individually hosted plugins and plugin groups. It should
+not have any noticeable effects, but please let me know if this does cause
+unwanted behavior.</li>
+</ul>
+<h3 id="user-content-fixed-29">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-29" id="user-content-fixed-29" name="user-content-fixed-29"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Steal keyboard focus when clicking on the plugin editor window to account for
+the new keyboard focus behavior in <em>Bitwig Studio 3.2</em>.</li>
+<li>Fixed large amount of empty lines in the log file when the Wine process closes
+unexpectedly.</li>
+<li>Made the plugin and host detection slightly more robust.</li>
+</ul>
+<h2 id="user-content-114---2020-05-12">
+<a aria-hidden="true" class="anchor" href="#user-content-114---2020-05-12" id="user-content-114---2020-05-12" name="user-content-114---2020-05-12"><span aria-hidden="true" class="octicon octicon-link"></span></a>[1.1.4] - 2020-05-12</h2>
+<h3 id="user-content-fixed-30">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-30" id="user-content-fixed-30" name="user-content-fixed-30"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed a static linking issue with the 32-bit build for Ubuntu 18.04.</li>
+</ul>
+<h2 id="user-content-113---2020-05-12">
+<a aria-hidden="true" class="anchor" href="#user-content-113---2020-05-12" id="user-content-113---2020-05-12" name="user-content-113---2020-05-12"><span aria-hidden="true" class="octicon octicon-link"></span></a>[1.1.3] - 2020-05-12</h2>
+<h3 id="user-content-fixed-31">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-31" id="user-content-fixed-31" name="user-content-fixed-31"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Added a workaround for the compilation issues under Wine 5.7 and above as
+caused by <a href="https://bugs.winehq.org/show_bug.cgi?id=49138" rel="nofollow">Wine bug #49138</a>.</li>
+<li>Added a workaround for plugins that improperly defer part of their
+initialization process without telling the host. This fixes startup behavior
+for the Roland Cloud plugins.</li>
+<li>Added a workaround for a rare race condition in certain plugins caused by
+incorrect assumptions in plugin's editor handling. Fixes the editor for
+Superior Drummer 3 and the Roland Cloud synths in Bitwig Studio.</li>
+<li>Fixed potential issue with plugins not returning their editor size.</li>
+</ul>
+<h2 id="user-content-112---2020-05-09">
+<a aria-hidden="true" class="anchor" href="#user-content-112---2020-05-09" id="user-content-112---2020-05-09" name="user-content-112---2020-05-09"><span aria-hidden="true" class="octicon octicon-link"></span></a>[1.1.2] - 2020-05-09</h2>
+<h3 id="user-content-fixed-32">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-32" id="user-content-fixed-32" name="user-content-fixed-32"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed an issue where plugin removal could cause Ardour and Mixbus to crash.</li>
+</ul>
+<h2 id="user-content-111---2020-05-09">
+<a aria-hidden="true" class="anchor" href="#user-content-111---2020-05-09" id="user-content-111---2020-05-09" name="user-content-111---2020-05-09"><span aria-hidden="true" class="octicon octicon-link"></span></a>[1.1.1] - 2020-05-09</h2>
+<h3 id="user-content-changed-20">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-20" id="user-content-changed-20" name="user-content-changed-20"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>Changed installation recommendations to only install using symlinks with hosts
+that support individually sandboxed plugins.</li>
+<li>Respect <code>YABRIDGE_DEBUG_FILE</code> when printing initialization errors.</li>
+</ul>
+<h3 id="user-content-fixed-33">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-33" id="user-content-fixed-33" name="user-content-fixed-33"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Stop waiting for the Wine VST host process on startup if the process has
+crashed or if Wine was not able to start.</li>
+</ul>
+<h2 id="user-content-110---2020-05-07">
+<a aria-hidden="true" class="anchor" href="#user-content-110---2020-05-07" id="user-content-110---2020-05-07" name="user-content-110---2020-05-07"><span aria-hidden="true" class="octicon octicon-link"></span></a>[1.1.0] - 2020-05-07</h2>
+<h3 id="user-content-added-21">
+<a aria-hidden="true" class="anchor" href="#user-content-added-21" id="user-content-added-21" name="user-content-added-21"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>Added support for plugins that send MIDI events back to the host. This allows
+plugins such as Cthulhu and Scaler to output notes and CC for another plugin
+to work with.</li>
+<li>Added support for querying and setting detailed information about speaker
+configurations for use in advanced surround setups. This indirectly allows
+yabridge to work under <em>Renoise</em>.</li>
+<li>Added automated development builds for yabridge, available by clicking on the
+'Automated builds' badge in the project readme.</li>
+</ul>
+<h3 id="user-content-changed-21">
+<a aria-hidden="true" class="anchor" href="#user-content-changed-21" id="user-content-changed-21" name="user-content-changed-21"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changed</h3>
+<ul>
+<li>Changed the plugin detection mechanism to support yet another way of
+symlinking plugins. Now you can use a symlink to a copy of <code>libyabridge.so</code>
+that's installed for a plugin in another directory. This is not recommended
+though.</li>
+<li>Changed Wine prefix detection to be relative to the plugin's <code>.dll</code> file,
+rather than the loaded <code>.so</code> file.</li>
+<li>Increased the maximum number of audio channels from 32 to 256.</li>
+<li>Clarified the error that appears when we're unable to load the <code>.dll</code>.</li>
+<li>Yabridge will now print the used version of Wine during startup. This can be
+useful for diagnosing startup problems.</li>
+</ul>
+<h3 id="user-content-fixed-34">
+<a aria-hidden="true" class="anchor" href="#user-content-fixed-34" id="user-content-fixed-34" name="user-content-fixed-34"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed</h3>
+<ul>
+<li>Fixed plugins failing to load on certain versions of <em>Ubuntu</em> because of
+paths starting with two forward slashes.</li>
+<li>Redirect the output from the Wine host process earlier in the startup process.
+Otherwise errors printed during startup won't be visible, making it very hard
+to diagnose problems.</li>
+</ul>
+<h2 id="user-content-100---2020-05-03">
+<a aria-hidden="true" class="anchor" href="#user-content-100---2020-05-03" id="user-content-100---2020-05-03" name="user-content-100---2020-05-03"><span aria-hidden="true" class="octicon octicon-link"></span></a>[1.0.0] - 2020-05-03</h2>
+<h3 id="user-content-added-22">
+<a aria-hidden="true" class="anchor" href="#user-content-added-22" id="user-content-added-22" name="user-content-added-22"><span aria-hidden="true" class="octicon octicon-link"></span></a>Added</h3>
+<ul>
+<li>This changelog file to track keep track of changes since yabridge's 1.0
+release.</li>
+</ul>
+</article>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>

@@ -1,0 +1,285 @@
+<!-- ?xml version='1.0' encoding='UTF-8'? -->
+<link href="./github-markdown-css/github-css.css" rel="stylesheet"/>
+<meta charset="utf-8" content="text/html"/>
+<div class="gist">
+<style class="formula-style">
+        svg.gh-md-to-html-formula {
+            fill: black;
+        }
+    </style>
+<div class="gist-file"> <!-- This is the class that is responsible for the boxing! -->
+<div class="gist-data">
+<div class="js-gist-file-update-container js-task-list-container file-box">
+<div class="file" id="user-content-article-architecture">
+<div class="Box-body readme blob js-code-block-container p-5 p-xl-6" id="user-content-file-docker-image-pull-md-readme" style="margin-left: 40px; margin-right: 40px; margin-top: 20px; margin-bottom: 20px">
+<article class="markdown-body entry-content container-lg" itemprop="text">
+<h1 id="user-content-architecture">
+<a aria-hidden="true" class="anchor" href="#user-content-architecture" id="user-content-architecture" name="user-content-architecture"><span aria-hidden="true" class="octicon octicon-link"></span></a>Architecture</h1>
+<ul>
+<li>
+<a href="#user-content-general-architecture">General architecture</a>
+<ul>
+<li><a href="#user-content-communication">Communication</a></li>
+<li><a href="#user-content-editor-embedding">Editor embedding</a></li>
+</ul>
+</li>
+<li><a href="#user-content-vst2-plugins">VST2 plugins</a></li>
+<li><a href="#user-content-vst3-plugins">VST3 plugins</a></li>
+<li><a href="#user-content-audio-buffers">Audio buffers</a></li>
+</ul>
+<h2 id="user-content-general-architecture">
+<a aria-hidden="true" class="anchor" href="#user-content-general-architecture" id="user-content-general-architecture" name="user-content-general-architecture"><span aria-hidden="true" class="octicon octicon-link"></span></a>General architecture</h2>
+<p>The project consists of multiple components: a number of native Linux plugin
+libraries (<code>libyabridge-vst2.so</code> for VST2 plugins, and <code>libyabridge-vst3.so</code> for
+VST3 plugins), matching chainloader libraries (<code>libyabridge-chainloader-vst2.so</code>
+for VST2 plugins, and <code>libyabridge-chainloader-vst3.so</code> for VST3 plugins) that
+act as stubs to load the former libraries, and a few different plugin host
+applications that can run under Wine
+(<code>yabridge-host.exe</code>/<code>yabridge-host.exe.so</code>, and
+<code>yabridge-host-32.exe</code>/<code>yabridge-host-32.exe.so</code> if the bitbridge is enabled).</p>
+<p>The main idea is that when the host loads a (chainloader) plugin, the plugin
+will try to locate the corresponding Windows plugin, and it will then start a
+Wine process to host that Windows plugin. Depending on the architecture of the
+Windows plugin and the configuration in the <code>yabridge.toml</code> config files (see
+the readme for more information), yabridge will pick between the four plugin
+host applications named above. When a plugin has been configured to use plugin
+groups, instead of spawning a new host process the plugin will try to connect to
+an existing group host process first and ask it to host the Windows plugin
+within that process.</p>
+<p>The chainloader libraries are compact dependencyless shims that load the
+corresponding plugin library and forward calls to the plugin API's entry poitn
+functions. This allows the plugin library to be updated without needing to
+replace existing copies of the chainloader library. That makes using a
+distro-packaged version of yabridge more convenient soname rebuilds won't
+require a <code>yabridgectl sync</code> for yabridge to keep working. It also means that
+multiple plugins can all share the same yabridge plugin bridge library instance,
+since the same library will be <code>dlopen()</code>'d into a single process multiple
+times. This can help increase the L1i cache hit rate when using multiple
+yabridge plugins.</p>
+<h3 id="user-content-communication">
+<a aria-hidden="true" class="anchor" href="#user-content-communication" id="user-content-communication" name="user-content-communication"><span aria-hidden="true" class="octicon octicon-link"></span></a>Communication</h3>
+<p>Once the Wine plugin host has started or the group host process has accepted the
+request to host the plugin, communication between the native plugin and the
+Windows plugin host will be set up using a series of Unix domain sockets. How
+exactly these are used and distributed depends on the plugin format but the
+basic approach remains the same. When the plugin or the host calls a function or
+performs a callback, the arguments to that function and any additional payload
+data gets serialized into a struct which then gets sent over the socket. This is
+done using the <a href="https://github.com/fraillt/bitsery">bitsery</a> binary
+serialization library. On the receiving side there will be a thread idly waiting
+for data to be sent over the socket, and when it receives a request it will pass
+the payload data over to the corresponding function and then returns the results
+again using the same serialization process.</p>
+<p>One important detail for this approach is the ability to spawn additional
+sockets when needed. Because reads and writes on these sockets are necessarily
+blocking (requests may not arrive out of order, and on the receiving side there
+is no other work to do anyways), a socket can only be used to handle a single
+function call at a time. This can cause issues with certain mutually recursive
+function calling sequences, particularly when dealing with opening and resizing
+editors. To work around this, for some sockets yabridge will spawn an additional
+background thread that asynchronously accepts new connections on that socket
+endpoint. When the host or the plugin wants to call a function over a socket
+that is currently being written to (i.e. when the mutex for that socket is
+locked), yabridge will make a new socket connection and it will send the payload
+data over that new socket. This will cause a new thread to be spawned on the
+receiving side which then handles the request. All of this behaviour is
+encapsulated and further documented in the <code>AdHocSocketHandler</code> class and all of
+the classes derived from it.</p>
+<p>Another important detail when it comes to communication is the handling of
+certain function calls on the Wine plugin host side. On Windows anything that
+interacts with the Win32 message loop or the GUI has to be done from the same
+thread (or typically the main thread). To do this yabridge will execute certain
+'unsafe' functions that are likely to interact with these things from the main
+thread. The main thread also periodically handles Win32 and optionally also X11
+events (when there are open editors) using an Asio timer, so these function
+calls can all be done from that same thread by posting a task to the Asio IO
+context.</p>
+<p>On the native Linux side it usually doesn't matter which thread functions are
+called from, but since REAPER does not allow any function calls that interact
+with the GUI from any non-GUI threads, we'll also do something similar when
+handling <code>audioMasterSizeWindow()</code> for VST2 plugins
+<code>IPlugFrame::resizeView()</code>/<code>IContextMenu::popup()</code> for VST3 plugins.</p>
+<p>Lastly there are a few specific situations where the above two issues of mutual
+recursion and functions that can only be called from a single thread are
+combined. In those cases we need to the send over the socket on a new thread, so
+that the calling thread can handle other tasks through another IO context. See
+<code>Vst3HostBridge::send_mutually_recursive_message()</code> and
+<code>Vst3Bridge::send_mutually_recursive_message()</code> for the actual implementation
+with more details. This applies to the functions related to resizing VST3
+editors on both the Linux and the Wine sides.</p>
+<h3 id="user-content-editor-embedding">
+<a aria-hidden="true" class="anchor" href="#user-content-editor-embedding" id="user-content-editor-embedding" name="user-content-editor-embedding"><span aria-hidden="true" class="octicon octicon-link"></span></a>Editor embedding</h3>
+<p>Everything related to editor embedding happens in <code>src/wine-host/editor.h</code>. To
+embed the Windows plugin's editor in the X11 window provided by the host we'll
+create a Wine window and an X11 wrapper window, embed that Wine window into the
+wrapper window, embed the wrapper window into the host's window, and then ask
+the Windows plugin to embed itself into that Wine window. The reason why we need
+a separate wrapper window in between is to prevent the host from incorrectly
+subscribing to <code>SubStructureNotify</code> events and catching the <code>ConfigureNotify</code>
+events we're going to send to the Wine window. We will manually resize the
+wrapper window whenever the host asks the plugin to resize itself to a certain
+size or when the plugin resizes its own window. For embedding the Wine window
+into the host's window we support two different implementations:</p>
+<ul>
+<li>The main approach involves reparenting the Wine window to the host window, and
+then manually sending X11 <code>ConfigureNotify</code> events to the corresponding X11
+window whenever its size or position on the screen changes. This is needed
+because while the reparented Wine window is located at the (relative)
+coordinates <code>(0, 0)</code>, Wine willl think that these coordinates are absolute
+screen coordinates and without sending this event a lot of Windows
+applications will either render in the wrong location or have broken knobs and
+sliders. By manually sending the event instead of actually reconfiguring the
+window Wine will think the window is located at its actual screen coordinates
+and user interaction works as expected.</li>
+<li>Alternatively there's an option to use Wine's own XEmbed implementation.
+XEmbed is the usual solution for embedding one application window into
+approach. However this sadly does have a few quirks, including flickering with
+some plugins that use VSTGUI and windows that don't properly rendering until
+they are reopened in some hosts. Because of that the above embedding behaviour
+that essentially fakes this XEmbed support is the default and XEmbed can be
+enabled separately on a plugin by plugin basis by setting a flag in a
+<code>yabridge.toml</code> config file.</li>
+</ul>
+<p>Aside from embedding the window we also manage keyboard focus grabbing. Since
+it's not possible for us to know when the Windows plugin wants keyboard focus,
+we'll grab keyboard focus automatically when the mouse enters editor window
+while that editor is active (so we don't end up grabbing focus when the window
+is in the background or when the plugin has opened a popup), and we'll reset
+keyboard focus to the host's window when the mouse leaves the editor window
+again while it is active. This makes it possible to enter text and to use
+keyboard combinations in a plugin while still allowing regular control over the
+host. For hosts like REAPER where the editor window is embedded in a larger
+window with more controls this is even more important as it allows you to still
+interact with those controls using the keyboard.</p>
+<p>The last big feature we implement here is support for Wine-&gt;X11 drag-and-drop.
+All of this happens in <code>src/wine-host/xdnd-proxy.{h,cpp}</code>. There we simply rely
+on the fact that Wine's OLE drag-and-drop implementation uses a tracker window
+that stores the <code>IDataSource</code> used for the drop. That means that we can just
+listen for that tracker window being created, read the data the plugin is trying
+to drag-and-drop, and then set up XDND with that same data.</p>
+<h2 id="user-content-vst2-plugins">
+<a aria-hidden="true" class="anchor" href="#user-content-vst2-plugins" id="user-content-vst2-plugins" name="user-content-vst2-plugins"><span aria-hidden="true" class="octicon octicon-link"></span></a>VST2 plugins</h2>
+<p>When a VST2 plugin gets initialized using the process described above, we'll
+send the VST2 plugin's <code>AEffect</code> object from the Wine plugin host to the native
+plugin over a control socket. We'll also send the plugin's configuration
+obtained by parsing a <code>yabridge.toml</code> file from the native plugin to the Wine
+plugin host so it can. After that we'll use the following sockets to communicate
+over:</p>
+<ul>
+<li>Calls from the host to the plugin's <code>dispatcher()</code> function will be forwarded
+to the Windows plugin running under the Wine plugin host. For this we'll use
+the approach described above where we'll spawn additional sockets and threads
+as necessary. Because the <code>dispatcher()</code> (and the <code>audioMaster()</code> function
+below) are already in fairly easily serializable format, we use the
+<code>*DataConverter</code> classes to read and write payload data depending on the
+opcode (or to make a best guess estimate if we're dealing with some unknown
+undocumented function), and we then <code>Vst2EventHandler::send_event()</code>,
+<code>Vst2EventHandler::receive_events()</code>, and <code>passthrough_event()</code> to pass through
+these function calls.</li>
+<li>For callbacks made by the Windows plugin using the provided <code>audioMaster()</code>
+function we do exactly the same as the above, but the other way around.</li>
+<li>Getting and setting parameters through the plugin's <code>getParameter()</code> and
+<code>setParameter()</code> functions is done over a single socket.</li>
+<li>Finally processing audio gets a dedicated socket. The native VST2 plugin
+exposes the <code>processReplacing()</code>, the legacy <code>process()</code>, if supported by the
+Windows plugin also the <code>processDoubleReplacing()</code> functions. Since
+<code>process()</code> is never used (nor should it be), we'll simply emulate it in terms
+of <code>processReplacing()</code> by summing the results to existing output values and
+the outputs returned by that <code>processReplacing()</code> call. On the Wine host side
+we'll also check whether the plugin supports <code>processReplacing()</code>, and if it
+for some reason does not then we'll simply call <code>process()</code> with zeroed out
+buffers.</li>
+</ul>
+<h2 id="user-content-vst3-plugins">
+<a aria-hidden="true" class="anchor" href="#user-content-vst3-plugins" id="user-content-vst3-plugins" name="user-content-vst3-plugins"><span aria-hidden="true" class="octicon octicon-link"></span></a>VST3 plugins</h2>
+<p>VST3 plugins are architecturally very different from VST2 plugins. A VST3 plugin
+is a module, that when loaded by the host exposes a plugin factory that can be
+used to create various classes known to that factory. Normally this factory
+contains one or more audio processing classes (which are based on the
+<code>IComponent</code> class), and then that same number of edit controller classes (which
+are based on the <code>IEditController</code> class) belonging to those audio processors. A
+VST3 host loads the VST3 module, calls the <code>ModuleEntry()</code> function, requests
+the plugin's factory, iterates over the available classes, and then asks the
+plugin to instantiate the objects it wants. A very important consequence of this
+approach is that a single VST3 module can provide multiple processor and edit
+controller instances which will then appear in your DAW as multiple plugins.
+Because of that all instances of a single VST3 plugin will always have to be
+hosted in a single Wine process.</p>
+<p>VST3 plugin object instances are also very different from the VST2 <code>AEffect</code>
+instances. The VST3 architecture is based on Microsoft COM and uses a system
+where an object can implement any number of interfaces that are exposed through
+a query interface and an associated reference counting dynamically casting smart
+pointer. This allows the VST3 SDK to be modular and its functionality to be
+expanded upon over time, but it does make proxying such an object more
+difficult. Yabridge's approach for this problem is described below.</p>
+<p>Communication for VST3 modules within yabridge uses one communication channel
+for function calls from the native host to the Windows plugin, one channel for
+callbacks from the Windows plugin to the native host, and then one additional
+channel per audio processor for performance reasons. All of these communication
+channels allow for additional sockets and threads to be spawned using the means
+outlined above.</p>
+<p>When the host loads the VST3 module, we'll go through a similar process as when
+initialzing the VST2 version of yabridge. After initialization the host will ask
+for the plugin factory which we'll request a copy of from the Windows plugin.
+We'll also once again copy any configuration for the plugin set in a
+<code>yabridge.toml</code> configuration file to the Wine plugin host. The returned plugin
+factory acts as a <em>proxy</em>, and when the host requests an object to be created
+using it we'll create the corresponding object on the Wine plugin host side and
+then build a perfect proxy of that object on the plugin side. This means that
+the object we return should support all of the same VST3 interfaces as the
+original object, so that plugin proxy object will act identically to the
+original object instance provided by the Windows VST3 plugin.</p>
+<p>Every plugin proxy objects each gets assigned a unique identifier. This way we
+can identify it and any other associated objects during function calls.</p>
+<p>Any function calls made on a proxy object will be passed through to the other
+side over one of the sockets mentioned above. For this we use dedicated request
+objects per function call or operation with an associated type for the expected
+response type. Combining that with <code>std::variant&lt;Ts...&gt;</code> and C++20 templated
+lambdas allows this communication system to be type safe while still having
+easily readable error messages.</p>
+<p>When a function call returns another interface object instance, we also have to
+create a proxy of that.
+<a href="https://github.com/robbert-vdh/yabridge/blob/master/src/common/serialization/vst3/README.md">src/common/serialization/vst3/README.md</a>
+outlines all of these proxy classes and the interfaces implemented. This goes
+three levels deep at most (<code>Vst3PluginProxy</code> to <code>Vst3PlugViewProxy</code> to
+<code>Vst3PlugFrameProxy</code>). Here we once again detect all of the interfaces the
+actual object supports so that the proxy object can report to support those same
+interfaces.</p>
+<p>Creating proxies happens using these monolithic <code>Vst3*Proxy</code> classes defined in
+the document linked above. These inherit from a number of application <code>YaFoo</code>
+classes which are simply wrappers around the corresponding <code>IFoo</code> VST3 interface
+with their associated message structs for handling function calls and a field
+indicating whether the object supported that interface or not. These
+<code>Vst3*Proxy</code> classes are also where we'll implement the <code>FUnknown</code> interface,
+which is where the functionality for reference counting is implemented. A VST3
+object will call <code>delete this;</code> when its reference count reaches zero to clean
+itself up. Because of binary compatibility reasons destructors in the VST3 SDK
+are non-virtual, but we can safely make them virtual in our case.
+<code>Vst3*ProxyImpl</code> then provides an implementation for all of the applicable
+<code>IFoo</code> interfaces that perform function calls using those message structs.</p>
+<h2 id="user-content-audio-buffers">
+<a aria-hidden="true" class="anchor" href="#user-content-audio-buffers" id="user-content-audio-buffers" name="user-content-audio-buffers"><span aria-hidden="true" class="octicon octicon-link"></span></a>Audio buffers</h2>
+<p>Starting from yabridge 3.4.0, audio processing is now handled using a hybrid of
+both shared memory and the socket-based message passing mechanism. Yabridge uses
+sockets instead of shared memory everywhere else because of the added
+flexibility in terms of messages we can handle and so we can concurrently handle
+multiple messages, but the downside of this approach is that you will always
+need to do additional work during the (de)serialization process mostly in terms
+of copying and moving memory. Since audio buffers are large and have a maximum
+size that is known before audio processing begins, we can simply store the audio
+buffers in a big block of shared memory and use the sockets for all other data
+that gets sent along with the actual audio buffers. This also means that the
+sockets act as a form of synchronisation, so we do not need any additional
+inter-process locking. These shared memory audio buffers are defined as part of
+<code>AudioShmBuffer</code>, and they are configured while handling <code>effMainsChanged</code> for
+VST2 plugins and during <code>IAudioProcessor::setActive()</code> for VST3 plugins.
+For VST2 plugins this does mean that we will need to keep track of the maximum
+block size and the sample size reported by the host, since this information is
+not passed along with <code>effMainsChanged</code>.</p>
+</article>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
