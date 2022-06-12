@@ -40,8 +40,8 @@ if [ -z "$ARCH" ]; then
   esac
 fi
 
-if [ $ARCH != "x86_64" ]; then
-  echo "This script supports only x86_64 for now, I'll get to 32-bit vertion soon, I have to test in vbox!"
+if [ $ARCH != "arm" ]; then
+  echo "This script supports only x86"
   exit 1
 fi
 
@@ -56,20 +56,6 @@ fi
 TMP=${TMP:-/tmp/SBo}	# For consistency's sake, use this
 PKG=$TMP/package-$PRGNAM
 OUTPUT=${OUTPUT:-/tmp}	# Drop the package in /tmp
-
-if [ "$ARCH" = "i586" ]; then
-  SLKCFLAGS="-O2 -march=i586 -mtune=i686"
-  LIBDIRSUFFIX=""
-elif [ "$ARCH" = "i686" ]; then
-  SLKCFLAGS="-O2 -march=i686 -mtune=i686"
-  LIBDIRSUFFIX=""
-elif [ "$ARCH" = "x86_64" ]; then
-  SLKCFLAGS="-O2 -fPIC"
-  LIBDIRSUFFIX="64"
-else
-  SLKCFLAGS="-O2"
-  LIBDIRSUFFIX=""
-fi
 
 set -e # Exit on most errors
 # If you prefer to do selective error checking with
@@ -89,6 +75,17 @@ find -L . \
  \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
   -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
 
+if [ "$ARCH" = "i586" ] || [ "$ARCH" = "i686" ]; then
+  meson setup \
+    build \
+    --cross-file=cross-wine.conf \
+    --buildtype=release \
+    --unity=on \
+    --unity-size=1000 \
+    -Dbitbridge=true \
+    -Dbuild.cpp_args='-m32' \
+    -Dbuild.cpp_link_args='-m32'
+elif [ "$ARCH" = "x86_64" ]; then
   meson setup \
     build \
     --cross-file=cross-wine.conf \
@@ -96,30 +93,38 @@ find -L . \
     --unity=on \
     --unity-size=1000 \
     -Dbitbridge=true
+else
+  echo "Unsupported architecture"
+fi
 
-  # The unity build takes can take up to 2 GB of RAM per target, so if the
-  # system does not have enough RAM to build everything at once we'll limit the
-  # number of concurrent jobs
-  # NOTE: The `LANG=C` is needed because apparently the `pt_BR.UTF-8` locale
-  #       changes `Mem:` to `Mem.:`, so who knows what other locales might do
-  total_memory=$(env LANG=C free --gibi --si | awk '/^Mem:/ { print $2 }')
-  num_jobs=$((total_memory / 4))
-  echo -e "\n$total_memory gigabytes of RAM detected, limiting the number of build jobs to $num_jobs\n"
-  ninja -C build -j"$num_jobs"
+# Build yabridge
+# The unity build takes can take up to 2 GB of RAM per target, so if the
+# system does not have enough RAM to build everything at once we'll limit the
+# number of concurrent jobs
+# NOTE: The `LANG=C` is needed because apparently the `pt_BR.UTF-8` locale
+#       changes `Mem:` to `Mem.:`, so who knows what other locales might do
+total_memory=$(env LANG=C free --gibi --si | awk '/^Mem:/ { print $2 }')
+num_jobs=$((total_memory / 4))
+echo -e "\n$total_memory gigabytes of RAM detected, limiting the number of build jobs to $num_jobs\n"
+ninja -C build -j"$num_jobs"
 
-  cd ./tools/yabridgectl
-  cargo build --release --locked --all-features --target-dir=target
-  cd ../../build
+# Build yabridgectl
+cd ./tools/yabridgectl
+cargo build --release --locked --all-features --target-dir=target
+cd ../../build
 
-
-  install -dm755 "$PKG/usr/bin"
+# Copy program files
+install -dm755 "$PKG/usr/bin"
+if [ "$ARCH" = "i586" ] || [ "$ARCH" = "i686" ]; then
+  install yabridge-host-32.exe{,.so} "$PKG/usr/bin"
+elif [ "$ARCH" = "x86_64" ]; then
   install yabridge-host.exe{,.so} "$PKG/usr/bin"
   install yabridge-host-32.exe{,.so} "$PKG/usr/bin"
-  install ../tools/yabridgectl/target/release/yabridgectl "$PKG/usr/bin"
-
-  install -dm755 "$PKG/usr/lib"
-  install libyabridge-{vst2,vst3}.so "$PKG/usr/lib"
-  install libyabridge-chainloader-{vst2,vst3}.so "$PKG/usr/lib"
+fi
+install ../tools/yabridgectl/target/release/yabridgectl "$PKG/usr/bin"
+install -dm755 "$PKG/usr/lib"
+install libyabridge-{vst2,vst3}.so "$PKG/usr/lib"
+install libyabridge-chainloader-{vst2,vst3}.so "$PKG/usr/lib"
 
 cd ..
 
@@ -132,7 +137,6 @@ rm -f $PKG/{,usr/}lib${LIBDIRSUFFIX}/*.la
 find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
   | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
 
-
 # Copy program documentation into the package
 # The included documentation varies from one application to another, so be sure
 # to adjust your script as needed
@@ -144,8 +148,8 @@ mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
    COPYING \
    CHANGELOG.md \
    $PKG/usr/doc/$PRGNAM-$VERSION
-cp -a $CWD/docs/html $PKG/usr/doc/$PRGNAM-$VERSION
 cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
+cp -a $CWD/docs/html $PKG/usr/doc/$PRGNAM-$VERSION
 
 # Copy the slack-desc into ./install
 mkdir -p $PKG/install
