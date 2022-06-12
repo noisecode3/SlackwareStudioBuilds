@@ -40,8 +40,8 @@ if [ -z "$ARCH" ]; then
   esac
 fi
 
-if [ $ARCH != "arm" ]; then
-  echo "This script supports only x86"
+if [ $ARCH = "arm" ]; then
+  echo "This script supports only x86, if you know that you are doing comment out exit 1"
   exit 1
 fi
 

@@ -7,13 +7,16 @@ architecture and focus on transparency allows yabridge to be both fast
 and highly compatible, while also staying easy to debug and maintain.
 
 This script will build yabridge with 64bit and 32bit plugin host
-on Slackware64 and only 32bit plugin host Slackware with yabridgectl
+on Slackware64 and only 32bit plugin host on Slackware with yabridgectl
 helper tool on both architectures. This script depends on any wine
-version and multilib, but wine-tkg is recommended.
+version and multilib if you're on Slackware64.
 
 The script depends on a internet connection for meson subprojects.
 
 Make sure you have configured you're system with real-time priority.
 Read the documentation in /usr/doc/yabridge-4.0.0/html/
 
-OPTIONAL DEPENDS ON: winetricks rtirq
+OPTIONAL DEPENDENCIES
+
+winetricks
+rtirq
