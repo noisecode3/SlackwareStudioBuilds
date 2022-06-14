@@ -25,7 +25,7 @@
 cd $(dirname $0) ; CWD=$(pwd)
 
 PRGNAM=yabridge
-VERSION=${VERSION:-4.0.0}
+VERSION=${VERSION:-4.0.1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SBo}
 PKGTYPE=${PKGTYPE:-tgz}
@@ -128,9 +128,6 @@ install libyabridge-chainloader-{vst2,vst3}.so "$PKG/usr/lib"
 
 cd ..
 
-# Don't ship .la files:
-rm -f $PKG/{,usr/}lib${LIBDIRSUFFIX}/*.la
-
 # Strip binaries and libraries - this can be done with 'make install-strip'
 # in many source trees, and that's usually acceptable if so, but if not,
 # use this:
@@ -149,7 +146,12 @@ mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
    CHANGELOG.md \
    $PKG/usr/doc/$PRGNAM-$VERSION
 cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
-cp -a $CWD/docs/html $PKG/usr/doc/$PRGNAM-$VERSION
+
+# HTML documentation
+echo -e "\nUnpacking documentation"
+cd $TMP/$PRGNAM-$VERSION
+tar xvf $CWD/yabridge-html-docs-$VERSION.tar.gz
+cp -a yabridge-html-docs-$VERSION/* $PKG/usr/doc/$PRGNAM-$VERSION
 
 # Copy the slack-desc into ./install
 mkdir -p $PKG/install

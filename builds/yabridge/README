@@ -6,17 +6,25 @@ for VST2 plugins and quick startup times. Its modern concurrent
 architecture and focus on transparency allows yabridge to be both fast
 and highly compatible, while also staying easy to debug and maintain.
 
-This script will build yabridge with 64bit and 32bit plugin host
+This script will build yabridge both 64bit and 32bit plugin hosts
 on Slackware64 and only 32bit plugin host on Slackware with yabridgectl
 helper tool on both architectures. This script depends on any wine
 version and multilib if you're on Slackware64.
 
-The script depends on a internet connection for meson subprojects.
-
 Make sure you have configured you're system with real-time priority.
-Read the documentation in /usr/doc/yabridge-4.0.0/html/
+Read the documentation in /usr/doc/yabridge-*/
 
-OPTIONAL DEPENDENCIES
+IMPORTANT to understand is that you need an internet connection
+for these meson wrap subprojects:
 
-winetricks
-rtirq
+Asio
+bitsery
+function2
+ghc::filesystem
+tomlplusplus
+VST3 SDK
+
+OPTIONAL DEPENDENCIES NOT NEEDED FOR COMPILING
+
+winetricks: For correct fonts displayed by plugins
+rtirq: For better latency of audio peripherals
