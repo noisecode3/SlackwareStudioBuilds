@@ -6,7 +6,7 @@
 # customary to leave one space after the ':' except on otherwise blank lines.
 
         |-----handy-ruler------------------------------------------------------|
-yabridge: Yabridge (Yet Another way to use Windows VST plugins on Linux)
+yabridge: yabridge (Yet Another way to use Windows VST plugins on Linux)
 yabridge:
 yabridge: Yabridge seamlessly supports using both 32-bit and 64-bit Windows VST2
 yabridge: and VST3 plugins in a 64-bit Linux VST host as if they were
