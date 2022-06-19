@@ -16,11 +16,6 @@ Then create you're user and make sure you're in the audio group and use Slackwar
 
 Tips: Build a better kernel
 
-Tips: You could install jack2 like this after:
-
-slackpkg install pulseaudio-jack jack2 zita-resampler zita-alsa-pcmi portaudio qjackctl
-
-pulseaudio/jack don't just work with startxfce4 enabling jack D-bus
-it will just work with init 4 in /etc/inittab
+Tips: look at pipewire-enable.sh and pipewire-disable.sh /usr/sbin/
 
 Tips: You can look at post_install.sh for configuration inspiration to start with if you don't want to run it
