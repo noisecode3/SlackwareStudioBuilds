@@ -68,10 +68,8 @@ read
 sed -i 's/# https:\/\/mirrors.slackware.com\/slackware\/slackware64-15.0\//https:\/\/mirrors.slackware.com\/slackware\/slackware64-15.0\//g' /etc/slackpkg/mirrors
 
 sed -i 's/#PKGS_PRIORITY=( multilib )/PKGS_PRIORITY=( multilib )/g' /etc/slackpkg/slackpkgplus.conf
-sed -i 's/REPOPLUS=( slackpkgplus )/REPOPLUS=( slackpkgplus multilib alienbob restricted )/g' /etc/slackpkg/slackpkgplus.conf
+sed -i 's/REPOPLUS=( slackpkgplus )/REPOPLUS=( slackpkgplus multilib )/g' /etc/slackpkg/slackpkgplus.conf
 sed -i "s/^#MIRRORPLUS\['multilib'\]/MIRRORPLUS\['multilib'\]/g" /etc/slackpkg/slackpkgplus.conf
-sed -i "s/^#MIRRORPLUS\['alienbob'\]\=https/MIRRORPLUS\['alienbob'\]\=https/g" /etc/slackpkg/slackpkgplus.conf
-sed -i "s/^#MIRRORPLUS\['restricted'\]/MIRRORPLUS\['restricted'\]/g" /etc/slackpkg/slackpkgplus.conf
 
 echo ""
 echo "Upgrading slackware base and apply multilib"
@@ -81,7 +79,6 @@ slackpkg update
 slackpkg upgrade multilib
 slackpkg upgrade-all
 slackpkg install multilib
-slackpkg install-new
 
 # Copy config files here
 echo "vm.mmap_min_addr = 65536"  >> /etc/sysctl.d/mmap_restriction_override.conf
