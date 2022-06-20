@@ -19,11 +19,11 @@ Then create you're user and make sure you're in the audio group and use Slackwar
  - Tips: look at pipewire-enable.sh and pipewire-disable.sh /usr/sbin/
 
  - Slackbuilds tips: [jack](https://slackbuilds.org/repository/15.0/audio/jack/)<br/>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;
 [alsa-plugin-jack](https://slackbuilds.org/repository/15.0/audio/alsa-plugin-jack/)<br/>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;
 [pipewire-native-jack](https://slackbuilds.org/repository/15.0/audio/pipewire-native-jack/)<br/>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;
 [carla](https://slackbuilds.org/repository/15.0/audio/carla/)
 
  - alien tips: [pipewire-jack](http://www.slackware.com/~alien/slackbuilds/pipewire-jack/)
