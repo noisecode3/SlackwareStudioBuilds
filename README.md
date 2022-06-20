@@ -14,8 +14,17 @@ Run post_install.sh after installing full Slackware 15 first thing you do after 
 Overwrite all old config files.
 Then create you're user and make sure you're in the audio group and use Slackware like normal.
 
-Tips: Build a better kernel
+ - Tips: Build a better kernel
 
-Tips: look at pipewire-enable.sh and pipewire-disable.sh /usr/sbin/
+ - Tips: look at pipewire-enable.sh and pipewire-disable.sh /usr/sbin/
 
-Tips: You can look at post_install.sh for configuration inspiration to start with if you don't want to run it
+ - Slackbuilds tips:
+    https://slackbuilds.org/repository/15.0/audio/jack/
+    https://slackbuilds.org/repository/15.0/audio/alsa-plugin-jack/
+    https://slackbuilds.org/repository/15.0/audio/pipewire-native-jack/
+    https://slackbuilds.org/repository/15.0/audio/carla/
+
+ - alien tips:
+    http://www.slackware.com/~alien/slackbuilds/pipewire-jack/
+
+ - Tips: You can look at post_install.sh for configuration inspiration to start with if you don't want to run it
