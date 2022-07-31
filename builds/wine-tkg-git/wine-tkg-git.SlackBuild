@@ -45,13 +45,12 @@ if [ $ARCH != "x86_64" ]; then
   exit 1
 fi
 
-if [ ! -f /var/log/packages/glibc-[0-9]*_multilib-x86_64-5alien ]; then
-    echo "Install glibc-2.33_multilib-x86_64-5alien from alien"
-    exit 1
+if [ ! -f /var/log/packages/glibc-[0-9]*_multilib-x86_64-*alien ]; then
+    echo "Install glibc-[0-9]*_multilib-x86_64-*alien"
 fi
 
 TMP=${TMP:-/tmp/SBo}	# For consistency's sake, use this
-PKG=$TMP/package-$PRGNAM-$VERSION
+PKG=${PKG:-$TMP/package-$PRGNAM-$VERSION}
 OUTPUT=${OUTPUT:-/tmp}	# Drop the package in /tmp
 
 # If the variable PRINT_PACKAGE_NAME is set, then this script will report what
@@ -70,7 +69,6 @@ set -e # Exit on most errors
 rm -rf $PKG
 mkdir -p $TMP $PKG $OUTPUT
 cd $TMP
-rm -rf $PRGNAM-$VERSION
 rm -rf wine-tkg-git
 
 git clone https://github.com/Frogging-Family/wine-tkg-git
@@ -95,7 +93,8 @@ find -L . \
 
 ./non-makepkg-build.sh
 
-cp $CWD/symlink_usr_bin.sh $PKG/opt/wine-tkg-staging-fsync-git/
+cp $CWD/symlink_usr_bin.sh $PKG/opt/wine-*/
+sed -i "s|/opt/wine-tkg-staging-fsync-git|/opt/$(ls $PKG/opt/)|g" $PKG/opt/wine-*/symlink_usr_bin.sh
 mkdir -p $PKG/usr/share/applications/
 cp $CWD/wine-tkg-git.desktop $PKG/usr/share/applications/
 

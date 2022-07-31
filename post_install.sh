@@ -65,11 +65,22 @@ echo "****************************"
 read
 
 # Sed slackpkg
-sed -i 's/# https:\/\/mirrors.slackware.com\/slackware\/slackware64-15.0\//https:\/\/mirrors.slackware.com\/slackware\/slackware64-15.0\//g' /etc/slackpkg/mirrors
+if [[ $(cat /etc/slackware-version) == "Slackware 15.0" ]]
+then
+  echo "Slackware 15.0"
+  sed -i 's/# https:\/\/mirrors.slackware.com\/slackware\/slackware64-15.0\//https:\/\/mirrors.slackware.com\/slackware\/slackware64-15.0\//g' /etc/slackpkg/mirrors
+  sed -i "s/^#MIRRORPLUS\['multilib'\]/MIRRORPLUS\['multilib'\]/g" /etc/slackpkg/slackpkgplus.conf
+elif [[ $(cat /etc/slackware-version) == "Slackware 15.0+" ]]
+then
+  echo "Slackware 15.0+"
+  sed -i 's/# https:\/\/mirrors.slackware.com\/slackware\/slackware64-current\//https:\/\/mirrors.slackware.com\/slackware\/slackware64-current\//g' /etc/slackpkg/mirrors
+  sed -i "s|^#MIRRORPLUS\['multilib'\]|MIRRORPLUS\['multilib'\]=https://slackware.nl/people/alien/multilib/current/|g" /etc/slackpkg/slackpkgplus.conf
+fi
+
 
 sed -i 's/#PKGS_PRIORITY=( multilib )/PKGS_PRIORITY=( multilib )/g' /etc/slackpkg/slackpkgplus.conf
 sed -i 's/REPOPLUS=( slackpkgplus )/REPOPLUS=( slackpkgplus multilib )/g' /etc/slackpkg/slackpkgplus.conf
-sed -i "s/^#MIRRORPLUS\['multilib'\]/MIRRORPLUS\['multilib'\]/g" /etc/slackpkg/slackpkgplus.conf
+
 
 echo ""
 echo "Upgrading slackware base and apply multilib"
@@ -90,5 +101,5 @@ cp ./config_files/40-timer-permissions.rules /etc/udev/rules.d/40-timer-permissi
 /etc/rc.d/rc.udev reload
 cp ./config_files/daw.conf /etc/sysctl.d/daw.conf
 
-echo "!!Attention!! run lilo or setup you're boot loader and reboot !!Attention!!"
+echo "!!Attention!! You may need to run lilo or setup you're boot loader and reboot !!Attention!!"
 exit 0
