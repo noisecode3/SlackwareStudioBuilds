@@ -77,10 +77,8 @@ then
   sed -i "s|^#MIRRORPLUS\['multilib'\]=https://slackware.nl/people/alien/multilib/15.0/|MIRRORPLUS\['multilib'\]=https://slackware.nl/people/alien/multilib/current/|g" /etc/slackpkg/slackpkgplus.conf
 fi
 
-
 sed -i 's/#PKGS_PRIORITY=( multilib )/PKGS_PRIORITY=( multilib )/g' /etc/slackpkg/slackpkgplus.conf
 sed -i 's/REPOPLUS=( slackpkgplus )/REPOPLUS=( slackpkgplus multilib )/g' /etc/slackpkg/slackpkgplus.conf
-
 
 echo ""
 echo "Upgrading slackware base and apply multilib"
@@ -90,16 +88,6 @@ slackpkg update
 slackpkg upgrade multilib
 slackpkg upgrade-all
 slackpkg install multilib
-
-# Copy config files here
-echo "vm.mmap_min_addr = 65536"  >> /etc/sysctl.d/mmap_restriction_override.conf
-sed -i 's/#SCALING_GOVERNOR=ondemand/#SCALING_GOVERNOR=performance/g' /etc/default/cpufreq
-sed -i 's/SCALING_GOVERNOR=ondemand/SCALING_GOVERNOR=performance/g' /etc/rc.d/rc.cpufreq
-
-echo -e "@audio - memlock unlimited\n@audio - rtprio 95\n@audio - nofile 1048576" >> /etc/security/limits.d/audio.conf
-cp ./config_files/40-timer-permissions.rules /etc/udev/rules.d/40-timer-permissions.rules
-/etc/rc.d/rc.udev reload
-cp ./config_files/daw.conf /etc/sysctl.d/daw.conf
 
 echo "!!Attention!! You may need to run lilo or setup you're boot loader and reboot !!Attention!!"
 exit 0

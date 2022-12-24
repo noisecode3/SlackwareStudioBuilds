@@ -5,8 +5,10 @@ Configuration scripts and builds for Slackware music productions
 kernel 5.15.55-rt48-xanmod1
 
 # How
-Run post_install.sh after installing full Slackware 15, or current first thing you do after installation.
-Overwrite all old config files.
+Run post_install_setup_sbo_slackpkg+_multilib.sh after installing full Slackware 15,
+or Slackware current first thing you do after installation. This will update Slackware
+and install sbopkg, slackpkg+ and multilib. Overwrite all old config files when you get asked.
+See config.info first then run this file to get a some essential configuration for music production.
 Then create you're user and make sure you're in the audio group and use Slackware like normal.
 
  - Tips: Build a better kernel
@@ -20,5 +22,3 @@ Then create you're user and make sure you're in the audio group and use Slackwar
  - Slackbuilds pkg tips: [carla](https://slackbuilds.org/repository/15.0/audio/carla/)
 
  - alien tips: [pipewire-jack](http://www.slackware.com/~alien/slackbuilds/pipewire-jack/)
-
- - Tips: You can look at post_install.sh for configuration inspiration to start with if you don't want to run it

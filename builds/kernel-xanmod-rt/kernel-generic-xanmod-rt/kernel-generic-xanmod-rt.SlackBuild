@@ -41,6 +41,13 @@ if [ -z "$ARCH" ]; then
   esac
 fi
 
+cd /usr/src/linux-$VERSION-$RT-$KERNEL
+if [ $? != 1 ]; then
+  VERSION=$(grep "^VERSION = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^PATCHLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^SUBLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev)$(grep "^EXTRAVERSION = " Makefile | rev | cut -f 1 -d ' ' | rev)
+  RT=$(cat localversion-rt 2> /dev/null | sed s/-//g)
+  KERNEL=$(cat localversion-xanmod 2> /dev/null | sed s/-//g)
+fi
+
 if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
   echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
   exit 0
@@ -65,21 +72,33 @@ cd $TMP
 rm -rf linux-$VERSION-$RT-$KERNEL
 tar xvf $CWD/linux-$VERSION-$RT-$KERNEL.tar.gz
 cd linux-$VERSION-$RT-$KERNEL
-cp -v /usr/src/linux-$VERSION-$RT-$KERNEL/.config .config
 
-## TODO: if there are patches int /usr/src/linux-$VERSION-$RT-$KERNEL apply them here
+if [ `ls -1 /usr/src/linux-$VERSION-$RT-$KERNEL/*.patch.xz 2>/dev/null | wc -l` != 0 ]; then
+  for i in /usr/src/linux-$VERSION-$RT-$KERNEL/*.patch.xz; do
+    xzcat $i | patch -p1 --verbose --backup --suffix=.orig || exit 1
+    cp $i $PKG/usr/src/linux-$VERSION-$RT-$KERNEL || exit 1
+  done
+fi
+if [ `ls -1 /usr/src/linux-$VERSION-$RT-$KERNEL/*.patch 2>/dev/null | wc -l` != 0 ]; then
+  for i in /usr/src/linux-$VERSION-$RT-$KERNEL/*.patch; do
+    cat $i | patch -p1 --verbose --backup --suffix=.orig || exit 1
+    cp $i $PKG/usr/src/linux-$VERSION-$RT-$KERNEL || exit 1
+  done
+fi
+
+cp -v /usr/src/linux-$VERSION-$RT-$KERNEL/.config .config || exit 1
 
 make clean
 make prepare
 make oldconfig
-make $NUMJOBS bzImage || make bzImage
+make $NUMJOBS bzImage || make bzImage || exit 2
 
 echo ""
 
 mkdir -p $PKG/boot
-cp -v System.map $PKG/boot/System.map-generic-xanmod-rt-$VERSION-$RT
-cp -v .config $PKG/boot/config-generic-xanmod-rt-$VERSION-$RT
-cp -v arch/x86/boot/bzImage $PKG/boot/vmlinuz-generic-xanmod-rt-$VERSION-$RT
+cp -v System.map $PKG/boot/System.map-generic-xanmod-rt-$VERSION-$RT || exit 3
+cp -v .config $PKG/boot/config-generic-xanmod-rt-$VERSION-$RT || exit 3
+cp -v arch/x86/boot/bzImage $PKG/boot/vmlinuz-generic-xanmod-rt-$VERSION-$RT || exit 3
 
 ln -srv $PKG/boot/System.map-generic-xanmod-rt-$VERSION-$RT $PKG/boot/System.map-generic-xanmod-rt
 ln -srv $PKG/boot/config-generic-xanmod-rt-$VERSION-$RT $PKG/boot/config-generic-xanmod-rt

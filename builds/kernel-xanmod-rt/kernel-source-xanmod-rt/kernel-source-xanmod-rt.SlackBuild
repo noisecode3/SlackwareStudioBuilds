@@ -66,11 +66,39 @@ rm -rf linux-$VERSION-$RT-$KERNEL
 tar xvf $CWD/linux-$VERSION-$RT-$KERNEL.tar.gz
 cd linux-$VERSION-$RT-$KERNEL
 
-# TODO IF patches specified by a variable
-#xzcat $CWD/001-somePatch.patch.xz | patch -p1 --verbose --backup --suffix=.orig || exit 1
-#cp -a $CWD/001-somePatch.patch.xz .
+# If we find .patch.xz or .patch files apply then and save them in the source dir
+if [ -d "$PATCH_DIR" ]; then
+  if [ `ls -1 $PATCH_DIR/*.patch.xz 2>/dev/null | wc -l` != 0 ]; then
+    for i in $PATCH_DIR/*.patch.xz; do
+      xzcat $i | patch -p1 --verbose --backup --suffix=.orig || exit 1
+      cp $i $PKG/usr/src/linux-$VERSION-$RT-$KERNEL
+    done
+  fi
+  if [ `ls -1 $PATCH_DIR/*.patch 2>/dev/null | wc -l` != 0 ]; then
+    for i in $PATCH_DIR/*.patch; do
+      cat $i | patch -p1 --verbose --backup --suffix=.orig || exit 1
+      cp $i $PKG/usr/src/linux-$VERSION-$RT-$KERNEL
+    done
+  fi
 
-cp -v $CWD/config .config
+  # Sync version of applied patches
+  VERSION=$(grep "^VERSION = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^PATCHLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^SUBLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev)$(grep "^EXTRAVERSION = " Makefile | rev | cut -f 1 -d ' ' | rev)
+  RT=$(cat localversion-rt 2> /dev/null | sed s/-//g)
+  KERNEL=$(cat localversion-xanmod 2> /dev/null | sed s/-//g)
+
+fi
+
+# If we specify a config file then do some check to see that is looks like a config file
+if [ -f "$CONFIG" ]; then
+  if [ "$(sed '3q;d' $CONFIG | awk '{print $5;}')" != "Configuration" ]; then
+    echo "Specified CONFIG file don't look right"
+    exit 1
+  else
+    cp -v $CONFIG .config || exit 1
+  fi
+else
+  cp -v $CWD/config .config || exit 1
+fi
 
 chown -R root:root .
 find . \
@@ -79,10 +107,10 @@ find . \
  \( -perm 666 -o -perm 664 -o -perm 600 -o -perm 444 -o -perm 440 -o -perm 400 \) \
  -exec chmod 644 {} \+
 
-# We should build the kernel so that out of tree modules builds will work
+# We should build the kernel so that out of tree module builds will work
 make oldconfig
-make $NUMJOBS
-make $NUMJOBS modules
+make $NUMJOBS || exit 2
+make $NUMJOBS modules || exit 3
 make clean
 make prepare
 find . -name "*Image" -exec rm "{}" \+
