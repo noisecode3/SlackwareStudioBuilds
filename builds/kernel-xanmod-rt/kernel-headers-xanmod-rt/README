@@ -6,7 +6,7 @@ ALL OTHER SOFTWARE EXCEPT WINE SHOULD BE BUILD WITH SLACKWARE'S
 DEFAULT HEADERS! NOT DOING SO COULD DAMAGE YOU SLACKWARE INSTALLATION!
 
 Don't forget to remove kernel-headers installed from slackware.com
-before you install. If you do, uninstall all headers packages
+before you install. If you forget, uninstall all headers packages
 and reinstall from slackware.com
 
 Use the package in this order

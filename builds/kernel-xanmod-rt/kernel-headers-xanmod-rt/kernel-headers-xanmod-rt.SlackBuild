@@ -41,11 +41,18 @@ if [ -z "$ARCH" ]; then
   esac
 fi
 
-cd /usr/src/linux-$VERSION-$RT-$KERNEL
+cd /usr/src/linux-$VERSION-$RT-$KERNEL 2> /dev/null
 if [ $? != 1 ]; then
   VERSION=$(grep "^VERSION = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^PATCHLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^SUBLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev)$(grep "^EXTRAVERSION = " Makefile | rev | cut -f 1 -d ' ' | rev)
   RT=$(cat localversion-rt 2> /dev/null | sed s/-//g)
   KERNEL=$(cat localversion-xanmod 2> /dev/null | sed s/-//g)
+else
+  if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
+    echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
+    exit 0
+  fi
+  echo "You seem to be missing the source in /usr/src"
+  exit 1
 fi
 
 if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
@@ -76,13 +83,11 @@ cd linux-$VERSION-$RT-$KERNEL
 if [ `ls -1 /usr/src/linux-$VERSION-$RT-$KERNEL/*.patch.xz 2>/dev/null | wc -l` != 0 ]; then
   for i in /usr/src/linux-$VERSION-$RT-$KERNEL/*.patch.xz; do
     xzcat $i | patch -p1 --verbose --backup --suffix=.orig || exit 1
-    cp $i $PKG/usr/src/linux-$VERSION-$RT-$KERNEL || exit 1
   done
 fi
 if [ `ls -1 /usr/src/linux-$VERSION-$RT-$KERNEL/*.patch 2>/dev/null | wc -l` != 0 ]; then
   for i in /usr/src/linux-$VERSION-$RT-$KERNEL/*.patch; do
     cat $i | patch -p1 --verbose --backup --suffix=.orig || exit 1
-    cp $i $PKG/usr/src/linux-$VERSION-$RT-$KERNEL || exit 1
   done
 fi
 

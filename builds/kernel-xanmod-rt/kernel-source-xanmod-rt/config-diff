@@ -1,6 +1,8 @@
 > = xanmod1-rt
 < = slackware-generic
 
+This was generated against Slackware's generic config file
+with vanilla linux-5.15.55 and make oldconfig
 
 > CONFIG_HAVE_PREEMPT_LAZY=y
 > CONFIG_PREEMPT_LAZY=y
