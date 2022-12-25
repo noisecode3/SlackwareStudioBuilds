@@ -1,0 +1,20 @@
+Xanmod 5.15 kernel
+
+This kernel unlock some serious performance improvements
+and was build was made for Slackware and for better use of wine-tkg.
+
+Don't forget to configure you're boot manager.
+
+Path to kernels:
+
+/boot/vmlinuz-generic
+/boot/vmlinuz-huge
+/boot/vmlinuz-generic-xanmod-rt
+
+Don't forget you're mkinitrd command and update you're boot loader!
+
+Initrd command:
+/usr/share/mkinitrd/mkinitrd_command_generator.sh -k 5.15.84-xanmod1
+
+If you have Intel processor you must load microcode early!
+Add -P /boot/intel-ucode.cpio to the generated mkinitrd command!
