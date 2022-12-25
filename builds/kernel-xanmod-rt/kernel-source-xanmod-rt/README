@@ -28,6 +28,6 @@ Everything is set to be verbose. Analyse the output
 to see how the patching went and from where the config
 was copied.
 
-Pleas give feedback, if you see something in kernel config or in the script
-that you think could be better. E-mail me or open pull request on git
-against this packages.
+Pleas give feedback, if you see something in kernel config or in the
+script that you think could be better. E-mail me or open pull request
+on git against this packages.

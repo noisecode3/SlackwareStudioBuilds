@@ -17,7 +17,7 @@ Path to kernels to boot from:
 Don't forget you're mkinitrd command and to update you're boot loader!
 
 Initrd command:
-/usr/share/mkinitrd/mkinitrd_command_generator.sh -k 5.15.55-rt48-xanmod1
+/usr/share/mkinitrd/mkinitrd_command_generator.sh -k 5.15.?-rt?-xanmod1
 
 If you have Intel processor you must load microcode early!
 Add -P /boot/intel-ucode.cpio to the generated mkinitrd command!
