@@ -6,14 +6,14 @@
 # customary to leave one space after the ':'.
 
                         |-----handy-ruler------------------------------------------------------|
-kernel-headers-xanmod-rt: kernel-headers-xanmod-rt (Linux kernel include files)
-kernel-headers-xanmod-rt:
-kernel-headers-xanmod-rt: These are the include files from the Linux xanmod real-time kernel.
-kernel-headers-xanmod-rt:
-kernel-headers-xanmod-rt: You'll need these to compile most system software for Linux.
-kernel-headers-xanmod-rt:
-kernel-headers-xanmod-rt:
-kernel-headers-xanmod-rt:
-kernel-headers-xanmod-rt:
-kernel-headers-xanmod-rt:
-kernel-headers-xanmod-rt:
+futex-waitv-winesync-api: futex-waitv-winesync-api (Linux kernel futex_waitv and winesync api)
+futex-waitv-winesync-api:
+futex-waitv-winesync-api: This packaged add futex_waitv and winesync userspace api
+futex-waitv-winesync-api: to the existing kernel-headers package.
+futex-waitv-winesync-api:
+futex-waitv-winesync-api:
+futex-waitv-winesync-api:
+futex-waitv-winesync-api:
+futex-waitv-winesync-api:
+futex-waitv-winesync-api:
+futex-waitv-winesync-api:

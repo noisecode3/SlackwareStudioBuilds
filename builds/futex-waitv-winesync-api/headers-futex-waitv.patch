@@ -1,0 +1,50 @@
+--- a/asm-generic/unistd.h
++++ b/asm-generic/unistd.h
+@@ -880,8 +880,11 @@ __SYSCALL(__NR_landlock_add_rule, sys_landlock_add_rule)
+ #define __NR_process_mrelease 448
+ __SYSCALL(__NR_process_mrelease, sys_process_mrelease)
+ 
++#define __NR_futex_waitv 449
++__SYSCALL(__NR_futex_waitv, sys_futex_waitv)
++
+ #undef __NR_syscalls
+-#define __NR_syscalls 449
++#define __NR_syscalls 450
+ 
+ /*
+  * 32 bit systems traditionally used different
+--- a/linux/futex.h
++++ b/linux/futex.h
+@@ -41,6 +41,32 @@
+ #define FUTEX_CMP_REQUEUE_PI_PRIVATE	(FUTEX_CMP_REQUEUE_PI | \
+ 					 FUTEX_PRIVATE_FLAG)
+ 
++ /*
++ * Flags to specify the bit length of the futex word for futex2 syscalls.
++ * Currently, only 32 is supported.
++ */
++#define FUTEX_32		2
++
++/*
++ * Max numbers of elements in a futex_waitv array
++ */
++#define FUTEX_WAITV_MAX		128
++
++/**
++ * struct futex_waitv - A waiter for vectorized wait
++ * @val:	Expected value at uaddr
++ * @uaddr:	User address to wait on
++ * @flags:	Flags for this waiter
++ * @__reserved:	Reserved member to preserve data alignment. Should be 0.
++ */
++struct futex_waitv {
++	__u64 val;
++	__u64 uaddr;
++	__u32 flags;
++	__u32 __reserved;
++};
++
++
+ /*
+  * Support for robust futexes: the kernel cleans up held futexes at
+  * thread exit time.
