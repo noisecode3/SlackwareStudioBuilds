@@ -18,3 +18,8 @@ Initrd command:
 
 If you have Intel processor you must load microcode early!
 Add -P /boot/intel-ucode.cpio to the generated mkinitrd command!
+
+This kernel will preform better with rtirq, try out config-new configuration
+file
+
+sbopkg will try to compile kernel modules for this kernel with default option on
