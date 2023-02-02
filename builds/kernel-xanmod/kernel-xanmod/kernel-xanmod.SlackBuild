@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Slackware build script for kernel-modules-xanmod
+# Slackware build script for kernel-generic-xanmod
 
-# Copyright 2022 Martin Bångens Sweden
+# Copyright 2023 Martin Bångens Sweden
 # All rights reserved.
 #
 # Redistribution and use of this script, with or without modification, is
@@ -24,12 +24,12 @@
 
 cd $(dirname $0) ; CWD=$(pwd)
 
-PRGNAM=kernel-modules-xanmod
-VERSION=${VERSION:-5.15.84}
+PRGNAM=kernel-xanmod
+VERSION=${VERSION:-5.15.89}
 KERNEL=${KERNEL:-xanmod1}
 NUMJOBS=${NUMJOBS:-" -j$(expr $(nproc) + 1) "}
 BUILD=${BUILD:-1}
-TAG=${TAG:-_SBo}
+TAG=${TAG:-_SSb}
 PKGTYPE=${PKGTYPE:-tgz}
 
 if [ -z "$ARCH" ]; then
@@ -42,8 +42,20 @@ fi
 
 cd /usr/src/linux-$VERSION-$KERNEL 2> /dev/null
 if [ $? != 1 ]; then
-  VERSION=$(grep "^VERSION = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^PATCHLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^SUBLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev)$(grep "^EXTRAVERSION = " Makefile | rev | cut -f 1 -d ' ' | rev)
-  KERNEL=$(cat localversion 2> /dev/null | sed s/-//g)
+  # Sync version to git and applied patches
+  if [ -f "localversion-rt" ]; then
+    VERSION=$(grep "^VERSION = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^PATCHLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^SUBLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev)$(grep "^EXTRAVERSION = " Makefile | rev | cut -f 1 -d ' ' | rev)$(cat localversion-rt 2> /dev/null)
+  elif [ -f "localversion-tt" ]; then
+    VERSION=$(grep "^VERSION = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^PATCHLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^SUBLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev)$(grep "^EXTRAVERSION = " Makefile | rev | cut -f 1 -d ' ' | rev)$(cat localversion-tt 2> /dev/null)
+  else
+    VERSION=$(grep "^VERSION = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^PATCHLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^SUBLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev)$(grep "^EXTRAVERSION = " Makefile | rev | cut -f 1 -d ' ' | rev)
+  fi
+
+  if [ -f "localversion-xanmod" ]; then
+    KERNEL=$(cat localversion-xanmod 2> /dev/null | sed s/-//g)
+  elif [ -f "localversion" ]; then
+    KERNEL=$(cat localversion 2> /dev/null | sed s/-//g)
+  fi
 else
   if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
     echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
@@ -58,7 +70,7 @@ if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
   exit 0
 fi
 
-TMP=${TMP:-/tmp/SBo}
+TMP=${TMP:-/tmp/SSb}
 PKG=$TMP/package-$PRGNAM
 OUTPUT=${OUTPUT:-/tmp}
 
@@ -70,31 +82,19 @@ fi
 set -e
 
 rm -rf $PKG
-mkdir -p $TMP $PKG/lib/modules $OUTPUT
+mkdir -p $TMP $PKG/boot $PKG/lib/modules $OUTPUT
 
 cd $TMP
 
 rm -rf linux-$VERSION-$KERNEL
-tar xvf $CWD/linux-$VERSION-$KERNEL.tar.gz
+cp -a  /usr/src/linux-$VERSION-$KERNEL .
 cd linux-$VERSION-$KERNEL
-
-if [ `ls -1 /usr/src/linux-$VERSION-$KERNEL/*.patch.xz 2>/dev/null | wc -l` != 0 ]; then
-  for i in /usr/src/linux-$VERSION-$KERNEL/*.patch.xz; do
-    xzcat $i | patch -p1 --verbose --backup --suffix=.orig || exit 1
-  done
-fi
-if [ `ls -1 /usr/src/linux-$VERSION-$KERNEL/*.patch 2>/dev/null | wc -l` != 0 ]; then
-  for i in /usr/src/linux-$VERSION-$KERNEL/*.patch; do
-    cat $i | patch -p1 --verbose --backup --suffix=.orig || exit 1
-  done
-fi
-
-cp -v /usr/src/linux-$VERSION-$KERNEL/.config .config || exit 1
 
 make clean
 make prepare
 make oldconfig
-make $NUMJOBS || exit 2
+make $NUMJOBS bzImage || make bzImage || exit 2
+echo ""
 make $NUMJOBS modules || exit 3
 make INSTALL_MOD_PATH=$PKG modules_install || exit 4
 
@@ -105,6 +105,14 @@ ln -sv /usr/src/linux-$VERSION-$KERNEL source || exit 5
 
 cd $TMP/linux-$VERSION-$KERNEL
 depmod -b $PKG -a $VERSION-$KERNEL
+
+cp -v System.map $PKG/boot/System.map-generic-xanmod-$VERSION || exit 3
+cp -v .config $PKG/boot/config-generic-xanmod-$VERSION || exit 3
+cp -v arch/x86/boot/bzImage $PKG/boot/vmlinuz-generic-xanmod-$VERSION || exit 3
+
+ln -srv $PKG/boot/System.map-generic-xanmod-$VERSION $PKG/boot/System.map-generic-xanmod
+ln -srv $PKG/boot/config-generic-xanmod-$VERSION $PKG/boot/config-generic-xanmod
+ln -srv $PKG/boot/vmlinuz-generic-xanmod-$VERSION $PKG/boot/vmlinuz-generic-xanmod
 
 mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
 cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild

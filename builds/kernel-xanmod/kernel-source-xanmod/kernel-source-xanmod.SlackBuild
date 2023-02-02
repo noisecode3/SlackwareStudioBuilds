@@ -25,11 +25,12 @@
 cd $(dirname $0) ; CWD=$(pwd)
 
 PRGNAM=kernel-source-xanmod
-VERSION=${VERSION:-5.15.84}
-KERNEL=${KERNEL:-xanmod1}
+VERSION=${VERSION:-5.15}
+KERNEL=${KERNEL:-}
 NUMJOBS=${NUMJOBS:-" -j$(expr $(nproc) + 1) "}
+REMOVE_GIT=${REMOVE_GIT:-YES}
 BUILD=${BUILD:-1}
-TAG=${TAG:-_SBo}
+TAG=${TAG:-_SSb}
 PKGTYPE=${PKGTYPE:-tgz}
 
 if [ -z "$ARCH" ]; then
@@ -50,7 +51,7 @@ if [ $ARCH != "x86_64" ]; then
   exit 1
 fi
 
-TMP=${TMP:-/tmp/SBo}
+TMP=${TMP:-/tmp/SSb}
 PKG=$TMP/package-$PRGNAM
 OUTPUT=${OUTPUT:-/tmp}
 
@@ -61,9 +62,13 @@ mkdir -p $TMP $PKG/usr/src $OUTPUT
 
 cd $PKG/usr/src
 
-rm -rf linux-$VERSION-$KERNEL
-tar xvf $CWD/linux-$VERSION-$KERNEL.tar.gz
+git clone --depth 1 -b $VERSION https://github.com/xanmod/linux
+mv linux linux-$VERSION-$KERNEL
 cd linux-$VERSION-$KERNEL
+
+if [ "$REMOVE_GIT" = "YES" ]; then
+  rm -fr .git*
+fi
 
 # If we find .patch.xz or .patch files apply then and save them in the source dir
 if [ -d "$PATCH_DIR" ]; then
@@ -79,12 +84,26 @@ if [ -d "$PATCH_DIR" ]; then
       cp $i $PKG/usr/src/linux-$VERSION-$KERNEL
     done
   fi
-
-  # Sync version of applied patches
-  VERSION=$(grep "^VERSION = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^PATCHLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^SUBLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev)$(grep "^EXTRAVERSION = " Makefile | rev | cut -f 1 -d ' ' | rev)
-  KERNEL=$(cat localversion-xanmod 2> /dev/null | sed s/-//g)
-
 fi
+
+# Sync version to git and applied patches
+if [ -f "localversion-rt" ]; then
+  VERSION=$(grep "^VERSION = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^PATCHLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^SUBLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev)$(grep "^EXTRAVERSION = " Makefile | rev | cut -f 1 -d ' ' | rev)$(cat localversion-rt 2> /dev/null)
+elif [ -f "localversion-tt" ]; then
+  VERSION=$(grep "^VERSION = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^PATCHLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^SUBLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev)$(grep "^EXTRAVERSION = " Makefile | rev | cut -f 1 -d ' ' | rev)$(cat localversion-tt 2> /dev/null)
+else
+  VERSION=$(grep "^VERSION = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^PATCHLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^SUBLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev)$(grep "^EXTRAVERSION = " Makefile | rev | cut -f 1 -d ' ' | rev)
+fi
+
+if [ -f "localversion-xanmod" ]; then
+  KERNEL=$(cat localversion-xanmod 2> /dev/null | sed s/-//g)
+elif [ -f "localversion" ]; then
+  KERNEL=$(cat localversion 2> /dev/null | sed s/-//g)
+fi
+
+cd ../
+mv linux-* linux-$VERSION-$KERNEL
+cd linux-$VERSION-$KERNEL
 
 # If we specify a config file then do some check to see that is looks like a config file
 if [ -f "$CONFIG" ]; then
