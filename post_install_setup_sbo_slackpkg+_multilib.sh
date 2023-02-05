@@ -16,6 +16,9 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# Slackware version
+SV=15.0
+
 # check md5 for pkgs
 sbopkg_md5sum="df40c7c991a30c1129a612a40be9f590  /tmp/sbopkg-0.38.2-noarch-1_wsr.tgz"
 slackpkg_md5sum="769a2505230bbd709823ba4c35a9b29b  /tmp/slackpkg+-1.8.0-noarch-7mt.txz"
@@ -64,37 +67,37 @@ upgradepkg --install-new /tmp/slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.t
 rm /tmp/sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz
 rm /tmp/slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.txz
 
-# Upgrade system
+# Setup bail chance
 echo ""
-echo "****************************"
-echo " Upgrade system , hit return"
-echo "****************************"
+echo "*************************************"
+echo " Setup slackpkg+ multilib, hit return"
+echo "*************************************"
 read -r
 
-# Sed slackpkg
-if [[ $(cat /etc/slackware-version) == "Slackware 15.0" ]]
-then
-  echo "Slackware 15.0"
-  sed -i 's/# https:\/\/mirrors.slackware.com\/slackware\/slackware64-15.0\//https:\/\/mirrors.slackware.com\/slackware\/slackware64-15.0\//g' /etc/slackpkg/mirrors
-  sed -i "s/^#MIRRORPLUS\['multilib'\]/MIRRORPLUS\['multilib'\]/g" /etc/slackpkg/slackpkgplus.conf
-elif [[ $(cat /etc/slackware-version) == "Slackware 15.0+" ]]
-then
-  echo "Slackware 15.0+"
-  sed -i 's/# https:\/\/mirrors.slackware.com\/slackware\/slackware64-current\//https:\/\/mirrors.slackware.com\/slackware\/slackware64-current\//g' /etc/slackpkg/mirrors
-  sed -i "s|^#MIRRORPLUS\['multilib'\]=https://slackware.nl/people/alien/multilib/15.0/|MIRRORPLUS\['multilib'\]=https://slackware.nl/people/alien/multilib/current/|g" /etc/slackpkg/slackpkgplus.conf
+# Sed slackpkg mirror and run setupmultilib.sh
+if grep -v ^\# /etc/slackpkg/mirrors 2>/dev/null; then
+  echo Found mirror;
+  /usr/doc/slackpkg+-$slackpkg_version/setupmultilib.sh
+else
+  if [[ $(cat /etc/slackware-version) == "Slackware $SV" ]]; then
+    echo "Slackware $SV"
+    sed -i "s/# https:\/\/mirrors.slackware.com\/slackware\/slackware64-$SV\//https:\/\/mirrors.slackware.com\/slackware\/slackware64-$SV\//g" /etc/slackpkg/mirrors
+    /usr/doc/slackpkg+-$slackpkg_version/setupmultilib.sh
+  elif [[ $(cat /etc/slackware-version) == "Slackware $SV+" ]]; then
+    echo "Slackware $SV+"
+    sed -i 's/# https:\/\/mirrors.slackware.com\/slackware\/slackware64-current\//https:\/\/mirrors.slackware.com\/slackware\/slackware64-current\//g' /etc/slackpkg/mirrors
+    /usr/doc/slackpkg+-$slackpkg_version/setupmultilib.sh
+  fi
 fi
 
-sed -i 's/#PKGS_PRIORITY=( multilib )/PKGS_PRIORITY=( multilib )/g' /etc/slackpkg/slackpkgplus.conf
-sed -i 's/REPOPLUS=( slackpkgplus )/REPOPLUS=( slackpkgplus multilib )/g' /etc/slackpkg/slackpkgplus.conf
-
 echo ""
-echo "Upgrading slackware base and apply multilib"
+echo "Do you want to upgrade slackware? (y/N)"
+read -r ANS
+if [ "$ANS" == "y" -o "$ANS" == "Y" ]; then
+  slackpkg update gpg
+  slackpkg update
+  slackpkg upgrade-all
+  echo "!!Attention!! You may need to run lilo or setup you're boot loader and reboot !!Attention!!"
+fi
 
-slackpkg update gpg
-slackpkg update
-slackpkg upgrade multilib
-slackpkg upgrade-all
-slackpkg install multilib
-
-echo "!!Attention!! You may need to run lilo or setup you're boot loader and reboot !!Attention!!"
 exit 0
