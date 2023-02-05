@@ -4,17 +4,18 @@ esync from compiling wine-tkg, proton or other wine
 with fsync_futex_waitv.patch.
 
 You need to rebuild and reinstall this package if you upgrade
-you're Slackware15 linux 5.15 kernel-headers package.
+you're Slackware15 kernel-headers-5.15 package.
 This is safe and only processes that owns the same
-userspace memory handled with threads can use it. This wont affect
-glibc on Slackware15 and if you updated you're headers
-the futex wait API will just be overwritten by kernel-headers
-package. winesync.h on the other hand won't be overwritten.
+userspace memory handled with threads can use futex.
+This wont affect glibc on Slackware15 and if you updated
+you're headers the futex wait API will just be overwritten
+by kernel-headers package. winesync.h on the other hand won't
+be overwritten.
 
 The non patched Linux kernel 5.15 don't know about
 __NR_futex_waitv 449 and will ignore it and return an error
 resulting in wine defaults back to esync.
 
 So you only need this for compiling wine-tkg. But if you have a kernel with
-futex_waitv or winesync, pre-compiled (binary) wine-tkg will still work with fsync
-without this.
+futex_waitv or winesync, pre-compiled (binary) wine-tkg will still work with 
+fsync without this.
