@@ -17,8 +17,8 @@
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # check md5 for pkgs
-sbopkg_md5sum="df40c7c991a30c1129a612a40be9f590  sbopkg-0.38.2-noarch-1_wsr.tgz"
-slackpkg_md5sum="769a2505230bbd709823ba4c35a9b29b  slackpkg+-1.8.0-noarch-7mt.txz"
+sbopkg_md5sum="df40c7c991a30c1129a612a40be9f590  /tmp/sbopkg-0.38.2-noarch-1_wsr.tgz"
+slackpkg_md5sum="769a2505230bbd709823ba4c35a9b29b  /tmp/slackpkg+-1.8.0-noarch-7mt.txz"
 
 # versions
 sbopkg_version=0.38.2
@@ -27,20 +27,20 @@ slackpkg_version=1.8.0
 slackpkg_tag=7mt
 
 # Download
-wget -c https://github.com/sbopkg/sbopkg/releases/download/$sbopkg_version/sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz
-wget -c https://sourceforge.net/projects/slackpkgplus/files/slackpkg%2B-$slackpkg_version-noarch-$slackpkg_tag.txz
+wget -c -P /tmp https://github.com/sbopkg/sbopkg/releases/download/$sbopkg_version/sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz
+wget -c -P /tmp https://sourceforge.net/projects/slackpkgplus/files/slackpkg%2B-$slackpkg_version-noarch-$slackpkg_tag.txz
 
 # Check
-sbopkg_md5sum_dl=$(md5sum sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz)
-slackpkg_md5sum_dl=$(md5sum slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.txz)
+sbopkg_md5sum_dl=$(md5sum /tmp/sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz)
+slackpkg_md5sum_dl=$(md5sum /tmp/slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.txz)
 
 if [[ $sbopkg_md5sum == "$sbopkg_md5sum_dl" ]]
     then
         echo "sbopkg download OK"
     else
         echo "sbopkg download faild"
-        rm ./sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz
-        rm ./slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.txz
+        rm -f /tmp/sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz
+        rm -f /tmp/slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.txz
         exit 1
 fi
 
@@ -49,20 +49,20 @@ if [[ $slackpkg_md5sum == "$slackpkg_md5sum_dl" ]]
         echo "slackpkg+ download OK"
     else
         echo "slackpkg+ download faild"
-        rm ./sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz
-        rm ./slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.txz
+        rm -f /tmp/sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz
+        rm -f /tmp/slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.txz
         exit 1
 fi
 
 echo ""
 
 # Install sbopkg and slackpkg+
-installpkg ./sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz
-installpkg ./slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.txz
+upgradepkg --install-new /tmp/sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz
+upgradepkg --install-new /tmp/slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.txz
 
 # Clean up
-rm ./sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz
-rm ./slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.txz
+rm /tmp/sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz
+rm /tmp/slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.txz
 
 # Upgrade system
 echo ""
