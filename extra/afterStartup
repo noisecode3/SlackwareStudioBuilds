@@ -1,0 +1,10 @@
+#!/bin/bash
+vol=$(cat $HOME/.cache/alsa-jack-volume-pass-759322502f3753aa62f0 2>/dev/null)
+rm -f $HOME/.cache/alsa-jack-volume-pass-759322502f3753aa62f0
+amixer -c 1 sset Master 0%
+
+if echo $vol >/dev/null; then
+  amixer -c 1 sset Master $vol%
+fi
+
+pactl set-sink-volume jack_out 100%

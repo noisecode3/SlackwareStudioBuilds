@@ -1,0 +1,3 @@
+#!/bin/bash
+mkdir $HOME/.cache 2>/dev/null
+amixer sget -c 1 Master | tail -n 1 | awk '{print $4}' | sed 's/[^0-9]*//g' > $HOME/.cache/alsa-jack-volume-pass-759322502f3753aa62f0

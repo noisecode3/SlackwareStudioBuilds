@@ -1,0 +1,7 @@
+#!/bin/bash
+if ps -e | grep jackd > /dev/null; then
+  amixer -c 1 sset Master 1%-
+else
+  pactl set-sink-volume @DEFAULT_SINK@ -1%
+fi
+
