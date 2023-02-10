@@ -1,25 +1,23 @@
 This scrip download the source from git
-The generated package will be installed in /opt so that is can be installed
-with another wine in /usr
+The generated package will be installed in /usr (finally)
+or optionally /opt (TODO)
 
-To integrate with desktop
-/usr/share/applications/wine-tkg-git.desktop
+To integrate with desktop 
+/usr/share/applications/wine.desktop is used for /usr install
+other wine-tkg-6.21.desktop for example will be for /opt install
 Remember that if an installer generate a desktop shortcut
 that .desktop file will use the path to the used wine-tkg binary path.
 wine puts those classic windows menu application launchers in:
 ~/.local/share/applications/wine/Programs/
 
-Symbolic links to wine64 and wine
+Symbolic links to wine64-tkg and wine-tkg in /ust/bin for /opt
 To post install into /usr/bin/ run:
 
 /opt/wine-tkg-staging-fsync-git/symlink_usr_bin.sh
 /opt/wine-tkg-staging-fsync-git/symlink_usr_bin.sh --restore
-/opt/wine-tkg-staging-fsync-git/symlink_usr_bin.sh --force-no-backup
 
-If /usr/bin/wine is a Symbolic link it will overwrite
-else it will backup and hide all wine related binaries
-like /usr/bin/.wine.backup
-
+TODO: more options is on the way, specify wine versions and tkg commit
+      some others I have in mind.
 Build Options:
 Use like this
 PROTONIFY=YES ./wine-tkg-git.SlackBuild

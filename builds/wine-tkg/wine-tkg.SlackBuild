@@ -1,0 +1,165 @@
+#!/bin/bash
+
+# Slackware build script for wine-tkg-git
+
+# Copyright 2022 Martin Bångens
+# All rights reserved.
+#
+# Redistribution and use of this script, with or without modification, is
+# permitted provided that the following conditions are met:
+#
+# 1. Redistributions of this script must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
+#  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+#  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO
+#  EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+#  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+#  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+#  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+#  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+cd $(dirname $0) ; CWD=$(pwd)
+
+PRGNAM=wine-tkg
+VERSION=${VERSION:-git}
+BUILD=${BUILD:-1}
+TAG=${TAG:-_SSb}
+PKGTYPE=${PKGTYPE:-tgz}
+PROTONIFY=${PROTONIFY:-NO}
+LOCAL_PRESET_PROMPT=${LOCAL_PRESET_PROMPT:-NO}
+ALLOW_SERVER_RT_PRIO=${ALLOW_SERVER_RT_PRIO:-YES}
+
+if [ -z "$ARCH" ]; then
+  case "$( uname -m )" in
+    i?86) ARCH=i586 ;;
+    arm*) ARCH=arm ;;
+       *) ARCH=$( uname -m ) ;;
+  esac
+fi
+
+TMP=${TMP:-/tmp/SSb}
+PKG=${PKG:-$TMP/package-$PRGNAM-$VERSION}
+OUTPUT=${OUTPUT:-/tmp}
+
+if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
+  echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
+  exit 0
+fi
+
+if [ $ARCH != "x86_64" ]; then
+  echo "This script supports only x86_64 now, "
+  exit 1
+fi
+
+if [ ! -f /var/log/packages/glibc-[0-9]*_multilib-x86_64-*alien ]; then
+    echo "Install glibc-[0-9]*_multilib-x86_64-*alien"
+    exit 1
+fi
+
+set -e
+
+rm -rf $PKG
+mkdir -p $TMP $PKG $OUTPUT
+cd $TMP
+rm -rf wine-tkg-git
+rm -rf /tmp/wine-tkg
+
+git clone https://github.com/Frogging-Family/wine-tkg-git
+
+cd wine-tkg-git/wine-tkg-git
+
+if [ $PROTONIFY == "YES" ]; then
+    sed -i '/_protonify=/ s/"false"/"true"/' customization.cfg
+fi
+
+if [ $LOCAL_PRESET_PROMPT == "NO" ]; then
+    sed -i '/_LOCAL_PRESET=/ s/""/"none"/' customization.cfg
+fi
+
+if [ $ALLOW_SERVER_RT_PRIO == "YES" ]; then
+    sed -i '/_allow_server_rt_prio=/ s/"false"/"true"/' wine-tkg-profiles/advanced-customization.cfg
+fi
+
+# All this sed is for /usr install, EXTERNAL_INSTALL seem not to work for slackware
+sed -i "s|_nomakepkg_prefix_path=\"\"|_nomakepkg_prefix_path=\"/usr\"|g" customization.cfg
+sed -i '/_nomakepkg_nover=/ s/"false"/"true"/' wine-tkg-profiles/advanced-customization.cfg
+
+sed -i "s|\"\$_prefix\"|$PKG\"\$_prefix\"|g"            wine-tkg-scripts/build.sh
+sed -i "s|make install|make install DESTDIR=$PKG|g" wine-tkg-scripts/build.sh
+sed -i 's|_nomakepkg_pkgname="${pkgname}"|_nomakepkg_pkgname=""|g' wine-tkg-scripts/build.sh
+sed -i 's|_nomakepkg_pkgname="${pkgname}"|_nomakepkg_pkgname=""|g' non-makepkg-build.sh
+sed -i 's|local _prefix="${_nomakepkg_prefix_path}/${_nomakepkg_pkgname}"|local _prefix="${_nomakepkg_prefix_path}"|g' wine-tkg-scripts/build.sh
+sed -i 's|local _prefix="${_nomakepkg_prefix_path}/${_nomakepkg_pkgname}"|local _prefix="${_nomakepkg_prefix_path}"|g' non-makepkg-build.sh
+
+chown -R root:root .
+find -L . \
+ \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \
+  -o -perm 511 \) -exec chmod 755 {} \; -o \
+ \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
+  -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
+
+./non-makepkg-build.sh || { rm -rf /tmp/wine-tkg; exit 1; }
+
+#VERSION= upgrade from /tmp/wine-tkg/
+
+find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
+  | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
+
+# Add a desktop menu for winecfg, wine-uninstaller, wine-browsedrive and doc:
+mkdir -p $PKG/usr/share/{applications,icons/hicolor/scalable/apps,pixmaps}
+mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+
+cd src/wine-git
+DOCS="ANNOUNCE AUTHORS COPYING.LIB LICENSE* MAINTAINERS README VERSION"
+FONTS_LICENSE="COPYING.arial COPYING.cour COPYING.msyh COPYING.times"
+cp $DOCS $FONTS_LICENSE $PKG/usr/doc/$PRGNAM-$VERSION
+cp programs/winecfg/winecfg.svg $PKG/usr/share/icons/hicolor/scalable/apps/
+cd ../..
+# clear source from tmp (can stop the user from being able to build in $HOME)
+rm -rf /tmp/wine-tkg
+
+# old stuff maybe use for opt build
+#cp $CWD/symlink_usr_bin.sh $PKG/opt/wine-*/
+#sed -i "s|/opt/wine-tkg-staging-fsync-git|/opt/$(ls $PKG/opt/)|g" $PKG/opt/wine-*/symlink_usr_bin.sh
+#mkdir -p $PKG/usr/share/applications/
+#cp $CWD/wine-tkg-git.desktop $PKG/usr/share/applications/
+
+# on slackware /usr/share/man is a symbolic link to /usr/man
+mv $PKG/usr/share/man $PKG/usr/man
+find $PKG/usr/man -type f -exec gzip -9 {} \;
+for i in $( find $PKG/usr/man -type l ) ; do ln -s $( readlink $i ).gz $i.gz ; rm $i ; done
+
+# Add font configuration:
+install -d $PKG/etc/fonts/conf.{avail,d}
+install -m644 $CWD/30-win32-aliases.conf $PKG/etc/fonts/conf.avail
+ln -sf /etc/fonts/conf.avail/30-win32-aliases.conf $PKG/etc/fonts/conf.d/30-win32-aliases.conf
+install -Dm 644 $CWD/wine-binfmt.conf $PKG/usr/lib/binfmt.d/wine.conf
+
+# Create Wine menu structure:
+mkdir -p $PKG/etc/xdg/menus/applications-merged
+cp $CWD/wine.menu $PKG/etc/xdg/menus/applications-merged
+
+# icons and desktop files
+convert $CWD/wine.svg -scale 64 $PKG/usr/share/pixmaps/wine.png
+cp $CWD/wine.svg $PKG/usr/share/icons/hicolor/scalable/apps/
+convert $CWD/winecfg.png -scale 64 $PKG/usr/share/pixmaps/winecfg.png
+convert $CWD/winecfg.png -scale 64 $PKG/usr/share/pixmaps/folder-wine.png
+convert $CWD/winecfg.png -scale 64 $PKG/usr/share/pixmaps/wine-uninstaller.png
+cp $CWD/*.desktop $PKG/usr/share/applications/
+
+# TODO:
+# part of the VERSION string should be in PRGNAM problem, regarding $PRGNAM.SlackBuild and slack-desc
+# should wine really be in bin/32/wine and wine64 in bin/ ? Don't think so
+
+cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
+
+mkdir -p $PKG/install
+cat $CWD/slack-desc > $PKG/install/slack-desc
+cat $CWD/doinst.sh > $PKG/install/doinst.sh
+
+cd $PKG
+/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE
