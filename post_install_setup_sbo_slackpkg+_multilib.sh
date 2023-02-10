@@ -67,6 +67,19 @@ upgradepkg --install-new /tmp/slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.t
 rm /tmp/sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz
 rm /tmp/slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.txz
 
+updateFun ()
+{
+echo ""
+echo "Do you want to upgrade slackware? (y/N)"
+read -r ANS
+if [ "$ANS" == "y" ] || [ "$ANS" == "Y" ]; then
+  slackpkg update gpg
+  slackpkg update
+  slackpkg upgrade-all
+  echo "!!Attention!! You may need to run lilo or setup you're boot loader and reboot !!Attention!!"
+fi
+}
+
 # Setup bail chance
 echo ""
 echo "*************************************"
@@ -76,28 +89,21 @@ read -r
 
 # Sed slackpkg mirror and run setupmultilib.sh
 if grep -v ^\# /etc/slackpkg/mirrors 2>/dev/null; then
-  echo Found mirror;
+  echo "Found mirror"
+  updateFun
   /usr/doc/slackpkg+-$slackpkg_version/setupmultilib.sh
 else
   if [[ $(cat /etc/slackware-version) == "Slackware $SV" ]]; then
     echo "Slackware $SV"
     sed -i "s/# https:\/\/mirrors.slackware.com\/slackware\/slackware64-$SV\//https:\/\/mirrors.slackware.com\/slackware\/slackware64-$SV\//g" /etc/slackpkg/mirrors
+    updateFun
     /usr/doc/slackpkg+-$slackpkg_version/setupmultilib.sh
   elif [[ $(cat /etc/slackware-version) == "Slackware $SV+" ]]; then
     echo "Slackware $SV+"
     sed -i 's/# https:\/\/mirrors.slackware.com\/slackware\/slackware64-current\//https:\/\/mirrors.slackware.com\/slackware\/slackware64-current\//g' /etc/slackpkg/mirrors
+    updateFun
     /usr/doc/slackpkg+-$slackpkg_version/setupmultilib.sh
   fi
-fi
-
-echo ""
-echo "Do you want to upgrade slackware? (y/N)"
-read -r ANS
-if [ "$ANS" == "y" -o "$ANS" == "Y" ]; then
-  slackpkg update gpg
-  slackpkg update
-  slackpkg upgrade-all
-  echo "!!Attention!! You may need to run lilo or setup you're boot loader and reboot !!Attention!!"
 fi
 
 exit 0
