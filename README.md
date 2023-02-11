@@ -2,9 +2,15 @@
 
 Configuration scripts and builds for Slackware music productions
 
-## Kernels
+## Git SlackBuilds
 
-kernel 5.15 xanmod1
+* wine-tkg
+* yabridge
+
+### Kernels
+
+* futex-waitv-winesync-api
+* kernel-xanmod
 
 ## How
 
@@ -16,14 +22,16 @@ See config.info first then run this file to get a some essential configuration
 for music production. Then create you're user and make sure you're in the audio
 group and use Slackware like normal.
 
-  - Tips: Build a better kernel
+##
 
-  - Tips: look at pipewire-enable.sh and pipewire-disable.sh /usr/sbin/
+* Tips
+    * build a better kernel
+    * look at pipewire-enable.sh and pipewire-disable.sh /usr/sbin/
 
-  - Slackbuilds pkg tips: [jack](https://slackbuilds.org/repository/15.0/audio/jack/)
+* Slackbuilds pkg tips
+    * [jack](https://slackbuilds.org/repository/15.0/audio/jack/)
+    * [pipewire-native-jack](https://slackbuilds.org/repository/15.0/audio/pipewire-native-jack/)
+    * [carla](https://slackbuilds.org/repository/15.0/audio/carla/)
 
-  - Slackbuilds pkg tips: [pipewire-native-jack](https://slackbuilds.org/repository/15.0/audio/pipewire-native-jack/)
-
-  - Slackbuilds pkg tips: [carla](https://slackbuilds.org/repository/15.0/audio/carla/)
-
-  - alien tips: [pipewire-jack](http://www.slackware.com/~alien/slackbuilds/pipewire-jack/)
+* Alien pkg tips
+    * [pipewire-jack](http://www.slackware.com/~alien/slackbuilds/pipewire-jack/)
