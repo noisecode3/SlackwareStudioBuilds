@@ -26,12 +26,19 @@ cd $(dirname $0) ; CWD=$(pwd)
 
 PRGNAM=wine-tkg
 VERSION=${VERSION:-git}
+PLAIN_VERSION=${PLAIN_VERSION:-}
+STAGING_VERSION=${STAGING_VERSION:-}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SSb}
 PKGTYPE=${PKGTYPE:-tgz}
+USE_STAGING=${USE_STAGING:-YES}
+USE_GE_PATCHES=${USE_GE_PATCHES:-YES}
 PROTONIFY=${PROTONIFY:-NO}
 LOCAL_PRESET_PROMPT=${LOCAL_PRESET_PROMPT:-NO}
 ALLOW_SERVER_RT_PRIO=${ALLOW_SERVER_RT_PRIO:-YES}
+FASTSYNC=${FASTSYNC:-NO}
+ESYNC=${ESYNC:-YES}
+FSYNC=${FSYNC:-YES}
 
 if [ -z "$ARCH" ]; then
   case "$( uname -m )" in
@@ -42,7 +49,7 @@ if [ -z "$ARCH" ]; then
 fi
 
 TMP=${TMP:-/tmp/SSb}
-PKG=${PKG:-$TMP/package-$PRGNAM-$VERSION}
+PKG=${PKG:-$TMP/package-$PRGNAM-git}
 OUTPUT=${OUTPUT:-/tmp}
 
 if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
@@ -72,6 +79,23 @@ git clone https://github.com/Frogging-Family/wine-tkg-git
 
 cd wine-tkg-git/wine-tkg-git
 
+if [ $VERSION != "git" ]; then
+    sed -i "s/_plain_version=\"\"/_plain_version=\"wine-$VERSION\"/" customization.cfg
+    sed -i "s/_staging_version=\"\"/_staging_version=\"v$VERSION\"/" customization.cfg
+else
+    sed -i "s/_plain_version=\"\"/_plain_version=\"$PLAIN_VERSION\"/" customization.cfg
+    sed -i "s/_staging_version=\"\"/_staging_version=\"$STAGING_VERSION\"/" customization.cfg
+fi
+
+
+if [ $USE_STAGING == "NO" ]; then
+    sed -i '/_use_staging=/ s/"true"/"false"/' customization.cfg
+fi
+
+if [ $USE_GE_PATCHES == "NO" ]; then
+    sed -i '/_use_GE_patches=/ s/"true"/"false"/' customization.cfg
+fi
+
 if [ $PROTONIFY == "YES" ]; then
     sed -i '/_protonify=/ s/"false"/"true"/' customization.cfg
 fi
@@ -84,7 +108,18 @@ if [ $ALLOW_SERVER_RT_PRIO == "YES" ]; then
     sed -i '/_allow_server_rt_prio=/ s/"false"/"true"/' wine-tkg-profiles/advanced-customization.cfg
 fi
 
-# All this sed is for /usr install, EXTERNAL_INSTALL seem not to work for slackware
+if [ $FASTSYNC == "YES" ]; then
+    sed -i '/_use_fastsync=/ s/"false"/"true"/' customization.cfg
+fi
+
+if [ $ESYNC == "NO" ]; then
+    sed -i '/_use_esync=/ s/"true"/"false"/' customization.cfg
+fi
+
+if [ $FSYNC == "NO" ]; then
+    sed -i '/_use_fsync=/ s/"true"/"false"/' customization.cfg
+fi
+
 sed -i "s|_nomakepkg_prefix_path=\"\"|_nomakepkg_prefix_path=\"/usr\"|g" customization.cfg
 sed -i '/_nomakepkg_nover=/ s/"false"/"true"/' wine-tkg-profiles/advanced-customization.cfg
 
@@ -104,29 +139,25 @@ find -L . \
 
 ./non-makepkg-build.sh || { rm -rf /tmp/wine-tkg; exit 1; }
 
-#VERSION= upgrade from /tmp/wine-tkg/
 
 find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
   | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
+
+cd src/wine-git
+VERSION=$(cat VERSION | awk '{print $3}')
 
 # Add a desktop menu for winecfg, wine-uninstaller, wine-browsedrive and doc:
 mkdir -p $PKG/usr/share/{applications,icons/hicolor/scalable/apps,pixmaps}
 mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
 
-cd src/wine-git
 DOCS="ANNOUNCE AUTHORS COPYING.LIB LICENSE* MAINTAINERS README VERSION"
 FONTS_LICENSE="COPYING.arial COPYING.cour COPYING.msyh COPYING.times"
 cp $DOCS $FONTS_LICENSE $PKG/usr/doc/$PRGNAM-$VERSION
 cp programs/winecfg/winecfg.svg $PKG/usr/share/icons/hicolor/scalable/apps/
-cd ../..
-# clear source from tmp (can stop the user from being able to build in $HOME)
-rm -rf /tmp/wine-tkg
 
-# old stuff maybe use for opt build
-#cp $CWD/symlink_usr_bin.sh $PKG/opt/wine-*/
-#sed -i "s|/opt/wine-tkg-staging-fsync-git|/opt/$(ls $PKG/opt/)|g" $PKG/opt/wine-*/symlink_usr_bin.sh
-#mkdir -p $PKG/usr/share/applications/
-#cp $CWD/wine-tkg-git.desktop $PKG/usr/share/applications/
+# clear source from tmp (can stop the user from being able to build in $HOME)
+cd ../..
+rm -rf /tmp/wine-tkg
 
 # on slackware /usr/share/man is a symbolic link to /usr/man
 mv $PKG/usr/share/man $PKG/usr/man
@@ -150,10 +181,6 @@ convert $CWD/winecfg.png -scale 64 $PKG/usr/share/pixmaps/winecfg.png
 convert $CWD/winecfg.png -scale 64 $PKG/usr/share/pixmaps/folder-wine.png
 convert $CWD/winecfg.png -scale 64 $PKG/usr/share/pixmaps/wine-uninstaller.png
 cp $CWD/*.desktop $PKG/usr/share/applications/
-
-# TODO:
-# part of the VERSION string should be in PRGNAM problem, regarding $PRGNAM.SlackBuild and slack-desc
-# should wine really be in bin/32/wine and wine64 in bin/ ? Don't think so
 
 cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
 
