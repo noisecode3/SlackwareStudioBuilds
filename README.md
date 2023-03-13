@@ -1,6 +1,7 @@
 # Slackware Studio Builds
 
 Configuration scripts and builds for Slackware music productions
+Slackware 15.1 on the road to an eventual beta
 
 ## Git SlackBuilds
 
@@ -9,7 +10,6 @@ Configuration scripts and builds for Slackware music productions
 
 ### Kernels
 
-* futex-waitv-winesync-api
 * kernel-xanmod
 
 ## How
@@ -35,3 +35,4 @@ group and use Slackware like normal.
 
 * Alien pkg tips
   * [pipewire-jack](http://www.slackware.com/~alien/slackbuilds/pipewire-jack/)
+  * [pulseaudio-jack](http://www.slackware.com/~alien/slackbuilds/pulseaudio-jack/pkg64/)

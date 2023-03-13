@@ -25,7 +25,7 @@
 cd $(dirname $0) ; CWD=$(pwd)
 
 PRGNAM=kernel-xanmod
-VERSION=${VERSION:-5.15.89}
+VERSION=${VERSION:-6.1.13-rt7}
 KERNEL=${KERNEL:-xanmod1}
 NUMJOBS=${NUMJOBS:-" -j$(expr $(nproc) + 1) "}
 BUILD=${BUILD:-1}
