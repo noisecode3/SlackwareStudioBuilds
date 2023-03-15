@@ -1,0 +1,51 @@
+Xanmod kernel
+
+This kernel should be used and will preform better with rtirq
+sbopkg will try to compile kernel modules for this kernel with
+default option on but not for the rt version
+
+RUNNING THE SCRIPT WILL NEED INTERNET AND GIT
+
+If you set VERSION it will switch branch
+VERSION=6.1-rt
+
+There is a copy of the xanmod source code installed in /usr/src/
+without touching the linux symbolic link in /usr/src.
+Point to you config file and patch directory with a leading "/", if you don't
+it will be relative to /tmp/SSb/package-kernel-xanmod/usr/src/linux../
+that is probably not what you want.
+This build was made for Slackware and for better use of wine-tkg.
+
+I want to automate as much as possible and also make the script
+and download secure. Spend some time to configure you kernel.
+
+Don't forget to configure you're boot manager also :)
+
+Path to kernels:
+
+/boot/vmlinuz-generic
+/boot/vmlinuz-huge
+/boot/vmlinuz-xanmod
+
+Don't forget you're mkinitrd command and update you're boot loader!
+
+Initrd command:
+/usr/share/mkinitrd/mkinitrd_command_generator.sh -k version-xanmod1
+
+If you have Intel processor you must load microcode early!
+Add -P /boot/intel-ucode.cpio to the generated mkinitrd command!
+
+PATCH_DIR=/full/path/to/the/directory/patches
+CONFIG=/full/path/to/kernel/config/file
+
+Patches need to be in the format .patch or .patch.xz
+
+Everything is set to be verbose. Analyse the output
+to see how the patching went and from where the config
+was copied.
+
+You can set REMOVE_GIT=YES to remove .git directory
+
+Pleas give feedback, if you see something in kernel config or in the
+script that you think could be better. E-mail me or open pull request
+on git against this packages. The config is the default slackware64-generic

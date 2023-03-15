@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Slackware build script for kernel-source-xanmod
+# Slackware build script for kernel-generic-xanmod
 
 # Copyright 2023 Martin Bångens Sweden
 # All rights reserved.
@@ -24,9 +24,9 @@
 
 cd $(dirname $0) ; CWD=$(pwd)
 
-PRGNAM=kernel-source-xanmod
-VERSION=${VERSION:-6.1-rt}
-KERNEL=${KERNEL:-}
+PRGNAM=kernel-xanmod
+VERSION=${VERSION:-6.1}
+KERNEL=${KERNEL:-xanmod1}
 NUMJOBS=${NUMJOBS:-" -j$(expr $(nproc) + 1) "}
 REMOVE_GIT=${REMOVE_GIT:-YES}
 BUILD=${BUILD:-1}
@@ -42,7 +42,7 @@ if [ -z "$ARCH" ]; then
 fi
 
 if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
-  echo "$PRGNAM-$VERSION-noarch-$BUILD$TAG.$PKGTYPE"
+  echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
   exit 0
 fi
 
@@ -58,13 +58,12 @@ OUTPUT=${OUTPUT:-/tmp}
 set -e
 
 rm -rf $PKG
-mkdir -p $TMP $PKG/usr/src $OUTPUT
+mkdir -p $TMP $PKG/usr/src $PKG/boot $PKG/lib/modules $OUTPUT
 
 cd $PKG/usr/src
 
 git clone --depth 1 -b $VERSION https://github.com/xanmod/linux
-mv linux linux-$VERSION-$KERNEL
-cd linux-$VERSION-$KERNEL
+cd linux
 
 if [ "$REMOVE_GIT" = "YES" ]; then
   rm -fr .git*
@@ -87,12 +86,15 @@ if [ -d "$PATCH_DIR" ]; then
 fi
 
 # Sync version to git and applied patches
+VERSION=$(grep "^VERSION = " Makefile | rev | cut -f 1 -d ' ' | rev)
+VERSION=$VERSION.$(grep "^PATCHLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev)
+VERSION=$VERSION.$(grep "^SUBLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev)
+VERSION=$VERSION$(grep "^EXTRAVERSION = " Makefile | rev | cut -f 1 -d ' ' | rev)
+
 if [ -f "localversion-rt" ]; then
-  VERSION=$(grep "^VERSION = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^PATCHLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^SUBLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev)$(grep "^EXTRAVERSION = " Makefile | rev | cut -f 1 -d ' ' | rev)$(cat localversion-rt 2> /dev/null)
+  VERSION=$VERSION$(cat localversion-rt 2> /dev/null | sed s/-/_/g)
 elif [ -f "localversion-tt" ]; then
-  VERSION=$(grep "^VERSION = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^PATCHLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^SUBLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev)$(grep "^EXTRAVERSION = " Makefile | rev | cut -f 1 -d ' ' | rev)$(cat localversion-tt 2> /dev/null)
-else
-  VERSION=$(grep "^VERSION = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^PATCHLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev).$(grep "^SUBLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev)$(grep "^EXTRAVERSION = " Makefile | rev | cut -f 1 -d ' ' | rev)
+  VERSION=$VERSION$(cat localversion-tt 2> /dev/null | sed s/-/_/g)
 fi
 
 if [ -f "localversion-xanmod" ]; then
@@ -101,8 +103,8 @@ elif [ -f "localversion" ]; then
   KERNEL=$(cat localversion 2> /dev/null | sed s/-//g)
 fi
 
-cd ../
-mv linux-* linux-$VERSION-$KERNEL
+cd ..
+mv linux linux-$VERSION-$KERNEL
 cd linux-$VERSION-$KERNEL
 
 # If we specify a config file then do some check to see that is looks like a config file
@@ -124,16 +126,35 @@ find . \
  \( -perm 666 -o -perm 664 -o -perm 600 -o -perm 444 -o -perm 440 -o -perm 400 \) \
  -exec chmod 644 {} \+
 
-# We should build the kernel so that out of tree module builds will work
+make clean
+make prepare
 make oldconfig
 make menuconfig
-make $NUMJOBS || exit 2
+make $NUMJOBS bzImage || make bzImage || exit 2
 make $NUMJOBS modules || exit 3
+make INSTALL_MOD_PATH=$PKG modules_install || exit 4
+
+cd $PKG/lib/modules/$VERSION-$KERNEL
+rm build source
+ln -sv /usr/src/linux-$VERSION-$KERNEL build || exit 5
+ln -sv /usr/src/linux-$VERSION-$KERNEL source || exit 5
+
+cd $PKG/usr/src/linux-$VERSION-$KERNEL
+depmod -b $PKG -a $VERSION-$KERNEL
+
+cp -v System.map $PKG/boot/System.map-xanmod-$VERSION || exit 3
+cp -v .config $PKG/boot/config-xanmod-$VERSION || exit 3
+cp -v arch/x86/boot/bzImage $PKG/boot/vmlinuz-xanmod-$VERSION || exit 3
+
+ln -srv $PKG/boot/System.map-xanmod-$VERSION $PKG/boot/System.map-xanmod
+ln -srv $PKG/boot/config-xanmod-$VERSION $PKG/boot/config-xanmod
+ln -srv $PKG/boot/vmlinuz-xanmod-$VERSION $PKG/boot/vmlinuz-xanmod
+
 make clean
 make prepare
 find . -name "*Image" -exec rm "{}" \+
 rm -f .config.old .version
-find . -name "*.cmd" -exec rm -f "{}" \+ 
+find . -name "*.cmd" -exec rm -f "{}" \+
 rm .*.d
 
 mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
@@ -143,4 +164,4 @@ mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
 
 cd $PKG
-/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-noarch-$BUILD$TAG.$PKGTYPE
+/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE
