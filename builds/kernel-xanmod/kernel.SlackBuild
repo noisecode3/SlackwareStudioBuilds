@@ -105,8 +105,8 @@ elif [ -f "localversion" ]; then
 fi
 
 cd ..
-mv linux linux-$VERSION$KTG$KERNEL
-cd linux-$VERSION$KTG$KERNEL
+mv linux linux-$VERSION$KTAG$KERNEL
+cd linux-$VERSION$KTAG$KERNEL
 
 # If we specify a config file then do some check to see that is looks like a config file
 if [ -f "$CONFIG" ]; then
