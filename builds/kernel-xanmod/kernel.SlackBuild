@@ -160,7 +160,7 @@ rm .*.d
 
 mkdir -p $PKG/usr/doc/$PRGNAM$KERNEL${KTAG:0:3}-$VERSION$KTAG
 cat $CWD/$PRGNAM.SlackBuild > \
-$PKG/usr/doc/$PRGNAM${KTAG:0:3}$KERNEL-$VERSION$KTAG/$PRGNAM$KERNEL${KTAG:0:3}.SlackBuild
+$PKG/usr/doc/$PRGNAM$KERNEL${KTAG:0:3}-$VERSION$KTAG/$PRGNAM$KERNEL${KTAG:0:3}.SlackBuild
 
 mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
