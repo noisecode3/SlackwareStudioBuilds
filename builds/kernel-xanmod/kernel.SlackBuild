@@ -24,9 +24,10 @@
 
 cd $(dirname $0) ; CWD=$(pwd)
 
-PRGNAM=kernel-xanmod
+PRGNAM=kernel
 VERSION=${VERSION:-6.1}
-KERNEL=${KERNEL:-xanmod1}
+KERNEL=-xanmod1
+KTAG=
 NUMJOBS=${NUMJOBS:-" -j$(expr $(nproc) + 1) "}
 REMOVE_GIT=${REMOVE_GIT:-YES}
 BUILD=${BUILD:-1}
@@ -42,7 +43,7 @@ if [ -z "$ARCH" ]; then
 fi
 
 if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
-  echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
+  echo "$PRGNAM$KERNEL-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
   exit 0
 fi
 
@@ -73,13 +74,13 @@ fi
 if [ -d "$PATCH_DIR" ]; then
   if [ `ls -1 $PATCH_DIR/*.patch.xz 2>/dev/null | wc -l` != 0 ]; then
     for i in $PATCH_DIR/*.patch.xz; do
-      xzcat $i | patch -p1 --verbose --backup --suffix=.orig || exit 1
+      xzcat $i | patch -p1 --verbose --backup --suffix=.orig || exit 2
       cp $i $PKG/usr/src/linux-$VERSION-$KERNEL
     done
   fi
   if [ `ls -1 $PATCH_DIR/*.patch 2>/dev/null | wc -l` != 0 ]; then
     for i in $PATCH_DIR/*.patch; do
-      cat $i | patch -p1 --verbose --backup --suffix=.orig || exit 1
+      cat $i | patch -p1 --verbose --backup --suffix=.orig || exit 3
       cp $i $PKG/usr/src/linux-$VERSION-$KERNEL
     done
   fi
@@ -92,20 +93,20 @@ VERSION=$VERSION.$(grep "^SUBLEVEL = " Makefile | rev | cut -f 1 -d ' ' | rev)
 VERSION=$VERSION$(grep "^EXTRAVERSION = " Makefile | rev | cut -f 1 -d ' ' | rev)
 
 if [ -f "localversion-rt" ]; then
-  VERSION=$VERSION$(cat localversion-rt 2> /dev/null | sed s/-/_/g)
+  KTAG=$(cat localversion-rt 2> /dev/null)
 elif [ -f "localversion-tt" ]; then
-  VERSION=$VERSION$(cat localversion-tt 2> /dev/null | sed s/-/_/g)
+  KTAG=$(cat localversion-tt 2> /dev/null)
 fi
 
 if [ -f "localversion-xanmod" ]; then
-  KERNEL=$(cat localversion-xanmod 2> /dev/null | sed s/-//g)
+  KERNEL=$(cat localversion-xanmod 2> /dev/null)
 elif [ -f "localversion" ]; then
-  KERNEL=$(cat localversion 2> /dev/null | sed s/-//g)
+  KERNEL=$(cat localversion 2> /dev/null)
 fi
 
 cd ..
-mv linux linux-$VERSION-$KERNEL
-cd linux-$VERSION-$KERNEL
+mv linux linux-$VERSION$KTG$KERNEL
+cd linux-$VERSION$KTG$KERNEL
 
 # If we specify a config file then do some check to see that is looks like a config file
 if [ -f "$CONFIG" ]; then
@@ -113,10 +114,10 @@ if [ -f "$CONFIG" ]; then
     echo "Specified CONFIG file don't look right"
     exit 1
   else
-    cp -v $CONFIG .config || exit 1
+    cp -v $CONFIG .config || exit 4
   fi
 else
-  cp -v $CWD/config .config || exit 1
+  cp -v $CWD/config .config || exit 5
 fi
 
 chown -R root:root .
@@ -130,25 +131,25 @@ make clean
 make prepare
 make oldconfig
 make menuconfig
-make $NUMJOBS bzImage || make bzImage || exit 2
-make $NUMJOBS modules || exit 3
-make INSTALL_MOD_PATH=$PKG modules_install || exit 4
+make $NUMJOBS bzImage || make bzImage || exit 6
+make $NUMJOBS modules || exit 7
+make INSTALL_MOD_PATH=$PKG modules_install || exit 8
 
-cd $PKG/lib/modules/$VERSION-$KERNEL
+cd $PKG/lib/modules/$VERSION$KTAG$KERNEL
 rm build source
-ln -sv /usr/src/linux-$VERSION-$KERNEL build || exit 5
-ln -sv /usr/src/linux-$VERSION-$KERNEL source || exit 5
+ln -sv /usr/src/linux-$VERSION$KTAG$KERNEL build || exit 9
+ln -sv /usr/src/linux-$VERSION$KTAG$KERNEL source || exit 10
 
-cd $PKG/usr/src/linux-$VERSION-$KERNEL
-depmod -b $PKG -a $VERSION-$KERNEL
+cd $PKG/usr/src/linux-$VERSION$KTAG$KERNEL
+depmod -b $PKG -a $VERSION$KTAG$KERNEL
 
-cp -v System.map $PKG/boot/System.map-xanmod-$VERSION || exit 3
-cp -v .config $PKG/boot/config-xanmod-$VERSION || exit 3
-cp -v arch/x86/boot/bzImage $PKG/boot/vmlinuz-xanmod-$VERSION || exit 3
+cp -v System.map $PKG/boot/System.map$KERNEL${KTAG:0:3}-$VERSION$KTAG || exit 11
+cp -v .config $PKG/boot/config$KERNEL${KTAG:0:3}-$VERSION$KTAG || exit 12
+cp -v arch/x86/boot/bzImage $PKG/boot/vmlinuz$KERNEL${KTAG:0:3}-$VERSION$KTAG || exit 13
 
-ln -srv $PKG/boot/System.map-xanmod-$VERSION $PKG/boot/System.map-xanmod
-ln -srv $PKG/boot/config-xanmod-$VERSION $PKG/boot/config-xanmod
-ln -srv $PKG/boot/vmlinuz-xanmod-$VERSION $PKG/boot/vmlinuz-xanmod
+ln -srv $PKG/boot/System.map$KERNEL${KTAG:0:3}-$VERSION$KTAG $PKG/boot/System.map$KERNEL${KTAG:0:3}
+ln -srv $PKG/boot/config$KERNEL${KTAG:0:3}-$VERSION$KTAG $PKG/boot/config$KERNEL${KTAG:0:3}
+ln -srv $PKG/boot/vmlinuz$KERNEL${KTAG:0:3}-$VERSION$KTAG $PKG/boot/vmlinuz$KERNEL${KTAG:0:3}
 
 make clean
 make prepare
@@ -157,11 +158,12 @@ rm -f .config.old .version
 find . -name "*.cmd" -exec rm -f "{}" \+
 rm .*.d
 
-mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
-cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
+mkdir -p $PKG/usr/doc/$PRGNAM$KERNEL${KTAG:0:3}-$VERSION$KTAG
+cat $CWD/$PRGNAM.SlackBuild > \
+$PKG/usr/doc/$PRGNAM${KTAG:0:3}$KERNEL-$VERSION$KTAG/$PRGNAM$KERNEL${KTAG:0:3}.SlackBuild
 
 mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
 
 cd $PKG
-/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE
+/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM$KERNEL${KTAG:0:3}-$VERSION$KTAG-$ARCH-$BUILD$TAG.$PKGTYPE
