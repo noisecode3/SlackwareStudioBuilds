@@ -163,7 +163,7 @@ cat $CWD/$PRGNAM.SlackBuild > \
 $PKG/usr/doc/$PRGNAM$KERNEL${KTAG:0:3}-$VERSION$KTAG/$PRGNAM$KERNEL${KTAG:0:3}.SlackBuild
 
 mkdir -p $PKG/install
-cat $CWD/slack-desc > $PKG/install/slack-desc
+cat $CWD/slack-desc$(echo ${KTAG:0:3} | sed s/-/./) > $PKG/install/slack-desc
 
 cd $PKG
 /sbin/makepkg -l y -c n $OUTPUT/$PRGNAM$KERNEL${KTAG:0:3}-$VERSION$KTAG-$ARCH-$BUILD$TAG.$PKGTYPE
