@@ -6,7 +6,7 @@
 # customary to leave one space after the ':'.
 
                  |-----handy-ruler------------------------------------------------------|
-kernel-xanmod1-rt: kernel-xanmod1-rt (Desktop focused 64-bit Xanmod Linux kernel)
+kernel-xanmod1-rt: kernel-xanmod1-rt (Realtime Desktop focused 64-bit Linux kernel)
 kernel-xanmod1-rt:
 kernel-xanmod1-rt: This is a xanmod Linux kernel with modified or generic config file
 kernel-xanmod1-rt: and built-in support for most disk controllers. To use filesystems,
