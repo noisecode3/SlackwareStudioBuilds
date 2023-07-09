@@ -1,0 +1,19 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.
+# Line up the first '|' above the ':' following the base package name, and
+# the '|' on the right side marks the last column you can put a character in.
+# You must make exactly 11 lines for the formatting to be correct.  It's also
+# customary to leave one space after the ':' except on otherwise blank lines.
+
+        |-----handy-ruler------------------------------------------------------|
+surge-xt: surge-xt (short description of app)
+surge-xt:
+surge-xt: Surge XT is a virtual synthesizer originally released as “Surge”
+surge-xt: into open source by creator Claes Johanson in September 2018.
+surge-xt: Since then, it is maintained by a group of volunteers.
+surge-xt: 
+surge-xt: 
+surge-xt: 
+surge-xt: 
+surge-xt: 
+surge-xt: 
