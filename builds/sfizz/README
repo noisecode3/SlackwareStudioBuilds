@@ -1,0 +1,3 @@
+SFZ parser and synth c++ library, providing a JACK standalone client
+and the SFZ based sampler, providing LV2 / PD / VST3 plugins using
+the sfizz library.
