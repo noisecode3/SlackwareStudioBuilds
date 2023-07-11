@@ -26,13 +26,14 @@ cd $(dirname $0) ; CWD=$(pwd)
 
 PRGNAM=kernel
 VERSION=${VERSION:-6.1}
-KERNEL=-xanmod1
+KERNEL=${KERNEL:-"xanmod1"}
 KTAG=
 NUMJOBS=${NUMJOBS:-" -j$(expr $(nproc) + 1) "}
 REMOVE_GIT=${REMOVE_GIT:-YES}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SSb}
 PKGTYPE=${PKGTYPE:-tgz}
+KERNEL=-$KERNEL
 
 if [ -z "$ARCH" ]; then
   case "$( uname -m )" in
@@ -62,9 +63,17 @@ rm -rf $PKG
 mkdir -p $TMP $PKG/usr/src $PKG/boot $PKG/lib/modules $OUTPUT
 
 cd $PKG/usr/src
-
-git clone --depth 1 -b $VERSION https://github.com/xanmod/linux
-cd linux
+if [ "$KERNEL" = "-xanmod1" ]; then
+  git clone --depth 1 -b $VERSION https://github.com/xanmod/linux
+  cd linux
+elif [ "$KERNEL" = "-zen" ]; then
+  git clone --depth 1 -b $VERSION https://github.com/zen-kernel/zen-kernel
+  mv zen-kernel linux
+  cd linux
+else
+    echo "Unknown KERNEL"
+    exit 1
+fi
 
 if [ "$REMOVE_GIT" = "YES" ]; then
   rm -fr .git*
@@ -105,8 +114,14 @@ elif [ -f "localversion" ]; then
 fi
 
 cd ..
-mv linux linux-$VERSION$KTAG$KERNEL
-cd linux-$VERSION$KTAG$KERNEL
+
+if [ "$KERNEL" = "-zen" ]; then
+  mv linux linux-$VERSION
+  cd linux-$VERSION
+else
+  mv linux linux-$VERSION$KTAG$KERNEL
+  cd linux-$VERSION$KTAG$KERNEL
+fi
 
 # If we specify a config file then do some check to see that is looks like a config file
 if [ -f "$CONFIG" ]; then
@@ -135,13 +150,23 @@ make $NUMJOBS bzImage || make bzImage || exit 6
 make $NUMJOBS modules || exit 7
 make INSTALL_MOD_PATH=$PKG modules_install || exit 8
 
-cd $PKG/lib/modules/$VERSION$KTAG$KERNEL
-rm build source
-ln -sv /usr/src/linux-$VERSION$KTAG$KERNEL build || exit 9
-ln -sv /usr/src/linux-$VERSION$KTAG$KERNEL source || exit 10
+if [ "$KERNEL" = "-zen" ]; then
+  MODULESTAG=$VERSION
+else
+  MODULESTAG=$VERSION$KTAG$KERNEL
+fi
 
-cd $PKG/usr/src/linux-$VERSION$KTAG$KERNEL
-depmod -b $PKG -a $VERSION$KTAG$KERNEL
+cd $PKG/lib/modules/$MODULESTAG
+rm build source
+ln -sv /usr/src/linux-$MODULESTAG build || exit 9
+ln -sv /usr/src/linux-$MODULESTAG source || exit 10
+
+cd $PKG/usr/src/linux-$MODULESTAG
+depmod -b $PKG -a $MODULESTAG
+
+if [ "$KERNEL" = "-zen" ]; then
+  VERSION="${VERSION%-*}"
+fi
 
 cp -v System.map $PKG/boot/System.map$KERNEL${KTAG:0:3}-$VERSION$KTAG || exit 11
 cp -v .config $PKG/boot/config$KERNEL${KTAG:0:3}-$VERSION$KTAG || exit 12
@@ -163,7 +188,14 @@ cat $CWD/$PRGNAM.SlackBuild > \
 $PKG/usr/doc/$PRGNAM$KERNEL${KTAG:0:3}-$VERSION$KTAG/$PRGNAM$KERNEL${KTAG:0:3}.SlackBuild
 
 mkdir -p $PKG/install
-cat $CWD/slack-desc$(echo ${KTAG:0:3} | sed s/-/./) > $PKG/install/slack-desc
+
+if [ "$KERNEL${KTAG:0:3}" = "xanmod1" ]; then
+  cat $CWD/slack-desc > $PKG/install/slack-desc
+elif [ "$KERNEL${KTAG:0:3}" = "xanmod1-rt" ]; then
+  cat $CWD/slack-desc.rt > $PKG/install/slack-desc
+elif [ "$KERNEL${KTAG:0:3}" = "zen" ]; then
+  cat $CWD/slack-desc.zen > $PKG/install/slack-desc
+fi
 
 cd $PKG
 /sbin/makepkg -l y -c n $OUTPUT/$PRGNAM$KERNEL${KTAG:0:3}-$VERSION$KTAG-$ARCH-$BUILD$TAG.$PKGTYPE
