@@ -1,0 +1,4 @@
+BespokeSynth is a software modular synth  with support for python
+
+Optional dependencies:
+ python3-jedi webkit2gtk jack
