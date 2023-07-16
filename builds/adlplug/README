@@ -1,0 +1,5 @@
+This software package provides FM synthesizer plugins,
+     based on OPL3 and OPN2 sound chip emulations.
+
+Optional dependencies:
+webkit2gtk jack
