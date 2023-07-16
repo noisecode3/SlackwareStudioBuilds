@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Slackware build script for bespokesynth
+# Slackware build script for aida-x
 
 # Copyright 2023 Martin Bångens Sweden
 # All rights reserved.
@@ -24,7 +24,7 @@
 
 cd $(dirname $0) ; CWD=$(pwd)
 
-PRGNAM=bespokesynth
+PRGNAM=aida-x
 VERSION=${VERSION:-git}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SSb}
@@ -45,9 +45,9 @@ OUTPUT=${OUTPUT:-/tmp}
 if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
   mkdir -p $TMP
   cd $TMP
-  rm -rf BespokeSynth
-  git clone https://github.com/BespokeSynth/BespokeSynth
-  cd BespokeSynth
+  rm -rf AIDA-X
+  git clone https://github.com/AidaDSP/AIDA-X
+  cd AIDA-X
   VERSION=$(git describe --tags)
   VERSION=$(echo $VERSION | tr '-' . )
   echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
@@ -56,12 +56,17 @@ fi
 
 set -e
 
+
 rm -rf $PKG
-mkdir -p $TMP $PKG $OUTPUT $PKG
+LIBDIR=lib
+if [ $ARCH == "x86_64" ]; then
+    LIBDIR="$LIBDIR"64
+fi
+mkdir -p $TMP $PKG $OUTPUT $PKG/$LIBDIR
 cd $TMP
-rm -rf BespokeSynth
-git clone https://github.com/BespokeSynth/BespokeSynth
-cd BespokeSynth
+rm -rf AIDA-X
+git clone https://github.com/AidaDSP/AIDA-X
+cd AIDA-X
 git submodule update --init --recursive
 VERSION=$(git describe --tags)
 VERSION=$(echo $VERSION | tr '-' . )
@@ -74,16 +79,17 @@ find -L . \
 
 cmake -B build \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_INSTALL_PREFIX=/usr \
-  -DBESPOKE_DEVENDORED_SYSTEM_JUCE=OFF \
-  -DBESPOKE_SYSTEM_PYBIND11=OFF \
-  -DBESPOKE_SYSTEM_JSONCPP=OFF \
-  -DBESPOKE_SYSTEM_TUNING_LIBRARY=OFF \
-  -DBESPOKE_SYSTEM_JUCE=OFF
-
+  -DCMAKE_INSTALL_PREFIX=/usr
 cmake --build build
 
-DESTDIR=$PKG cmake --install build
+
+install -vDm 755 build/bin/*.clap -t "$PKG/usr/lib$LIBDIR/clap/"
+install -vDm 755 build/bin/AIDA-X.lv2/*.so -t "$PKG/usr/$LIBDIR/lv2/AIDA-X.lv2/"
+install -vDm 644 build/bin/AIDA-X.lv2/*.ttl -t "$PKG/usr/$LIBDIR/lv2/AIDA-X.lv2/"
+install -vDm 755 build/bin/AIDA-X -t "$PKG/usr/bin/"
+install -vDm 755 build/bin/AIDA-X-vst2.so -t "$PKG/usr/lib/vst/"
+install -vDm 755 build/bin/AIDA-X.vst3/Contents/$ARCH-linux/*.so -t "$PKG/usr/$LIBDIR/vst3/AIDA-X.vst3/Contents/$ARCH-linux/"
+
 
 find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
   | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true

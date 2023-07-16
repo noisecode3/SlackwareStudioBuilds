@@ -77,21 +77,25 @@ find -L . \
  \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
   -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
 
+echo "configuring adlplug"
 cmake -B build-adlplug \
-  -DCMAKE_BUILD_TYPE=None \
+  -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX=/usr \
   -DCMAKE_INSTALL_LIBDIR=/usr/$LIBDIR \
   -DADLplug_CHIP=OPL3 \
   -DADLplug_USE_SYSTEM_FMT=OFF
 
+echo "configuring opnplug"
 cmake -B build-opnplug \
-  -DCMAKE_BUILD_TYPE=None \
+  -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX=/usr \
   -DCMAKE_INSTALL_LIBDIR=/usr/$LIBDIR \
   -DADLplug_CHIP=OPN2 \
   -DADLplug_USE_SYSTEM_FMT=OFF
 
+echo "building adlplug"
 cmake --build build-adlplug
+echo "building opnplug"
 cmake --build build-opnplug
 
 DESTDIR=$PKG cmake --install build-adlplug
