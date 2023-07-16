@@ -61,7 +61,7 @@ LIBDIR=lib
 if [ $ARCH == "x86_64" ]; then
     LIBDIR="$LIBDIR"64
 fi
-mkdir -p $TMP $PKG $OUTPUT $PKG/$LIBDIR
+mkdir -p $TMP $PKG $OUTPUT $PKG
 cd $TMP
 rm -rf $PRGNAM
 git clone https://github.com/sfztools/sfizz
@@ -79,7 +79,6 @@ find -L . \
 cmake -B build \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX=/usr \
-  -DCMAKE_INSTALL_LIBDIR=$LIBDIR \
   -DENABLE_LTO=ON
 cd build
   make
@@ -101,13 +100,12 @@ find -L . \
 cmake -B build \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX=/usr \
-  -DCMAKE_INSTALL_LIBDIR=$LIBDIR \
   -DPLUGIN_PUREDATA=ON
 cd build
   make
   DESTDIR=$PKG make install
 cd ..
-
+mv $PKG/usr/lib $PKG/usr/$LIBDIR
 
 find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
   | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
@@ -119,7 +117,7 @@ cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
 
 mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
-#cat $CWD/doinst.sh > $PKG/install/doinst.sh
+cat $CWD/doinst.sh > $PKG/install/doinst.sh
 
 cd $PKG
 /sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE
