@@ -83,11 +83,11 @@ cmake -B build \
 cmake --build build
 
 
-install -vDm 755 build/bin/*.clap -t "$PKG/usr/lib$LIBDIR/clap/"
+install -vDm 755 build/bin/*.clap -t "$PKG/usr/$LIBDIR/clap/"
 install -vDm 755 build/bin/AIDA-X.lv2/*.so -t "$PKG/usr/$LIBDIR/lv2/AIDA-X.lv2/"
 install -vDm 644 build/bin/AIDA-X.lv2/*.ttl -t "$PKG/usr/$LIBDIR/lv2/AIDA-X.lv2/"
 install -vDm 755 build/bin/AIDA-X -t "$PKG/usr/bin/"
-install -vDm 755 build/bin/AIDA-X-vst2.so -t "$PKG/usr/lib/vst/"
+install -vDm 755 build/bin/AIDA-X-vst2.so -t "$PKG/usr/$LIBDIR/vst/"
 install -vDm 755 build/bin/AIDA-X.vst3/Contents/$ARCH-linux/*.so -t "$PKG/usr/$LIBDIR/vst3/AIDA-X.vst3/Contents/$ARCH-linux/"
 
 
