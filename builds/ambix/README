@@ -1,0 +1,9 @@
+cross-platform Ambisonic VST, LV2 plug-ins with variable order for use
+in Digital Audio Workstations like Reaper or Ardour or as Jack
+standalone applications. The plug-in suite use the ambiX (1) convention
+(ACN channel order, SN3D normalization, full periphony (3D)) except the
+sqrt(1/4pi) factor in equation 3. these plug-ins use a recursive
+implementation of the spherical harmonics, therefore the maximum
+Ambisonic order is defined at compile time. the practical maximum order
+is rather defined by the hosts maximum channel count (N+1)^2 or your
+CPU power
