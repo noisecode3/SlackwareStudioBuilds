@@ -7,3 +7,6 @@ implementation of the spherical harmonics, therefore the maximum
 Ambisonic order is defined at compile time. the practical maximum order
 is rather defined by the hosts maximum channel count (N+1)^2 or your
 CPU power
+
+Optional dependencies:
+webkit2gtk
