@@ -1,0 +1,3 @@
+B.Choppr cuts the audio input stream into a repeated sequence of up 
+to 16 chops. Each chop can be leveled up or down (gating) or panned
+to the left or right. B.Choppr is the successor of B.Slizr.
