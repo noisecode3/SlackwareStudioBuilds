@@ -33,6 +33,7 @@ if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
   git clone https://github.com/falkTX/Carla
   cd Carla
   VERSION=$(grep "^VERSION   := " Makefile | rev | cut -f 1 -d ' ' | rev)
+  VERSION=$(echo $VERSION | tr '-' . )
   echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
   exit 0
 fi
@@ -64,6 +65,7 @@ rm -rf Carla
 git clone https://github.com/falkTX/Carla
 cd Carla
 VERSION=$(grep "^VERSION   := " Makefile | rev | cut -f 1 -d ' ' | rev)
+VERSION=$(echo $VERSION | tr '-' . )
 chown -R root:root .
 # upstream ships archive with broken symlinks, remove
 find -L . -type l -exec rm -f {} \+
