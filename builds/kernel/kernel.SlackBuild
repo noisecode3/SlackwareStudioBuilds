@@ -193,7 +193,7 @@ if [ "$KERNEL${KTAG:0:3}" = "xanmod1" ]; then
   cat $CWD/slack-desc > $PKG/install/slack-desc
 elif [ "$KERNEL${KTAG:0:3}" = "xanmod1-rt" ]; then
   cat $CWD/slack-desc.rt > $PKG/install/slack-desc
-elif [ "$KERNEL${KTAG:0:3}" = "zen" ]; then
+elif [ "$KERNEL" = "-zen" ]; then
   cat $CWD/slack-desc.zen > $PKG/install/slack-desc
 fi
 
