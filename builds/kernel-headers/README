@@ -1,0 +1,14 @@
+This makes a headers package if you really need it
+
+You may only need this for wine or software targeting user space calls.
+Drivers targeting a newer headers matching you're kernel
+
+ALL OTHER SOFTWARE EXCEPT WINE "SHOULD" BE BUILD WITH SLACKWARE'S
+DEFAULT HEADERS! NOT DOING SO COULD DAMAGE YOU SLACKWARE INSTALLATION!
+
+You should not install this on top of the kernel-headers
+
+upgradepkg --reinstall /tmp/kernel-headers
+
+If the source is /usr/src/linux-6.4.7-zen
+You may need to set VERSION to 6.4.7-zen
