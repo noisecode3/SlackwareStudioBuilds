@@ -1,0 +1,2 @@
+LV2 audio effect plugin for chopping stereo audio input signals.
+Each chop can be levelled up or down to get a step sequencer-like effect.
