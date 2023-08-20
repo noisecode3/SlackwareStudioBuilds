@@ -1,0 +1,19 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.
+# Line up the first '|' above the ':' following the base package name, and
+# the '|' on the right side marks the last column you can put a character in.
+# You must make exactly 11 lines for the formatting to be correct.  It's also
+# customary to leave one space after the ':' except on otherwise blank lines.
+
+     |-----handy-ruler------------------------------------------------------|
+fabla: fabla (A sampler LV2 plugin called Fabla)
+fabla:
+fabla: Fabla is an open-source LV2 drum sampler plugin instrument. It is
+fabla: ideal for loading up your favorite sampled sounds and bashing away on
+fabla: a MIDI controller. Or if it’s crafty beat programming your after
+fabla: that’s cool too! The ADSR envelope allows the shaping of hi-hats and
+fabla: kicks while the compressor beefs up the sound for thumping kicks!
+fabla:
+fabla:
+fabla:
+fabla:
