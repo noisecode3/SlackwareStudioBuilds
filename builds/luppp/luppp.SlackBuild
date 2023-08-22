@@ -83,7 +83,7 @@ cd ..
 
 install -vDm 644 resources/icons/luppp.svg        -t "$PKG/usr/share/icons/hicolor/scalable/apps/"
 install -vDm 644 resources/metadata/luppp.desktop -t "$PKG/usr/share/applications/"
-install -vDm 644 resources/controllers/*.ctlr     -t "$PKG/usr/share/luppp/"
+install -vDm 644 resources/controllers/*.ctlr     -t "$PKG/usr/share/luppp/controllers/"
 
 find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
   | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
