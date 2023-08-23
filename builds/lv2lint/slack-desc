@@ -1,0 +1,19 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.
+# Line up the first '|' above the ':' following the base package name, and
+# the '|' on the right side marks the last column you can put a character in.
+# You must make exactly 11 lines for the formatting to be correct.  It's also
+# customary to leave one space after the ':' except on otherwise blank lines.
+
+       |-----handy-ruler------------------------------------------------------|
+lv2lint: lv2lint (Check whether a given LV2 plugin is up to the specification)
+lv2lint:
+lv2lint: An LV2 lint-like tool that checks whether a given plugin and its UI(s)
+lv2lint: match up with the provided metadata and adhere to well-known best
+lv2lint: practices. Run it as part of your continuous integration pipeline
+lv2lint: together with lv2/sord_validate to reduce the likelihood of shipping
+lv2lint: plugins with major flaws in order to prevent unsatisfied users.
+lv2lint:
+lv2lint:
+lv2lint:
+lv2lint:

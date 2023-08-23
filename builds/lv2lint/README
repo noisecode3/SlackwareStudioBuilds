@@ -1,0 +1,7 @@
+An LV2 lint-like tool that checks whether a given plugin and its UI(s)
+match up with the provided metadata and adhere to well-known best
+practices. Run it as part of your continuous integration pipeline
+together with lv2/sord_validate to reduce the likelihood of shipping
+plugins with major flaws in order to prevent unsatisfied users.
+
+reuse-tool is optional
