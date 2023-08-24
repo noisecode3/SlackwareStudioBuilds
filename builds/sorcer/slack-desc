@@ -1,0 +1,19 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.
+# Line up the first '|' above the ':' following the base package name, and
+# the '|' on the right side marks the last column you can put a character in.
+# You must make exactly 11 lines for the formatting to be correct.  It's also
+# customary to leave one space after the ':' except on otherwise blank lines.
+
+      |-----handy-ruler------------------------------------------------------|
+sorcer: sorcer (A wavetable LV2 plugin synth)
+sorcer:
+sorcer: Sorcer is a polyphonic wavetable synth LV2 plugin. Its sonic 
+sorcer: fingerprint is one of harsh modulated sub-bass driven walls of sound.
+sorcer: Two morphing wavetable oscillators and one sine oscillator provide the
+sorcer: generation routines. The LFO can be mapped to wavetable modulation as
+sorcer: well as filter cutoff. An ADSR allows for shaping the resulting sound,
+sorcer: while a master volume finishes the signal chain. Easily creating a
+sorcer: variety of dubstep basslines and harsh pad sounds.
+sorcer:
+sorcer:
