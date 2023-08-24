@@ -1,0 +1,19 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.
+# Line up the first '|' above the ':' following the base package name, and
+# the '|' on the right side marks the last column you can put a character in.
+# You must make exactly 11 lines for the formatting to be correct.  It's also
+# customary to leave one space after the ':' except on otherwise blank lines.
+
+               |-----handy-ruler------------------------------------------------------|
+perl-xml-parser: perl-xml-parser (Perl module for parsing XML documents with libexpat)
+perl-xml-parser:
+perl-xml-parser: This module provides ways to parse XML documents. It is built on top
+perl-xml-parser: of XML::Parser::Expat, which is a lower level interface to James 
+perl-xml-parser: Clark's expat library. Each call to one of the parsing methods creates
+perl-xml-parser: a new instance of XML::Parser::Expat which is then used to parse the
+perl-xml-parser: document. Expat options may be provided when the XML::Parser object is
+perl-xml-parser: created. These options are then passed on to the Expat object on each
+perl-xml-parser: parse call. They can also be given as extra arguments to the parse
+perl-xml-parser: methods, in which case they override options given at XML::Parser
+perl-xml-parser: creation time.
