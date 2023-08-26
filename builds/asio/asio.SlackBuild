@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Slackware build script for swh-plugins
+# Slackware build script for asio
 
 # Copyright 2023 Martin Bångens Sweden
 # All rights reserved.
@@ -24,7 +24,7 @@
 
 cd $(dirname $0) ; CWD=$(pwd)
 
-PRGNAM=swh-plugins
+PRGNAM=asio
 VERSION=${VERSION:-git}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SSb}
@@ -45,29 +45,31 @@ OUTPUT=${OUTPUT:-/tmp}
 if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
   mkdir -p $TMP
   cd $TMP
-  rm -rf swh-plugins
-  git clone https://github.com/swh/ladspa swh-plugins
-  cd swh-plugins
+  rm -rf asio
+  if [ "$VERSION" != "git" ]; then
+    git clone --depth 1 -b $VERSION https://github.com/chriskohlhoff/asio
+  else
+    git clone https://github.com/chriskohlhoff/asio
+  fi
+  cd asio
   VERSION=$(git describe --tags)
+  VERSION=$(echo $VERSION | cut -d " " -f2-)
   VERSION=$(echo $VERSION | tr '-' . )
   echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
   exit 0
 fi
 
 if [ "$ARCH" = "i586" ]; then
-  SLKCFLAGS="-march=i586 -mtune=i686"
+  SLKCFLAGS="-O2 -march=i586 -mtune=i686"
   LIBDIRSUFFIX=""
 elif [ "$ARCH" = "i686" ]; then
-  SLKCFLAGS="-march=i686 -mtune=i686"
+  SLKCFLAGS="-O2 -march=i686 -mtune=i686"
   LIBDIRSUFFIX=""
 elif [ "$ARCH" = "x86_64" ]; then
-  SLKCFLAGS="-fPIC"
-  LIBDIRSUFFIX="64"
-elif [ "$ARCH" = "aarch64" ]; then
-  SLKCFLAGS="-fPIC"
+  SLKCFLAGS="-O2 -fPIC"
   LIBDIRSUFFIX="64"
 else
-  SLKCFLAGS=""
+  SLKCFLAGS="-O2"
   LIBDIRSUFFIX=""
 fi
 
@@ -76,11 +78,16 @@ set -e
 rm -rf $PKG
 mkdir -p $TMP $PKG $OUTPUT $PKG
 cd $TMP
-rm -rf swh-plugins
-git clone https://github.com/swh/ladspa swh-plugins
-cd swh-plugins
+rm -rf asio
+if [ "$VERSION" != "git" ]; then
+  git clone --depth 1 -b $VERSION https://github.com/chriskohlhoff/asio
+else
+  git clone https://github.com/chriskohlhoff/asio
+fi
+cd asio
 git submodule update --init --recursive
 VERSION=$(git describe --tags)
+VERSION=$(echo $VERSION | cut -d " " -f2-)
 VERSION=$(echo $VERSION | tr '-' . )
 chown -R root:root .
 find -L . \
@@ -89,36 +96,21 @@ find -L . \
  \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
   -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
 
-#remove old gsm and use system installed
-sed -i 's|#include "gsm/gsm.h"|#include <gsm/gsm.h>|g' gsm_1215.xml
-sed -i 's|SUBDIRS = po util gsm gverb metadata|SUBDIRS = po util gverb metadata|g' Makefile.am
-sed -i 's|gsm_1215_la_LIBADD = gsm/libgsm.a|gsm_1215_la_LIBADD = -lgsm|g' Makefile.am
-sed -i "/gsm\/Makefile/d" configure.ac
-rm -fr gsm
-
-## TODO Use a variable for deciding build typ and tag the package
-## TODO Implement CPU optimizations maybe by reading /proc/cpuinfo as "optimized build"
-## TODO Test if O2 works as "generic build" PIC is not problematic
-## https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
-#autoreconf -vfi
-autoreconf -vi
+cd asio
+#./autogen.sh
 CFLAGS="$SLKCFLAGS" \
+CXXFLAGS="$SLKCFLAGS" \
 ./configure \
   --prefix=/usr \
   --libdir=/usr/lib${LIBDIRSUFFIX} \
   --docdir=/usr/doc/$PRGNAM-$VERSION \
   --build=$ARCH-slackware-linux
-
 make
 make install DESTDIR=$PKG
+make check
 
-find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
-  | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
 mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
-cp -a \
-  AUTHORS \
-  COPYING \
-  $PKG/usr/doc/$PRGNAM-$VERSION
+cp -raf COPYING INSTALL LICENSE_1_0.txt README src/doc/ $PKG/usr/doc/$PRGNAM-$VERSION
 cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
 
 mkdir -p $PKG/install

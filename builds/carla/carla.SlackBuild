@@ -29,9 +29,13 @@ fi
 if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
   mkdir -p $TMP
   cd $TMP
-  rm -rf Carla
-  git clone https://github.com/falkTX/Carla
-  cd Carla
+  rm -rf $SRCNAM
+  if [ "$VERSION" != "git" ]; then
+    git clone --depth 1 -b $VERSION https://github.com/falkTX/Carla
+  else
+    git clone https://github.com/falkTX/Carla
+  fi
+  cd $SRCNAM
   VERSION=$(grep "^VERSION   := " Makefile | rev | cut -f 1 -d ' ' | rev)
   VERSION=$(echo $VERSION | tr '-' . )
   echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
@@ -61,9 +65,13 @@ set -e
 rm -rf $PKG
 mkdir -p $TMP $PKG $OUTPUT
 cd $TMP
-rm -rf Carla
-git clone https://github.com/falkTX/Carla
-cd Carla
+rm -rf $SRCNAM
+if [ "$VERSION" != "git" ]; then
+  git clone --depth 1 -b $VERSION https://github.com/falkTX/Carla
+else
+  git clone https://github.com/falkTX/Carla
+fi
+cd $SRCNAM
 VERSION=$(grep "^VERSION   := " Makefile | rev | cut -f 1 -d ' ' | rev)
 VERSION=$(echo $VERSION | tr '-' . )
 chown -R root:root .

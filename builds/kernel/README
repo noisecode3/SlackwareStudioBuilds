@@ -1,11 +1,7 @@
 Xanmod kernel
 
 This kernel should be used and will preform better with rtirq
-sbopkg will try to compile kernel modules for this kernel with
-default option on but not for the rt version
-
 RUNNING THE SCRIPT WILL NEED INTERNET AND GIT
-
 If you set VERSION it will switch branch
 VERSION=6.1-rt ./kernel.SlackBuild
 KERNEL=zen VERSION="6.4/main" ./kernel.SlackBuild
