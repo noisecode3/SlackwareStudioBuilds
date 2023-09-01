@@ -145,7 +145,7 @@ find . \
 make clean
 make prepare
 make oldconfig
-make menuconfig
+if echo $TERM | grep xterm 1>/dev/null ; then make xconfig; else make menuconfig; fi
 make $NUMJOBS bzImage || make bzImage || exit 6
 make $NUMJOBS modules || exit 7
 make INSTALL_MOD_PATH=$PKG modules_install || exit 8
