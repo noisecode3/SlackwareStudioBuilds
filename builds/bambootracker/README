@@ -1,0 +1,23 @@
+BambooTracker is a music tracker for the Yamaha YM2608 (OPNA)
+sound chip which was used in NEC PC-8801/9801 series computers.
+
+If it fails to build try to run it a second time..
+ I think it's a bug in qmake
+
+executing config test alsa
++ cd /tmp/SSb/BambooTracker/qmake/config.tests/alsa &&
+/usr/lib64/qt5/bin/qmake  -spec /usr/lib64/qt5/mkspecs/linux-g++ "CONFIG -= qt
+debug_and_release app_bundle lib_bundle"
+/tmp/SSb/BambooTracker/qmake/config.tests/alsa
++ cd /tmp/SSb/BambooTracker/qmake/config.tests/alsa && MAKEFLAGS= make
+> make[1]: Entering directory '/tmp/SSb/BambooTracker/qmake/config.tests/alsa'
+> g++ -Wl,-O1 -L/usr/lib64 -o test test.o   -lasound
+> /usr/bin/ld:
+> /usr/lib64/gcc/x86_64-slackware-linux/13.2.0/../../../../lib64/crt1.o: in
+> function `_start':
+> /root/glibc-43b5a0678dbab633ca2647a0ebb9e353/glibc-2.37/csu/../sysdeps/x86_64/start.S:103:(.text+0x17):
+> undefined reference to `main'
+> collect2: error: ld returned 1 exit status
+> make[1]: *** [Makefile:295: test] Error 1
+> make[1]: Leaving directory '/tmp/SSb/BambooTracker/qmake/config.tests/alsa'
+test alsa FAILED
