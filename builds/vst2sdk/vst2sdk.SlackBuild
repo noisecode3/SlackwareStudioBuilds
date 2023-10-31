@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# Slackware build script for vst2sdk
+
+# Copyright Martin Bångens Sweden
+# All rights reserved.
+#
+# Redistribution and use of this script, with or without modification, is
+# permitted provided that the following conditions are met:
+#
+# 1. Redistributions of this script must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
+#  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+#  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO
+#  EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+#  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+#  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+#  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+#  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+cd $(dirname $0) ; CWD=$(pwd)
+
+PRGNAM=vst2sdk
+VERSION=${VERSION:-3.6.10}
+SDK_DATE=${SDK_DATE:-_11_06_2018}
+SDK_BUILD=${SDK_BUILD:-_build_37}
+BUILD=${BUILD:-1}
+TAG=${TAG:-_SBo}
+PKGTYPE=${PKGTYPE:-tgz}
+ARCH=noarch
+
+# If the variable PRINT_PACKAGE_NAME is set, then this script will report what
+# the name of the created package would be, and then exit. This information
+# could be useful to other scripts.
+if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
+  echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
+  exit 0
+fi
+
+TMP=${TMP:-/tmp/SBo}
+PKG=$TMP/package-$PRGNAM
+OUTPUT=${OUTPUT:-/tmp}
+
+set -e
+
+rm -rf $PKG
+mkdir -p $TMP $PKG $OUTPUT
+cd $TMP
+
+rm -rf VST_SDK
+unzip $CWD/vstsdk${VERSION//.}${SDK_DATE}${SDK_BUILD}.zip
+cd VST_SDK/VST2_SDK/
+chown -R root:root .
+
+mkdir -p $PKG/usr/include/vst2sdk/pluginterfaces/vst2.x
+mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+mkdir -p $PKG/usr/share/pkgconfig
+
+install -m644 public.sdk/source/vst2.x/* $PKG/usr/include/vst2sdk/
+install -m644 pluginterfaces/vst2.x/* \
+    $PKG/usr/include/vst2sdk/pluginterfaces/vst2.x/
+
+cp $CWD/vst2sdk.pc $PKG/usr/share/pkgconfig
+sed -i "s/VERSION/$VERSION$SDK_BUILD/g" $PKG/usr/share/pkgconfig/vst2sdk.pc
+
+cp -a \
+  ../VST3_SDK/LICENSE.txt \
+  VST2_License_Agreement.pdf \
+$PKG/usr/doc/$PRGNAM-$VERSION
+cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
+
+chmod 755 $PKG/usr/include/vst2sdk
+find $PKG/usr/include/vst2sdk -type d -exec chmod 755 {} +
+find $PKG/usr/include/vst2sdk -type f -exec chmod 644 {} +
+
+chmod 755 $PKG/usr/doc/$PRGNAM-$VERSION
+find $PKG/usr/doc/$PRGNAM-$VERSION -type d -exec chmod 755 {} +
+find $PKG/usr/doc/$PRGNAM-$VERSION -type f -exec chmod 644 {} +
+
+mkdir -p $PKG/install
+cat $CWD/slack-desc > $PKG/install/slack-desc
+
+cd $PKG
+/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE

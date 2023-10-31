@@ -1,0 +1,4 @@
+Airwindows plugins are modular, graphic-less, stripped-down,
+VST plugins, for Mac and PC. The Mac VSTs are all 64 bit-
+triple binary, i386 / x86_64 / ppc. The PC VSTs come in 32 and 64 bit
+versions.

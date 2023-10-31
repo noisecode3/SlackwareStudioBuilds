@@ -1,0 +1,5 @@
+Name: vst2sdk
+Description: VST 2 Plug-In SDK
+Version: VERSION
+Cflags: -I/usr/include/vst2sdk
+Libs:

@@ -1,0 +1,10 @@
+PRGNAM="vst3sdk"
+VERSION="3.6.10"
+HOMEPAGE="https://www.steinberg.net/developers/"
+DOWNLOAD="https://web.archive.org/web/20181016150224/https://download.steinberg.net/sdk_downloads/vstsdk3610_11_06_2018_build_37.zip
+MD5SUM="f66fc320407822e610ccd26c5ba48b08"
+DOWNLOAD_x86_64=""
+MD5SUM_x86_64=""
+REQUIRES=""
+MAINTAINER="Martin Bångens"
+EMAIL="marbangens@gmail.com"

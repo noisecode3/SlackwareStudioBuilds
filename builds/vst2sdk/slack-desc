@@ -1,0 +1,19 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.
+# Line up the first '|' above the ':' following the base package name, and
+# the '|' on the right side marks the last column you can put a character in.
+# You must make exactly 11 lines for the formatting to be correct.  It's also
+# customary to leave one space after the ':' except on otherwise blank lines.
+
+       |-----handy-ruler------------------------------------------------------|
+vst2sdk: vst2sdk (Software development kit for VST2 plug-ins)
+vst2sdk:
+vst2sdk: This allows plug-in developers to create plug-ins in VST 2 format and
+vst2sdk: host developers to load VST 2 plug-ins into a DAW or audio editor. 
+vst2sdk:
+vst2sdk:
+vst2sdk:
+vst2sdk:
+vst2sdk:
+vst2sdk:
+vst2sdk:
