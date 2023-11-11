@@ -1,0 +1,129 @@
+#!/bin/bash
+
+# Slackware build script for radium
+
+# Copyright 2023 Martin Bångens Sweden
+# All rights reserved.
+#
+# Redistribution and use of this script, with or without modification, is
+# permitted provided that the following conditions are met:
+#
+# 1. Redistributions of this script must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
+#  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+#  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO
+#  EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+#  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+#  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+#  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+#  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+cd $(dirname $0) ; CWD=$(pwd)
+
+PRGNAM=radium
+VERSION=${VERSION:-git}
+BUILD=${BUILD:-1}
+TAG=${TAG:-_SSb}
+PKGTYPE=${PKGTYPE:-tgz}
+
+if [ -z "$ARCH" ]; then
+  case "$( uname -m )" in
+    i?86) ARCH=i586 ;;
+    arm*) ARCH=arm ;;
+       *) ARCH=$( uname -m ) ;;
+  esac
+fi
+
+TMP=${TMP:-/tmp/SSb}
+PKG=$TMP/package-$PRGNAM
+OUTPUT=${OUTPUT:-/tmp}
+
+if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
+  mkdir -p $TMP
+  cd $TMP
+  rm -rf radium
+  git clone --depth 1 https://github.com/kmatheussen/radium
+  cd radium
+  #VERSION=$(git describe --tags)
+  #VERSION=$(echo $VERSION | tr '-' . )
+  echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
+  exit 0
+fi
+
+set -e
+
+rm -rf $PKG
+mkdir -p $TMP $PKG $OUTPUT $PKG
+cd $TMP
+rm -rf radium
+git clone --depth 1 https://github.com/kmatheussen/radium
+cd radium
+git submodule update --init --recursive
+# we could nuke sequencer_osx, but there cant be a mac symlink with the chmod we are using
+rm bin/python-midi/src/sequencer_osx/CoreMIDI.framework
+#VERSION=$(git describe --tags)
+#VERSION=$(echo $VERSION | tr '-' . )
+chown -R root:root .
+find -L . \
+ \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \
+  -o -perm 511 \) -exec chmod 755 {} \; -o \
+ \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
+  -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
+chmod 644 COPYING
+
+patch -p0 < $CWD/build_linux_common.patch
+
+# This tweak edits new file template and demo songs to be compatible with chorus plugin from calf-ladspa package
+# !! NOTE TO LMMS USERS !!
+# !! Comment next line out if you have LMMS installed as it already comes with their own version of Calf plugins !!
+#for file in bin/sounds/*.rad; do sed -i -e 's/Calf MultiChorus LADSPA/Calf Multi Chorus LADSPA/g' "$file"; done
+# See comment on calf-ladspa AUR page then on how to let Radium load Calf from LMMS package
+
+# temp fix for soundfileexport
+patch -p0 < $CWD/sndfilexprt.patch
+sed -i "s|#sed -i 's/#define|sed -i 's/#define|" bin/packages/build.sh
+export INCLUDE_FAUSTDEV_BUT_NOT_LLVM="jadda" BUILDTYPE=RELEASE \
+    RADIUM_USE_CLANG=0 RADIUM_BUILD_LIBXCB=1 RADIUM_QT_VERSION=5 RADIUM_VST2SDK_PATH=/usr/include/vst2sdk
+export QT_QPA_PLATFORM_PLUGIN_PATH=`$(./find_moc_and_uic_paths.sh qmake) -query QT_INSTALL_PLUGINS`
+
+make packages
+./build_linux.sh  -j`nproc`
+./install.sh "$PKG/opt"
+
+# Create startup script according to bin/packages/README
+mkdir -p "$PKG/usr/bin"
+echo '#!/usr/bin/env bash' > "$PKG/usr/bin/radium"
+echo QT_QPA_PLATFORM_PLUGIN_PATH="$($(RADIUM_QT_VERSION=5 ./find_moc_and_uic_paths.sh qmake) -query QT_INSTALL_PLUGINS)" \
+  /opt/radium/radium '"$@"' >> "$PKG/usr/bin/radium"
+chmod +x "$PKG/usr/bin/radium"
+
+ln -s /usr/lib64/ladspa $PKG/opt/radium/ladspa
+chmod +x $PKG/opt/radium/packages/libpd-master/externals/freeverb~/freeverb~.pd_linux
+# Icons, .desktop and mimetype files
+mkdir -p "$PKG/usr/share/icons/hicolor/"{16x16,32x32,128x128,256x256}"/apps" \
+  "$PKG/usr/share/applications" \
+  "$PKG/usr/share/mime/packages"
+ln -s "/opt/radium/radium_16x16x8.png" "$PKG/usr/share/icons/hicolor/16x16/apps/radium.png"
+ln -s "/opt/radium/radium_32x32x24.png" "$PKG/usr/share/icons/hicolor/32x32/apps/radium.png"
+ln -s "/opt/radium/radium_128x128x32.png" "$PKG/usr/share/icons/hicolor/128x128/apps/radium.png"
+ln -s "/opt/radium/radium_256x256x32.png" "$PKG/usr/share/icons/hicolor/256x256/apps/radium.png"
+ln -s "/opt/radium/radium.desktop" "$PKG/usr/share/applications/radium.desktop"
+ln -s "/opt/radium/radium-mimetype.xml" "$PKG/usr/share/mime/packages/radium.xml"
+
+find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
+  | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
+mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+cp -a \
+  COPYING \
+  $PKG/usr/doc/$PRGNAM-$VERSION
+cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
+
+mkdir -p $PKG/install
+cat $CWD/slack-desc > $PKG/install/slack-desc
+
+cd $PKG
+/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE

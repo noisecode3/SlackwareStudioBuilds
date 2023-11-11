@@ -1,0 +1,19 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.
+# Line up the first '|' above the ':' following the base package name, and
+# the '|' on the right side marks the last column you can put a character in.
+# You must make exactly 11 lines for the formatting to be correct.  It's also
+# customary to leave one space after the ':' except on otherwise blank lines.
+
+      |-----handy-ruler------------------------------------------------------|
+radium: radium (A graphical music editor. A next generation tracker)
+radium:
+radium: Radium is a music editor with a new type of interface. Compared to
+radium: the normal sequencer interface editing is quicker and more musical
+radium: data fits on the screen. Compared to trackers, note positions and 
+radium: effects are edited graphically, which should be quicker, provide more 
+radium: vertical space and give a better musically overview.
+radium: (Everything can also be edited by text, like in a normal tracker)
+radium: Radium can also be used as a normal multitracker to mix and record
+radium: audio
+radium:
