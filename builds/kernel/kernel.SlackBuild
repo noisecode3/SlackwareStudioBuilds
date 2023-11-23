@@ -157,7 +157,7 @@ else
 fi
 
 cd $PKG/lib/modules/$MODULESTAG
-rm build source
+rm -f build source
 ln -sv /usr/src/linux-$MODULESTAG build || exit 9
 ln -sv /usr/src/linux-$MODULESTAG source || exit 10
 
