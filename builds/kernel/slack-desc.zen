@@ -8,7 +8,7 @@
           |-----handy-ruler------------------------------------------------------|
 kernel-zen: kernel-zen (Zen Patched 64-bit Linux kernel)
 kernel-zen:
-kernel-zen: This is a xanmod Linux kernel with modified or generic config file
+kernel-zen: This is a zen Linux kernel with modified or generic config file
 kernel-zen: and built-in support for most disk controllers. To use filesystems,
 kernel-zen: or to load support for a SCSI or other controller, then you'll
 kernel-zen: need to load one or more kernel modules using an initial ramdisk,
