@@ -145,6 +145,7 @@ find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | gr
 
 cd src/wine-git
 VERSION=$(cat VERSION | awk '{print $3}')
+VERSION=$(echo $VERSION | tr '-' . )
 
 # Add a desktop menu for winecfg, wine-uninstaller, wine-browsedrive and doc:
 mkdir -p $PKG/usr/share/{applications,icons/hicolor/scalable/apps,pixmaps}
