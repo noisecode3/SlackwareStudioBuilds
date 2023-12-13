@@ -3,11 +3,56 @@ Configuration scripts and builds for Slackware music productions
 Slackware 15.1 on the road to an eventual beta
 
 ## Git SlackBuilds
-* wine-tkg
+* SoundScapeRenderer
+* ams-lv2
+* bangr
+* boops
+* carla
+* jack-stdio
+* luppp
+* surge-xt
 * yabridge
+* adlplug
+* artyfx
+* bchoppr
+* bschaffl
+* cliconnect
+* kernel
+* lv2lint
+* radium (broken)
+* swh-plugins
+* aida-x
+* asio
+* beatslash-lv2
+* bsequencer
+* fabla
+* kernel-headers
+* midimsg-lv2
+* sfizz
+* vst2sdk
+* airwindows
+* avldrums-lv2-git
+* bespokesynth
+* bshapr
+* futex-waitv-winesync-api
+* libwebsocketpp
+* ninjas2
+* sherlock-lv2
+* wine-tkg
+* ambix
+* bambootracker
+* bjumblr
+* bslizr
+* geonkick
+* lsp-plugins
+* perl-xml-parser
+* sorcer
+* xmonk-lv2
 
 ### Kernels
-* kernel-xanmod
+* xanmod-rt (real time recording/live monitoring)
+* xanmod (composing with low latency and better support for drivers)
+* zen (like xanmod but uses a recent kernel)
 
 ## How
 Run post_install_setup_sbo_slackpkg+_multilib.sh after installing full
