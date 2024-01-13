@@ -151,7 +151,7 @@ VERSION=$(echo $VERSION | tr '-' . )
 mkdir -p $PKG/usr/share/{applications,icons/hicolor/scalable/apps,pixmaps}
 mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
 
-DOCS="ANNOUNCE AUTHORS COPYING.LIB LICENSE* MAINTAINERS README VERSION"
+DOCS="AUTHORS COPYING.LIB LICENSE* MAINTAINERS VERSION"
 FONTS_LICENSE="COPYING.arial COPYING.cour COPYING.msyh COPYING.times"
 cp $DOCS $FONTS_LICENSE $PKG/usr/doc/$PRGNAM-$VERSION
 cp programs/winecfg/winecfg.svg $PKG/usr/share/icons/hicolor/scalable/apps/
