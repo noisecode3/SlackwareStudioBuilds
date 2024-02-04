@@ -3,8 +3,8 @@ Xanmod kernel
 This kernel should be used and will preform better with rtirq
 RUNNING THE SCRIPT WILL NEED INTERNET AND GIT
 If you set VERSION it will switch branch
-VERSION=6.1-rt ./kernel.SlackBuild
-KERNEL=zen VERSION="6.4/main" ./kernel.SlackBuild
+VERSION=6.6-rt ./kernel.SlackBuild
+KERNEL=zen VERSION="6.6/main" ./kernel.SlackBuild
 
 There is a copy of the xanmod source code installed in /usr/src/
 without touching the linux symbolic link in /usr/src.

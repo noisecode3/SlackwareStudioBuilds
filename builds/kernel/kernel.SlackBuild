@@ -189,9 +189,9 @@ $PKG/usr/doc/$PRGNAM$KERNEL${KTAG:0:3}-$VERSION$KTAG/$PRGNAM$KERNEL${KTAG:0:3}.S
 
 mkdir -p $PKG/install
 
-if [ "$KERNEL${KTAG:0:3}" = "xanmod1" ]; then
+if [ "$KERNEL${KTAG:0:3}" = "-xanmod1" ]; then
   cat $CWD/slack-desc > $PKG/install/slack-desc
-elif [ "$KERNEL${KTAG:0:3}" = "xanmod1-rt" ]; then
+elif [ "$KERNEL${KTAG:0:3}" = "-xanmod1-rt" ]; then
   cat $CWD/slack-desc.rt > $PKG/install/slack-desc
 elif [ "$KERNEL" = "-zen" ]; then
   cat $CWD/slack-desc.zen > $PKG/install/slack-desc
