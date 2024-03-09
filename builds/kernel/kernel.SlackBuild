@@ -25,7 +25,7 @@
 cd $(dirname $0) ; CWD=$(pwd)
 
 PRGNAM=kernel
-VERSION=${VERSION:-6.1}
+VERSION=${VERSION:-6.6}
 KERNEL=${KERNEL:-"xanmod1"}
 KTAG=
 NUMJOBS=${NUMJOBS:-" -j$(expr $(nproc) + 1) "}
