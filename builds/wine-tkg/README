@@ -13,7 +13,7 @@ TODO: more options is on the way
 
 Build Options:
 Example
-PLAIN_VERSION=wine-8.3 STAGING_VERSION=v8.3 ./wine-tkg-git.SlackBuild
+PLAIN_VERSION=wine-8.3 STAGING_VERSION=v8.3 ./wine-tkg.SlackBuild
 
 PLAIN_VERSION           Default=
 STAGING_VERSION         Default=

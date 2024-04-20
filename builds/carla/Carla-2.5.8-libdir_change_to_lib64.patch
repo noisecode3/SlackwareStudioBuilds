@@ -1,0 +1,217 @@
+diff -ruN Carla-2.5.8.b/data/carla-single Carla-2.5.8.a/data/carla-single
+--- Carla-2.5.8.b/data/carla-single	2024-01-02 22:53:23.000000000 +0100
++++ Carla-2.5.8.a/data/carla-single	2024-04-20 13:50:21.416133887 +0200
+@@ -27,7 +27,7 @@
+ 
+ INSTALL_PREFIX = "X-PREFIX-X"
+ 
+-CARLA_LIBDIR = os.path.join(INSTALL_PREFIX, "lib", "carla")
++CARLA_LIBDIR = os.path.join(INSTALL_PREFIX, "lib64", "carla")
+ CARLA_RESDIR = os.path.join(INSTALL_PREFIX, "share", "carla", "resources")
+ 
+ # --------------------------------------------------------------------------------------------------------
+diff -ruN Carla-2.5.8.b/source/backend/engine/CarlaEngineJack.cpp Carla-2.5.8.a/source/backend/engine/CarlaEngineJack.cpp
+--- Carla-2.5.8.b/source/backend/engine/CarlaEngineJack.cpp	2024-01-02 22:53:23.000000000 +0100
++++ Carla-2.5.8.a/source/backend/engine/CarlaEngineJack.cpp	2024-04-20 16:37:41.153031325 +0200
+@@ -4548,7 +4548,7 @@
+ #endif
+ 
+     // FIXME
+-    engine->setOption(ENGINE_OPTION_PATH_BINARIES, 0, "/usr/lib/carla");
++    engine->setOption(ENGINE_OPTION_PATH_BINARIES, 0, "/usr/lib64/carla");
+     engine->setOption(ENGINE_OPTION_PATH_RESOURCES, 0, "/usr/share/resources");
+ 
+     if (engine->initInternal(client))
+diff -ruN Carla-2.5.8.b/source/frontend/carla_shared.py Carla-2.5.8.a/source/frontend/carla_shared.py
+--- Carla-2.5.8.b/source/frontend/carla_shared.py	2024-01-02 22:53:23.000000000 +0100
++++ Carla-2.5.8.a/source/frontend/carla_shared.py	2024-04-20 14:10:38.698242698 +0200
+@@ -466,28 +466,28 @@
+     splitter = ":"
+ 
+     DEFAULT_LADSPA_PATH  = HOME + "/.ladspa"
+-    DEFAULT_LADSPA_PATH += ":/usr/lib/ladspa"
+-    DEFAULT_LADSPA_PATH += ":/usr/local/lib/ladspa"
++    DEFAULT_LADSPA_PATH += ":/usr/lib64/ladspa"
++    DEFAULT_LADSPA_PATH += ":/usr/local/lib64/ladspa"
+ 
+     DEFAULT_DSSI_PATH    = HOME + "/.dssi"
+-    DEFAULT_DSSI_PATH   += ":/usr/lib/dssi"
+-    DEFAULT_DSSI_PATH   += ":/usr/local/lib/dssi"
++    DEFAULT_DSSI_PATH   += ":/usr/lib64/dssi"
++    DEFAULT_DSSI_PATH   += ":/usr/local/lib64/dssi"
+ 
+     DEFAULT_LV2_PATH     = HOME + "/.lv2"
+-    DEFAULT_LV2_PATH    += ":/usr/lib/lv2"
+-    DEFAULT_LV2_PATH    += ":/usr/local/lib/lv2"
++    DEFAULT_LV2_PATH    += ":/usr/lib64/lv2"
++    DEFAULT_LV2_PATH    += ":/usr/local/lib64/lv2"
+ 
+     DEFAULT_VST2_PATH    = HOME + "/.vst"
+-    DEFAULT_VST2_PATH   += ":/usr/lib/vst"
+-    DEFAULT_VST2_PATH   += ":/usr/local/lib/vst"
++    DEFAULT_VST2_PATH   += ":/usr/lib64/vst"
++    DEFAULT_VST2_PATH   += ":/usr/local/lib64/vst"
+ 
+     DEFAULT_VST2_PATH   += HOME + "/.lxvst"
+-    DEFAULT_VST2_PATH   += ":/usr/lib/lxvst"
+-    DEFAULT_VST2_PATH   += ":/usr/local/lib/lxvst"
++    DEFAULT_VST2_PATH   += ":/usr/lib64/lxvst"
++    DEFAULT_VST2_PATH   += ":/usr/local/lib64/lxvst"
+ 
+     DEFAULT_VST3_PATH    = HOME + "/.vst3"
+-    DEFAULT_VST3_PATH   += ":/usr/lib/vst3"
+-    DEFAULT_VST3_PATH   += ":/usr/local/lib/vst3"
++    DEFAULT_VST3_PATH   += ":/usr/lib64/vst3"
++    DEFAULT_VST3_PATH   += ":/usr/local/lib64/vst3"
+ 
+     DEFAULT_SF2_PATH     = HOME + "/.sounds/sf2"
+     DEFAULT_SF2_PATH    += ":" + HOME + "/.sounds/sf3"
+diff -ruN Carla-2.5.8.b/source/frontend/carla_widgets.py Carla-2.5.8.a/source/frontend/carla_widgets.py
+--- Carla-2.5.8.b/source/frontend/carla_widgets.py	2024-01-02 22:53:23.000000000 +0100
++++ Carla-2.5.8.a/source/frontend/carla_widgets.py	2024-04-20 16:46:54.135080756 +0200
+@@ -1871,7 +1871,7 @@
+     _loadHostSettings(_host)
+ 
+     _host.engine_init("JACK", "Carla-Widgets")
+-    _host.add_plugin(BINARY_NATIVE, PLUGIN_DSSI, "/usr/lib/dssi/karplong.so", "karplong", "karplong", 0, None, 0x0)
++    _host.add_plugin(BINARY_NATIVE, PLUGIN_DSSI, "/usr/lib64/dssi/karplong.so", "karplong", "karplong", 0, None, 0x0)
+     _host.set_active(0, True)
+ 
+     gui1 = CarlaAboutW(None, _host)
+diff -ruN Carla-2.5.8.b/source/frontend/pluginlist/pluginlistdialog.cpp Carla-2.5.8.a/source/frontend/pluginlist/pluginlistdialog.cpp
+--- Carla-2.5.8.b/source/frontend/pluginlist/pluginlistdialog.cpp	2024-01-02 22:53:23.000000000 +0100
++++ Carla-2.5.8.a/source/frontend/pluginlist/pluginlistdialog.cpp	2024-04-20 14:15:01.257266168 +0200
+@@ -132,8 +132,8 @@
+             ladspa += ":/Library/Audio/Plug-Ins/LADSPA";
+            #else
+             ladspa  = HOME + "/.ladspa";
+-            ladspa += ":/usr/local/lib/ladspa";
+-            ladspa += ":/usr/lib/ladspa";
++            ladspa += ":/usr/local/lib64/ladspa";
++            ladspa += ":/usr/lib64/ladspa";
+            #endif
+         }
+ 
+@@ -156,8 +156,8 @@
+             dssi += ":/Library/Audio/Plug-Ins/DSSI";
+            #else
+             dssi  = HOME + "/.dssi";
+-            dssi += ":/usr/local/lib/dssi";
+-            dssi += ":/usr/lib/dssi";
++            dssi += ":/usr/local/lib64/dssi";
++            dssi += ":/usr/lib64/dssi";
+            #endif
+         }
+        #endif // !CARLA_FRONTEND_ONLY_EMBEDDABLE_PLUGINS
+@@ -180,8 +180,8 @@
+             lv2 += ":/Library/Audio/Plug-Ins/LV2";
+            #else
+             lv2 = HOME + "/.lv2";
+-            lv2 += ":/usr/local/lib/lv2";
+-            lv2 += ":/usr/lib/lv2";
++            lv2 += ":/usr/local/lib64/lv2";
++            lv2 += ":/usr/lib64/lv2";
+            #endif
+         }
+ 
+@@ -208,10 +208,10 @@
+             // no official spec, use common paths
+             vst2 = HOME + "/.vst";
+             vst2 += ":" + HOME + "/.lxvst";
+-            vst2 += ":/usr/local/lib/vst";
+-            vst2 += ":/usr/local/lib/lxvst";
+-            vst2 += ":/usr/lib/vst";
+-            vst2 += ":/usr/lib/lxvst";
++            vst2 += ":/usr/local/lib64/vst";
++            vst2 += ":/usr/local/lib64/lxvst";
++            vst2 += ":/usr/lib64/vst";
++            vst2 += ":/usr/lib64/lxvst";
+            #endif
+         }
+ 
+@@ -233,8 +233,8 @@
+             vst3 += ":/Library/Audio/Plug-Ins/VST3";
+            #else
+             vst3 = HOME + "/.vst3";
+-            vst3 += ":/usr/local/lib/vst3";
+-            vst3 += ":/usr/lib/vst3";
++            vst3 += ":/usr/local/lib64/vst3";
++            vst3 += ":/usr/lib64/vst3";
+            #endif
+         }
+ 
+@@ -256,8 +256,8 @@
+             clap += ":/Library/Audio/Plug-Ins/CLAP";
+            #else
+             clap = HOME + "/.clap";
+-            clap += ":/usr/local/lib/clap";
+-            clap += ":/usr/lib/clap";
++            clap += ":/usr/local/lib64/clap";
++            clap += ":/usr/lib64/clap";
+            #endif
+         }
+ 
+diff -ruN Carla-2.5.8.b/source/modules/juce_audio_processors/format_types/LV2_SDK/juce_lv2_config.h Carla-2.5.8.a/source/modules/juce_audio_processors/format_types/LV2_SDK/juce_lv2_config.h
+--- Carla-2.5.8.b/source/modules/juce_audio_processors/format_types/LV2_SDK/juce_lv2_config.h	2024-01-02 22:53:23.000000000 +0100
++++ Carla-2.5.8.a/source/modules/juce_audio_processors/format_types/LV2_SDK/juce_lv2_config.h	2024-04-20 13:31:09.724030938 +0200
+@@ -70,8 +70,8 @@
+  #elif JUCE_LINUX || JUCE_ANDROID
+   #define LILV_DEFAULT_LV2_PATH \
+     "~/.lv2"                        LILV_PATH_SEP \
+-    "/usr/lib/lv2"                  LILV_PATH_SEP \
+-    "/usr/local/lib/lv2"
++    "/usr/lib64/lv2"                  LILV_PATH_SEP \
++    "/usr/local/lib64/lv2"
+  #else
+   #error "Unsupported platform"
+  #endif
+diff -ruN Carla-2.5.8.b/source/modules/juce_audio_processors/format_types/juce_LADSPAPluginFormat.cpp Carla-2.5.8.a/source/modules/juce_audio_processors/format_types/juce_LADSPAPluginFormat.cpp
+--- Carla-2.5.8.b/source/modules/juce_audio_processors/format_types/juce_LADSPAPluginFormat.cpp	2024-01-02 22:53:23.000000000 +0100
++++ Carla-2.5.8.a/source/modules/juce_audio_processors/format_types/juce_LADSPAPluginFormat.cpp	2024-04-20 14:37:15.320385418 +0200
+@@ -714,7 +714,7 @@
+ 
+ FileSearchPath LADSPAPluginFormat::getDefaultLocationsToSearch()
+ {
+-    return  { SystemStats::getEnvironmentVariable ("LADSPA_PATH", "/usr/lib/ladspa;/usr/local/lib/ladspa;~/.ladspa").replace (":", ";") };
++    return  { SystemStats::getEnvironmentVariable ("LADSPA_PATH", "/usr/lib64/ladspa;/usr/local/lib64/ladspa;~/.ladspa").replace (":", ";") };
+ }
+ 
+ } // namespace juce
+diff -ruN Carla-2.5.8.b/source/modules/juce_audio_processors/format_types/juce_VST3PluginFormat.cpp Carla-2.5.8.a/source/modules/juce_audio_processors/format_types/juce_VST3PluginFormat.cpp
+--- Carla-2.5.8.b/source/modules/juce_audio_processors/format_types/juce_VST3PluginFormat.cpp	2024-01-02 22:53:23.000000000 +0100
++++ Carla-2.5.8.a/source/modules/juce_audio_processors/format_types/juce_VST3PluginFormat.cpp	2024-04-20 16:56:19.338131278 +0200
+@@ -3935,7 +3935,7 @@
+    #elif JUCE_MAC
+     return FileSearchPath ("~/Library/Audio/Plug-Ins/VST3;/Library/Audio/Plug-Ins/VST3");
+    #else
+-    return FileSearchPath ("~/.vst3/;/usr/lib/vst3/;/usr/local/lib/vst3/");
++    return FileSearchPath ("~/.vst3/;/usr/lib64/vst3/;/usr/local/lib64/vst3/");
+    #endif
+ }
+ 
+diff -ruN Carla-2.5.8.b/source/modules/juce_audio_processors/format_types/juce_VSTPluginFormat.cpp Carla-2.5.8.a/source/modules/juce_audio_processors/format_types/juce_VSTPluginFormat.cpp
+--- Carla-2.5.8.b/source/modules/juce_audio_processors/format_types/juce_VSTPluginFormat.cpp	2024-01-02 22:53:23.000000000 +0100
++++ Carla-2.5.8.a/source/modules/juce_audio_processors/format_types/juce_VSTPluginFormat.cpp	2024-04-20 14:05:48.275216737 +0200
+@@ -3604,7 +3604,7 @@
+     return FileSearchPath ("~/Library/Audio/Plug-Ins/VST;/Library/Audio/Plug-Ins/VST");
+    #elif JUCE_LINUX || JUCE_BSD || JUCE_ANDROID
+     return FileSearchPath (SystemStats::getEnvironmentVariable ("VST_PATH",
+-                                                                "/usr/lib/vst;/usr/local/lib/vst;~/.vst")
++                                                                "/usr/lib64/vst;/usr/local/lib64/vst;~/.vst")
+                              .replace (":", ";"));
+    #elif JUCE_WINDOWS
+     auto programFiles = File::getSpecialLocation (File::globalApplicationsDirectory).getFullPathName();
+diff -ruN Carla-2.5.8.b/source/plugin/Makefile Carla-2.5.8.a/source/plugin/Makefile
+--- Carla-2.5.8.b/source/plugin/Makefile	2024-01-02 22:53:23.000000000 +0100
++++ Carla-2.5.8.a/source/plugin/Makefile	2024-04-20 16:35:41.352020616 +0200
+@@ -211,8 +211,8 @@
+ WINE_LINK_FLAGS  = $(LINK_FLAGS)
+ WINE_LINK_FLAGS += -L$(BINDIR) -lcarla_native-plugin
+ WINE_LINK_FLAGS += -lstdc++ -lopengl32 -lgdi32 -ldl
+-WINE_LINK_FLAGS += -Wl,-rpath,/usr/local/lib/carla
+-WINE_LINK_FLAGS += -Wl,-rpath,/usr/lib/carla
++WINE_LINK_FLAGS += -Wl,-rpath,/usr/local/lib64/carla
++WINE_LINK_FLAGS += -Wl,-rpath,/usr/lib64/carla
+ 
+ # ---------------------------------------------------------------------------------------------------------------------
+ 
