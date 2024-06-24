@@ -1,0 +1,109 @@
+#!/bin/bash
+
+# Slackware build script for reaper
+
+# Copyright 2024 Martin Bångens Sweden
+# All rights reserved.
+#
+# Redistribution and use of this script, with or without modification, is
+# permitted provided that the following conditions are met:
+#
+# 1. Redistributions of this script must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
+#  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+#  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO
+#  EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+#  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+#  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+#  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+#  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+cd $(dirname $0) ; CWD=$(pwd)
+
+PRGNAM=reaper
+VERSION=${VERSION:-7.16}
+BUILD=${BUILD:-1}
+TAG=${TAG:-_SSb}
+PKGTYPE=${PKGTYPE:-tgz}
+
+SRCNAM=Carla
+
+if [ -z "$ARCH" ]; then
+  case "$( uname -m )" in
+    i?86) ARCH=i586 ;;
+    arm*) ARCH=arm ;;
+       *) ARCH=$( uname -m ) ;;
+  esac
+fi
+
+if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
+  echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
+  exit 0
+fi
+
+TMP=${TMP:-/tmp/SSb}
+PKG=$TMP/package-$PRGNAM
+OUTPUT=${OUTPUT:-/tmp}
+
+# There are i686, aarch64 and armv71
+# And we should support them but lets start with x86_64
+if [ "$ARCH" = "x86_64" ]; then
+  LIBDIRSUFFIX="64"
+else
+  LIBDIRSUFFIX=""
+fi
+
+set -e
+
+rm -rf $PKG
+mkdir -p $TMP $PKG $OUTPUT
+cd $TMP
+
+rm -rf ${PRGNAM}_linux_${ARCH}
+tar xvf $CWD/${PRGNAM}${VERSION//.}_linux_${ARCH}.tar.?z
+cd ${PRGNAM}_linux_${ARCH}
+
+chown -R root:root .
+
+PKG_XDG_PATH="$TMP/${PRGNAM}_linux_${ARCH}/xdg"
+XDG_DATA_HOME=$PKG_XDG_PATH ./install-reaper.sh --install \
+        "$PKG/usr/lib${LIBDIRSUFFIX}" --integrate-user-desktop
+
+# remove unneeded uninstallation script
+rm -v "$PKG/usr/lib${LIBDIRSUFFIX}/${PRGNAM^^}/uninstall-reaper.sh"
+
+# strip $pkgdir from XDG desktop Exec line
+sed -e "s|$PKG||g" -i "${PKG_XDG_PATH}/applications/"*.desktop
+
+# install only required files for XDG integration
+install -vDm 644 "${PKG_XDG_PATH}/applications/"*.desktop \
+  -t "$PKG/usr/share/applications/"
+install -vDm 644 "${PKG_XDG_PATH}/mime/packages/"*.xml \
+  -t "$PKG/usr/share/mime/packages/"
+install -vDm 644 "${PKG_XDG_PATH}/icons/hicolor/256x256/apps/"*.png \
+  -t "$PKG/usr/share/icons/hicolor/256x256/apps/"
+
+# add convenience symlink to PATH
+install -vdm 755 "$PKG/usr/bin"
+ln -sf /usr/lib${LIBDIRSUFFIX}/${PRGNAM^^}/$PRGNAM "$PKG/usr/bin/$PRGNAM"
+
+find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
+  | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
+
+PKGDOC=$PKG/usr/doc/$PRGNAM-$VERSION
+mkdir -p $PKGDOC
+ln -sf /usr/lib${LIBDIRSUFFIX}/REAPER/Docs/REAPER\ Quick\ Start.pdf $PKGDOC
+ln -sf /usr/lib${LIBDIRSUFFIX}/REAPER/EULA.txt $PKGDOC
+ln -sf /usr/lib${LIBDIRSUFFIX}/REAPER/whatsnew.txt $PKGDOC
+cat $CWD/$PRGNAM.SlackBuild > $PKGDOC/$PRGNAM.SlackBuild
+
+mkdir -p $PKG/install
+cat $CWD/slack-desc > $PKG/install/slack-desc
+cat $CWD/doinst.sh > $PKG/install/doinst.sh
+
+cd $PKG
+/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE

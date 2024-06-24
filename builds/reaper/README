@@ -1,0 +1,3 @@
+
+Optional dependencies: linuxsampler, projectM, pyliblo
+build options: VERSION=v2.5.8 ./carla.SlackBuild
