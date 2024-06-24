@@ -1,0 +1,5 @@
+The SWS / S&M extension is a collection of features that seamlessly integrate
+into REAPER, the Digital Audio Workstation (DAW) software by Cockos, Inc.
+It is a collaborative and open source project.
+
+build options: VERSION=v2.14.0.1 ./reaper-sws.SlackBuild

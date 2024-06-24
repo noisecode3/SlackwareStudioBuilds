@@ -50,7 +50,7 @@ Slackware 15.1 on the road to an eventual beta
 ### New
 * reaper
 * reaper-sws
-* reapack (planing, comming...)
+* reapack
 ### Will Probably Be Dropped
 * radium (broken)
 * kernel-headers (I have an idea of an overlay filesystem headers swap script)

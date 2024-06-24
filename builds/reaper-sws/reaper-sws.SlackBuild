@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Slackware build script for sws
+# Slackware build script for reaper-sws
 
 # Copyright 2024 Martin Bångens Sweden
 # All rights reserved.
@@ -24,7 +24,7 @@
 
 cd $(dirname $0) ; CWD=$(pwd)
 
-PRGNAM=sws
+PRGNAM=reaper-sws
 VERSION=${VERSION:-git}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SSb}
@@ -96,13 +96,14 @@ find -L . \
   -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
 
 VERSION=$(head -n 1 version.h.in | cut -d ' ' -f 3 | tr , .)
+sed -i 's|"UserPlugins")|"Plugins")|g' CMakeLists.txt
+sed -i 's|"Scripts")|"InstallData/Scripts")|g' CMakeLists.txt
 mkdir -p build
 cd build
   cmake \
     -DCMAKE_C_FLAGS:STRING="$SLKCFLAGS" \
     -DCMAKE_CXX_FLAGS:STRING="$SLKCFLAGS" \
-    -DCMAKE_INSTALL_PREFIX=/usr/lib${LIBDIRSUFFIX}/REAPER-sws \
-    -DLIB_SUFFIX=${LIBDIRSUFFIX} \
+    -DCMAKE_INSTALL_PREFIX=/usr/lib${LIBDIRSUFFIX}/REAPER \
     -DCMAKE_BUILD_TYPE=Release \
     -DUSE_SYSTEM_TAGLIB=YES ..
   make
