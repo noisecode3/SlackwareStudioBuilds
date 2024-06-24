@@ -1,0 +1,17 @@
+The SWS / S&M extension is a collection of features that seamlessly integrate
+into REAPER, the Digital Audio Workstation (DAW) software by Cockos, Inc.
+It is a collaborative and open source project.
+
+For REAPER to pick up the plugin, it must be symlinked into REAPER's non root
+user directory.
+
+64-bit
+ln -sf /usr/lib64/REAPER-sws/UserPlugins/reaper_sws-x86_64.so ~/.config/REAPER/UserPlugins/
+ln -sf /usr/lib64/REAPER-sws/Scripts/sws_python64.py ~/.config/REAPER/Scripts/
+
+
+32-bit
+ln -sf /usr/lib/REAPER-sws/UserPlugins/reaper_sws-x86_64.so ~/.config/REAPER/UserPlugins/
+ln -sf /usr/lib/REAPER-sws/Scripts/sws_python.py ~/.config/REAPER/Scripts/
+
+build options: VERSION=v2.14.0.1 ./reaper-sws.SlackBuild

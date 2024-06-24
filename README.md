@@ -2,7 +2,8 @@
 Configuration scripts and builds for Slackware music productions
 Slackware 15.1 on the road to an eventual beta
 
-## Git SlackBuilds
+## SlackBuilds
+### Git Download
 * SoundScapeRenderer
 * ams-lv2
 * bangr
@@ -19,14 +20,12 @@ Slackware 15.1 on the road to an eventual beta
 * cliconnect
 * kernel
 * lv2lint
-* radium (broken)
 * swh-plugins
 * aida-x
 * asio
 * beatslash-lv2
 * bsequencer
 * fabla
-* kernel-headers
 * midimsg-lv2
 * sfizz
 * vst2sdk
@@ -34,7 +33,6 @@ Slackware 15.1 on the road to an eventual beta
 * avldrums-lv2-git
 * bespokesynth
 * bshapr
-* futex-waitv-winesync-api
 * libwebsocketpp
 * ninjas2
 * sherlock-lv2
@@ -48,6 +46,15 @@ Slackware 15.1 on the road to an eventual beta
 * perl-xml-parser
 * sorcer
 * xmonk-lv2
+### Normal Download
+### New
+* reaper
+* reaper-sws
+* reapack (planing, comming...)
+### Will Probably Be Dropped
+* radium (broken)
+* kernel-headers (I have an idea of an overlay filesystem headers swap script)
+* futex-waitv-winesync-api
 
 ### Kernels
 * xanmod-rt (real time recording/live monitoring)
