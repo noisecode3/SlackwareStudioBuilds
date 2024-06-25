@@ -97,7 +97,7 @@ find -L . \
 
 VERSION=$(head -n 1 version.h.in | cut -d ' ' -f 3 | tr , .)
 sed -i 's|"UserPlugins")|"Plugins")|g' CMakeLists.txt
-sed -i 's|"Scripts")|"InstallData/Scripts")|g' CMakeLists.txt
+sed -i 's|"Scripts")|"Plugins")|g' CMakeLists.txt
 mkdir -p build
 cd build
   cmake \

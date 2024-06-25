@@ -2,6 +2,17 @@
 Configuration scripts and builds for Slackware music productions
 Slackware 15.1 on the road to an eventual beta
 
+## How
+Run post_install_setup_sbo_slackpkg+_multilib.sh after installing full
+Slackware 15,or Slackware current first thing you do after installation.
+This will update Slackware and install sbopkg, slackpkg+ and multilib.
+Overwrite all old config files when you get asked.
+See config.info first then run this file to get a some essential configuration
+for music production. Then create you're user and make sure you're in the audio
+group and use Slackware like normal. If you're on current you might want to
+set sbopkg to SBo-git (current)
+
+
 ## SlackBuilds
 ### Git Download
 * SoundScapeRenderer
@@ -28,7 +39,6 @@ Slackware 15.1 on the road to an eventual beta
 * fabla
 * midimsg-lv2
 * sfizz
-* vst2sdk
 * airwindows
 * avldrums-lv2-git
 * bespokesynth
@@ -43,10 +53,11 @@ Slackware 15.1 on the road to an eventual beta
 * bslizr
 * geonkick
 * lsp-plugins
-* perl-xml-parser
 * sorcer
 * xmonk-lv2
 ### Normal Download
+* perl-xml-parser
+* vst2sdk
 ### New
 * reaper
 * reaper-sws
@@ -60,15 +71,6 @@ Slackware 15.1 on the road to an eventual beta
 * xanmod-rt (real time recording/live monitoring)
 * xanmod (composing with low latency and better support for drivers)
 * zen (like xanmod but uses a recent kernel)
-
-## How
-Run post_install_setup_sbo_slackpkg+_multilib.sh after installing full
-Slackware 15,or Slackware current first thing you do after installation.
-This will update Slackware and install sbopkg, slackpkg+ and multilib.
-Overwrite all old config files when you get asked.
-See config.info first then run this file to get a some essential configuration
-for music production. Then create you're user and make sure you're in the audio
-group and use Slackware like normal.
 
 ## 
 * Tips
