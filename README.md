@@ -62,6 +62,7 @@ set sbopkg to SBo-git (current)
 * reaper
 * reaper-sws
 * reapack
+* fasttracker2
 ### Will Probably Be Dropped
 * radium (broken)
 * kernel-headers (I have an idea of an overlay filesystem headers swap script)
