@@ -1,0 +1,19 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.
+# Line up the first '|' above the ':' following the base package name, and
+# the '|' on the right side marks the last column you can put a character in.
+# You must make exactly 11 lines for the formatting to be correct.  It's also
+# customary to leave one space after the ':' except on otherwise blank lines.
+
+            |-----handy-ruler------------------------------------------------------|
+fasttracker2: fasttracker2 (Old tracker clone)
+fasttracker2:
+fasttracker2: The FT2 interface is largely inspired by the looks of Amiga's 
+fasttracker2: Protracker. The screen consists of a pattern editor in the lower half,
+fasttracker2: while the upper half features an instrument selector on the right,
+fasttracker2: and the general module settings and some oscilloscopes. The pattern
+fasttracker2: editor can be switched to sample/instrument editors.
+fasttracker2:
+fasttracker2:
+fasttracker2:
+fasttracker2:
