@@ -87,8 +87,9 @@ cd build
   make install/strip DESTDIR=$PKG
 cd ..
 
-mkdir -p $PKG/usr/share/icons/hicolor/scalable/apps
-install -vDm644 $CWD/fasttracker2.svg $PKG/usr/share/icons/hicolor/scalable/apps
+mkdir -p $PKG/usr/share/icons/hicolor/256x256/apps
+install -vDm644 src/gfxdata/icon/ft2-clone.png \
+  $PKG/usr/share/icons/hicolor/256x256/apps/fasttracker2.png
 mkdir -p $PKG/usr/share/applications
 install -vDm644 $CWD/fasttracker2.desktop $PKG/usr/share/applications
 mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
