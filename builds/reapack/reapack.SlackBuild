@@ -48,7 +48,8 @@ if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
     git clone https://github.com/cfillion/reapack
   fi
   cd $PRGNAM
-  VERSION=$(head -n 1 version.h.in | cut -d ' ' -f 3 | tr , .)
+  VERSION=$(git describe --tags | sed 's/^v//' | sed 's/-/./g')
+  VERSION=${VERSION%%.g*}
   echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
   exit 0
 fi
@@ -95,16 +96,17 @@ find -L . \
  \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
   -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
 
-VERSION=$(head -n 1 version.h.in | cut -d ' ' -f 3 | tr , .)
+VERSION=$(git describe --tags | sed 's/^v//' | sed 's/-/./g')
+VERSION=${VERSION%%.g*}
 patch -Np1 -i $CWD/reapack-1.2.4.5-system_wide.patch
+sed -i 's|"UserPlugins")|"Plugins")|g' CMakeLists.txt
 
 mkdir -p build
 cd build
   cmake \
     -DCMAKE_C_FLAGS:STRING="$SLKCFLAGS" \
     -DCMAKE_CXX_FLAGS:STRING="$SLKCFLAGS" \
-    -DCMAKE_INSTALL_PREFIX=/usr \
-    -DLIB_SUFFIX=${LIBDIRSUFFIX} \
+    -DCMAKE_INSTALL_PREFIX=/usr/lib$LIBDIRSUFFIX/REAPER \
     -DCMAKE_BUILD_TYPE=Release ..
   make
   make install/strip DESTDIR=$PKG
