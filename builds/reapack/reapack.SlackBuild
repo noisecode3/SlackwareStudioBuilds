@@ -43,9 +43,9 @@ if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
   cd $TMP
   rm -rf $PRGNAM
   if [ "$VERSION" != "git" ]; then
-    git clone --depth 1 -b $VERSION https://github.com/noisecode3/reapack
+    git clone --depth 1 -b $VERSION https://github.com/cfillion/reapack
   else
-    git clone https://github.com/noisecode3/reapack
+    git clone https://github.com/cfillion/reapack
   fi
   cd $PRGNAM
   VERSION=$(head -n 1 version.h.in | cut -d ' ' -f 3 | tr , .)
@@ -82,9 +82,9 @@ cd $TMP
 
 rm -rf reapack
 if [ "$VERSION" != "git" ]; then
-  git clone --recursive --depth 1 -b $VERSION https://github.com/noisecode3/reapack
+  git clone --recursive --depth 1 -b $VERSION https://github.com/cfillion/reapack
 else
-  git clone --recursive https://github.com/noisecode3/reapack
+  git clone --recursive https://github.com/cfillion/reapack
 fi
 cd reapack
 
