@@ -4,3 +4,14 @@ Aims to be a highly accurate clone of the classic Fasttracker II software for
 MS-DOS. The XM player itself has been directly ported from the original source
 code, for maximum accuracy. The code is partly my own, partly based on the
 original FT2 code.
+
+It can be hard to get started blank with no instruments so here is a link
+https://archive.org/details/cave-pgm-game-music-to-xm-mod-files
+
+run:
+mkdir -p ~/FT2/modules
+cd ~/FT2/modules
+7z x Various\ Rips.7z
+And set up default directories in the Config menu
+
+Now you have some Street Fighter II like songs/modules, to start with
