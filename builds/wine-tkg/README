@@ -23,7 +23,10 @@ USE_GE_PATCHES          Default=YES
 PROTONIFY               Default=NO
 LOCAL_PRESET_PROMPT     Default=NO
 ALLOW_SERVER_RT_PRIO    Default=YES
+DXVK_DXGI               Default=YES
+WAYLAND                 Default=NO
 
+NTSYNC                  Default=NO
 FASTSYNC                Default=NO
 ESYNC                   Default=YES
 FSYNC                   Default=YES

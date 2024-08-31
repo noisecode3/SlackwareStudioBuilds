@@ -22,7 +22,7 @@
 #  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cd $(dirname $0) ; CWD=$(pwd)
+cd "$(dirname "$0")" ; CWD=$(pwd)
 
 PRGNAM=wine-tkg
 VERSION=${VERSION:-git}
@@ -34,8 +34,11 @@ PKGTYPE=${PKGTYPE:-tgz}
 USE_STAGING=${USE_STAGING:-YES}
 USE_GE_PATCHES=${USE_GE_PATCHES:-YES}
 PROTONIFY=${PROTONIFY:-NO}
+DXVK_DXGI=${DXVK_DXGI:-YES}
+WAYLAND=${WAYLAND:-NO}
 LOCAL_PRESET_PROMPT=${LOCAL_PRESET_PROMPT:-NO}
 ALLOW_SERVER_RT_PRIO=${ALLOW_SERVER_RT_PRIO:-YES}
+NTSYNC=${NTSYNC:-NO}
 FASTSYNC=${FASTSYNC:-NO}
 ESYNC=${ESYNC:-YES}
 FSYNC=${FSYNC:-YES}
@@ -52,26 +55,32 @@ TMP=${TMP:-/tmp/SSb}
 PKG=${PKG:-$TMP/package-$PRGNAM-git}
 OUTPUT=${OUTPUT:-/tmp}
 
-if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
+if [ -n "${PRINT_PACKAGE_NAME}" ]; then
   echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
   exit 0
 fi
 
-if [ $ARCH != "x86_64" ]; then
+if [ "$ARCH" != "x86_64" ]; then
   echo "This script supports only x86_64 now, "
   exit 1
 fi
 
-if [ ! -f /var/log/packages/glibc-[0-9]*_multilib-x86_64-*alien ]; then
-    echo "Install glibc-[0-9]*_multilib-x86_64-*alien"
+WINETMP="$( mktemp -d "$TMP/wine-test-XXXXXX" )"
+echo "int main(void) {; return(0); }" > "$WINETMP/test.c"
+gcc -m32 "$WINETMP/test.c" -o /dev/null >/dev/null 2>&1 && WINE32TEST=${WINE32TEST:-yes}
+rm -rf "$WINETMP"
+if [[ $WINE32TEST = "yes" ]]; then
+    echo "The multilib test passed."
+else
+    echo "The multilib test has failed."
     exit 1
 fi
 
 set -e
 
-rm -rf $PKG
-mkdir -p $TMP $PKG $OUTPUT
-cd $TMP
+rm -rf "$PKG"
+mkdir -p "$TMP" "$PKG" "$OUTPUT"
+cd "$TMP"
 rm -rf wine-tkg-git
 rm -rf /tmp/wine-tkg
 
@@ -79,7 +88,7 @@ git clone https://github.com/Frogging-Family/wine-tkg-git
 
 cd wine-tkg-git/wine-tkg-git
 
-if [ $VERSION != "git" ]; then
+if [ "$VERSION" != "git" ]; then
     sed -i "s/_plain_version=\"\"/_plain_version=\"wine-$VERSION\"/" customization.cfg
     sed -i "s/_staging_version=\"\"/_staging_version=\"v$VERSION\"/" customization.cfg
 else
@@ -88,47 +97,63 @@ else
 fi
 
 
-if [ $USE_STAGING == "NO" ]; then
+if [ "$USE_STAGING" == "NO" ]; then
     sed -i '/_use_staging=/ s/"true"/"false"/' customization.cfg
 fi
 
-if [ $USE_GE_PATCHES == "NO" ]; then
+if [ "$USE_GE_PATCHES" == "NO" ]; then
     sed -i '/_use_GE_patches=/ s/"true"/"false"/' customization.cfg
 fi
 
-if [ $PROTONIFY == "YES" ]; then
+if [ "$PROTONIFY" == "YES" ]; then
     sed -i '/_protonify=/ s/"false"/"true"/' customization.cfg
 fi
 
-if [ $LOCAL_PRESET_PROMPT == "NO" ]; then
+if [ "$LOCAL_PRESET_PROMPT" == "NO" ]; then
     sed -i '/_LOCAL_PRESET=/ s/""/"none"/' customization.cfg
 fi
 
-if [ $ALLOW_SERVER_RT_PRIO == "YES" ]; then
+if [ "$ALLOW_SERVER_RT_PRIO" == "YES" ]; then
     sed -i '/_allow_server_rt_prio=/ s/"false"/"true"/' wine-tkg-profiles/advanced-customization.cfg
 fi
 
-if [ $FASTSYNC == "YES" ]; then
+if [ "$DXVK_DXGI" == "NO" ]; then
+    sed -i '/_dxvk_dxgi=/ s/"true"/"false"/' customization.cfg
+fi
+
+if [ "$WAYLAND" == "YES" ]; then
+    sed -i '/_wayland_driver=/ s/"false"/"true"/' customization.cfg
+fi
+
+if [ "$NTSYNC" == "YES" ]; then
+    sed -i '/_use_ntsync=/ s/"false"/"true"/' customization.cfg
+fi
+
+if [ "$FASTSYNC" == "YES" ]; then
     sed -i '/_use_fastsync=/ s/"false"/"true"/' customization.cfg
 fi
 
-if [ $ESYNC == "NO" ]; then
+if [ "$ESYNC" == "NO" ]; then
     sed -i '/_use_esync=/ s/"true"/"false"/' customization.cfg
 fi
 
-if [ $FSYNC == "NO" ]; then
+if [ "$FSYNC" == "NO" ]; then
     sed -i '/_use_fsync=/ s/"true"/"false"/' customization.cfg
 fi
 
 sed -i "s|_nomakepkg_prefix_path=\"\"|_nomakepkg_prefix_path=\"/usr\"|g" customization.cfg
+sed -i '/_nomakepkg_dependency_autoresolver=/ s/"true"/"false"/' customization.cfg
 sed -i '/_nomakepkg_nover=/ s/"false"/"true"/' wine-tkg-profiles/advanced-customization.cfg
 
-sed -i "s|\"\$_prefix\"|$PKG\"\$_prefix\"|g"            wine-tkg-scripts/build.sh
-sed -i "s|make install|make install DESTDIR=$PKG|g" wine-tkg-scripts/build.sh
-sed -i 's|_nomakepkg_pkgname="${pkgname}"|_nomakepkg_pkgname=""|g' wine-tkg-scripts/build.sh
-sed -i 's|_nomakepkg_pkgname="${pkgname}"|_nomakepkg_pkgname=""|g' non-makepkg-build.sh
-sed -i 's|local _prefix="${_nomakepkg_prefix_path}/${_nomakepkg_pkgname}"|local _prefix="${_nomakepkg_prefix_path}"|g' wine-tkg-scripts/build.sh
-sed -i 's|local _prefix="${_nomakepkg_prefix_path}/${_nomakepkg_pkgname}"|local _prefix="${_nomakepkg_prefix_path}"|g' non-makepkg-build.sh
+sed -i "s|\"\$_prefix\"|$PKG\"\$_prefix\"|g"                            wine-tkg-scripts/build.sh
+sed -i "s|make install|make install DESTDIR=$PKG|g"                     wine-tkg-scripts/build.sh
+sed -i "s|_nomakepkg_pkgname=\"\${pkgname}\"|_nomakepkg_pkgname=\"\"|g" wine-tkg-scripts/build.sh
+sed -i "s|_nomakepkg_pkgname=\"\${pkgname}\"|_nomakepkg_pkgname=\"\"|g" non-makepkg-build.sh
+
+look_for="local _prefix=\"\${_nomakepkg_prefix_path}/\${_nomakepkg_pkgname}\""
+turn_into="local _prefix=\"\${_nomakepkg_prefix_path}\""
+sed -i "s|$look_for|$turn_into|g" wine-tkg-scripts/build.sh
+sed -i "s|$look_for|$turn_into|g" non-makepkg-build.sh
 
 files_to_copy=$(find "$CWD/patches" -type f -name '[0-9][0-9][0-9][0-9]-*.mypatch' || \
   find "$CWD/patches" -type f -name '[0-9][0-9][0-9][0-9]-*.myrevert' || \
@@ -148,56 +173,61 @@ find -L . \
   -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
 
 ./non-makepkg-build.sh || { rm -rf /tmp/wine-tkg; exit 1; }
+stty sane
 
-
-find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
+find "$PKG" -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
   | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
 
 cd src/wine-git
-VERSION=$(cat VERSION | awk '{print $3}')
-VERSION=$(echo $VERSION | tr '-' . )
+
+VERSION=$(awk '{print $3}' VERSION)
+VERSION=$(echo "$VERSION" | tr '-' . )
 
 # Add a desktop menu for winecfg, wine-uninstaller, wine-browsedrive and doc:
-mkdir -p $PKG/usr/share/{applications,icons/hicolor/scalable/apps,pixmaps}
-mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
-
-DOCS="AUTHORS COPYING.LIB LICENSE* MAINTAINERS VERSION"
-FONTS_LICENSE="COPYING.arial COPYING.cour COPYING.msyh COPYING.times"
-cp $DOCS $FONTS_LICENSE $PKG/usr/doc/$PRGNAM-$VERSION
-cp programs/winecfg/winecfg.svg $PKG/usr/share/icons/hicolor/scalable/apps/
+mkdir -p "$PKG/usr/share/"{applications,icons/hicolor/scalable/apps,pixmaps}
+mkdir -p "$PKG/usr/doc/$PRGNAM-$VERSION"
+DOCS=("AUTHORS" "COPYING.LIB" "LICENSE" "LICENSE.OLD" "MAINTAINERS" "VERSION")
+FONTS_LICENSE=("COPYING.arial" "COPYING.cour" "COPYING.msyh" "COPYING.times")
+cp "${DOCS[@]}" "${FONTS_LICENSE[@]}" "$PKG/usr/doc/$PRGNAM-$VERSION"
+cp programs/winecfg/winecfg.svg "$PKG/usr/share/icons/hicolor/scalable/apps/"
 
 # clear source from tmp (can stop the user from being able to build in $HOME)
 cd ../..
 rm -rf /tmp/wine-tkg
 
 # on slackware /usr/share/man is a symbolic link to /usr/man
-mv $PKG/usr/share/man $PKG/usr/man
-find $PKG/usr/man -type f -exec gzip -9 {} \;
-for i in $( find $PKG/usr/man -type l ) ; do ln -s $( readlink $i ).gz $i.gz ; rm $i ; done
+mv "$PKG/usr/share/man" "$PKG/usr/man"
+find "$PKG/usr/man" -type f -exec gzip -9 {} \;
+find "$PKG/usr/man" -type l -exec sh -c '
+  for i; do
+    ln -s "$(readlink "$i").gz" "$i.gz"
+    rm "$i"
+  done
+' sh {} +
 
 # Add font configuration:
-install -d $PKG/etc/fonts/conf.{avail,d}
-install -m644 $CWD/30-win32-aliases.conf $PKG/etc/fonts/conf.avail
-ln -sf /etc/fonts/conf.avail/30-win32-aliases.conf $PKG/etc/fonts/conf.d/30-win32-aliases.conf
-install -Dm 644 $CWD/wine-binfmt.conf $PKG/usr/lib/binfmt.d/wine.conf
+install -d "$PKG/etc/fonts/conf."{avail,d}
+install -m644 "$CWD/30-win32-aliases.conf" "$PKG/etc/fonts/conf.avail"
+ln -sf /etc/fonts/conf.avail/30-win32-aliases.conf "$PKG/etc/fonts/conf.d/30-win32-aliases.conf"
+install -Dm 644 "$CWD/wine-binfmt.conf" "$PKG/usr/lib/binfmt.d/wine.conf"
 
 # Create Wine menu structure:
-mkdir -p $PKG/etc/xdg/menus/applications-merged
-cp $CWD/wine.menu $PKG/etc/xdg/menus/applications-merged
+install -Dm 644 "$CWD/wine.menu" "$PKG/etc/xdg/menus/applications-merged/wine.menu"
 
 # icons and desktop files
-convert $CWD/wine.svg -scale 64 $PKG/usr/share/pixmaps/wine.png
-cp $CWD/wine.svg $PKG/usr/share/icons/hicolor/scalable/apps/
-convert $CWD/winecfg.png -scale 64 $PKG/usr/share/pixmaps/winecfg.png
-convert $CWD/winecfg.png -scale 64 $PKG/usr/share/pixmaps/folder-wine.png
-convert $CWD/winecfg.png -scale 64 $PKG/usr/share/pixmaps/wine-uninstaller.png
-cp $CWD/*.desktop $PKG/usr/share/applications/
+install -Dm 644 "$CWD/wine.svg" "$PKG/usr/share/icons/hicolor/scalable/apps/wine.svg"
+magick "$CWD/wine.svg"    -scale 64 "$PKG/usr/share/pixmaps/wine.png"
+magick "$CWD/winecfg.png" -scale 64 "$PKG/usr/share/pixmaps/winecfg.png"
+magick "$CWD/winecfg.png" -scale 64 "$PKG/usr/share/pixmaps/folder-wine.png"
+magick "$CWD/winecfg.png" -scale 64 "$PKG/usr/share/pixmaps/wine-uninstaller.png"
 
-cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
+find "$CWD" -maxdepth 1 -name "*.desktop" -exec install -m 644 {} "$PKG/usr/share/applications/" \;
 
-mkdir -p $PKG/install
-cat $CWD/slack-desc > $PKG/install/slack-desc
-cat $CWD/doinst.sh > $PKG/install/doinst.sh
+cat "$CWD/$PRGNAM.SlackBuild" > "$PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild"
 
-cd $PKG
-/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE
+mkdir -p "$PKG/install"
+cat "$CWD/slack-desc" > "$PKG/install/slack-desc"
+cat "$CWD/doinst.sh" > "$PKG/install/doinst.sh"
+
+cd "$PKG"
+/sbin/makepkg -l y -c n "$OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
