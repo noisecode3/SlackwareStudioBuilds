@@ -22,15 +22,13 @@
 #  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cd $(dirname $0) ; CWD=$(pwd)
+cd "$(dirname "$0")" ; CWD=$(pwd)
 
 PRGNAM=reaper
-VERSION=${VERSION:-7.16}
+VERSION=${VERSION:-7.22}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SSb}
 PKGTYPE=${PKGTYPE:-tgz}
-
-SRCNAM=Carla
 
 if [ -z "$ARCH" ]; then
   case "$( uname -m )" in
@@ -40,7 +38,7 @@ if [ -z "$ARCH" ]; then
   esac
 fi
 
-if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
+if [ -n "${PRINT_PACKAGE_NAME}" ]; then
   echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
   exit 0
 fi
@@ -59,13 +57,13 @@ fi
 
 set -e
 
-rm -rf $PKG
-mkdir -p $TMP $PKG $OUTPUT
-cd $TMP
+rm -rf "$PKG"
+mkdir -p "$TMP" "$PKG" "$OUTPUT"
+cd "$TMP"
 
-rm -rf ${PRGNAM}_linux_${ARCH}
-tar xvf $CWD/${PRGNAM}${VERSION//.}_linux_${ARCH}.tar.?z
-cd ${PRGNAM}_linux_${ARCH}
+rm -rf "${PRGNAM}_linux_${ARCH}"
+tar xvf "$CWD/${PRGNAM}${VERSION//.}_linux_${ARCH}".tar.?z
+cd "${PRGNAM}_linux_${ARCH}"
 
 chown -R root:root .
 
@@ -91,19 +89,19 @@ install -vDm 644 "${PKG_XDG_PATH}/icons/hicolor/256x256/apps/"*.png \
 install -vdm 755 "$PKG/usr/bin"
 ln -sf /usr/lib${LIBDIRSUFFIX}/${PRGNAM^^}/$PRGNAM "$PKG/usr/bin/$PRGNAM"
 
-find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
+find "$PKG" -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
   | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
 
 PKGDOC=$PKG/usr/doc/$PRGNAM-$VERSION
-mkdir -p $PKGDOC
-ln -sf /usr/lib${LIBDIRSUFFIX}/REAPER/Docs/REAPER\ Quick\ Start.pdf $PKGDOC
-ln -sf /usr/lib${LIBDIRSUFFIX}/REAPER/EULA.txt $PKGDOC
-ln -sf /usr/lib${LIBDIRSUFFIX}/REAPER/whatsnew.txt $PKGDOC
-cat $CWD/$PRGNAM.SlackBuild > $PKGDOC/$PRGNAM.SlackBuild
+mkdir -p "$PKGDOC"
+ln -sf "/usr/lib${LIBDIRSUFFIX}/REAPER/Docs/REAPER Quick Start.pdf" "$PKGDOC"
+ln -sf "/usr/lib${LIBDIRSUFFIX}/REAPER/EULA.txt" "$PKGDOC"
+ln -sf "/usr/lib${LIBDIRSUFFIX}/REAPER/whatsnew.txt" "$PKGDOC"
+cat "$CWD/$PRGNAM.SlackBuild" > "$PKGDOC/$PRGNAM.SlackBuild"
 
-mkdir -p $PKG/install
-cat $CWD/slack-desc > $PKG/install/slack-desc
-cat $CWD/doinst.sh > $PKG/install/doinst.sh
+mkdir -p "$PKG/install"
+cat "$CWD/slack-desc" > "$PKG/install/slack-desc"
+cat "$CWD/doinst.sh" > "$PKG/install/doinst.sh"
 
-cd $PKG
-/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE
+cd "$PKG"
+/sbin/makepkg -l y -c n "$OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
