@@ -216,10 +216,10 @@ install -Dm 644 "$CWD/wine.menu" "$PKG/etc/xdg/menus/applications-merged/wine.me
 
 # icons and desktop files
 install -Dm 644 "$CWD/wine.svg" "$PKG/usr/share/icons/hicolor/scalable/apps/wine.svg"
-magick "$CWD/wine.svg"    -scale 64 "$PKG/usr/share/pixmaps/wine.png"
-magick "$CWD/winecfg.png" -scale 64 "$PKG/usr/share/pixmaps/winecfg.png"
-magick "$CWD/winecfg.png" -scale 64 "$PKG/usr/share/pixmaps/folder-wine.png"
-magick "$CWD/winecfg.png" -scale 64 "$PKG/usr/share/pixmaps/wine-uninstaller.png"
+magick convert "$CWD/wine.svg"    -scale 64 "$PKG/usr/share/pixmaps/wine.png"
+magick convert "$CWD/winecfg.png" -scale 64 "$PKG/usr/share/pixmaps/winecfg.png"
+magick convert "$CWD/winecfg.png" -scale 64 "$PKG/usr/share/pixmaps/folder-wine.png"
+magick convert "$CWD/winecfg.png" -scale 64 "$PKG/usr/share/pixmaps/wine-uninstaller.png"
 
 find "$CWD" -maxdepth 1 -name "*.desktop" -exec install -m 644 {} "$PKG/usr/share/applications/" \;
 
