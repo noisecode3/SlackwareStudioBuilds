@@ -1,0 +1,138 @@
+#!/bin/bash
+
+# Slackware build script for guitarix
+# Originally written by Michales Michaloudes (email removed)
+
+# Modified by B. Watson <urchlay@slackware.uk>. Modified version released
+# under the WTFPL, for details see http://www.wtfpl.net/txt/copying/
+
+# Take over by Martin Bången Sweden
+
+cd "$(dirname "$0")" ; CWD=$(pwd)
+
+PRGNAM=guitarix
+VERSION=${VERSION:-git}
+BUILD=${BUILD:-1}
+TAG=${TAG:-_SBo}
+PKGTYPE=${PKGTYPE:-tgz}
+
+if [ -z "$ARCH" ]; then
+  case "$( uname -m )" in
+    i?86) ARCH=i586 ;;
+    arm*) ARCH=arm ;;
+       *) ARCH=$( uname -m ) ;;
+  esac
+fi
+
+if [ -n "${PRINT_PACKAGE_NAME}" ]; then
+  echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
+  exit 0
+fi
+
+TMP=${TMP:-/tmp/SBo}
+PKG=$TMP/package-$PRGNAM
+OUTPUT=${OUTPUT:-/tmp}
+
+if [ "$ARCH" = "i586" ]; then
+  LIBDIRSUFFIX=""
+elif [ "$ARCH" = "i686" ]; then
+  LIBDIRSUFFIX=""
+elif [ "$ARCH" = "x86_64" ]; then
+  LIBDIRSUFFIX="64"
+else
+  LIBDIRSUFFIX=""
+fi
+
+set -e
+
+rm -rf "$PKG"
+mkdir -p "$TMP" "$PKG" "$OUTPUT"
+cd "$TMP"
+rm -rf "$PRGNAM"
+
+if [ "$VERSION" != "git" ]; then
+  git clone --depth 1 -b "$VERSION" https://github.com/brummer10/guitarix
+  VERSION=${VERSION:1}
+else
+  git clone https://github.com/brummer10/guitarix
+fi
+
+cd "$PRGNAM"
+chown -R root:root .
+find -L . \
+ \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 -o -perm 511 \) \
+ ! -type l -exec chmod 755 {} \; -o \
+ \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 -o -perm 440 -o -perm 400 \) \
+ ! -type l -exec chmod 644 {} \;
+
+VERSION=$(grep "^VERSION=" trunk/wscript  | cut -d"'" -f2 | cut -d'-' -f1)
+git submodule update --init --recursive
+cd trunk
+LIBDIR="/usr/lib${LIBDIRSUFFIX}"
+./waf configure \
+  --prefix=/usr \
+  --enable-nls \
+  --shared-lib \
+  --lib-dev \
+  --no-ldconfig \
+  --no-desktop-update \
+  --no-font-cache-update \
+  --lv2dir="$LIBDIR/lv2/" \
+  --libdir="$LIBDIR" \
+  --ldflags="-ldl"
+
+
+  #--optimization \
+  #--mod-lv2 \
+  #--includeresampler \
+  #--includeconvolver \
+  #--enable-nls \
+  #--faust \
+
+./waf build
+./waf install --destdir="$PKG"
+
+find "$PKG" -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
+  | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
+
+# Man page written for this SlackBuild, see guitarix.rst.
+mkdir -p "$PKG/usr/man/man1"
+gzip -9c < "$CWD/$PRGNAM.1" > "$PKG/usr/man/man1/$PRGNAM.1.gz"
+
+# for the 128x128 icon, center upstream's 100x100 icon in a 128x128 png.
+dir="$PKG/usr/share/icons/hicolor/128x128/apps"
+mkdir -p "$dir"
+convert -background none -extent 128x128 -gravity center \
+    pixmaps/gx_head.png \
+    "$dir/$PRGNAM.png"
+
+# for the rest, resize as usual.
+for px in 16 32 48 64; do
+    size=${px}x${px}
+    dir=$PKG/usr/share/icons/hicolor/$size/apps
+    mkdir -p "$dir"
+    convert -resize $size \
+        pixmaps/gx_head.png \
+        "$dir/$PRGNAM.png"
+done
+
+ln -s "../icons/hicolor/48x48/apps/$PRGNAM.png" "$PKG/usr/share/pixmaps/$PRGNAM.png"
+
+mkdir -p "$PKG/usr/doc/$PRGNAM-$VERSION"
+cp -a COPYING changelog README* "$PKG/usr/doc/$PRGNAM-$VERSION"
+cat "$CWD/$PRGNAM.SlackBuild" > "$PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild"
+
+mkdir -p "$PKG/install"
+cat "$CWD/slack-desc" > "$PKG/install/slack-desc"
+cat "$CWD/doinst.sh"  > "$PKG/install/doinst.sh"
+
+# Only add capability stuff if not disabled:
+if [ "${SETCAP:-yes}" = "yes" ]; then
+  cat "$CWD/setcap.sh" >> "$PKG/install/doinst.sh"
+  # Only allow execution by audio group
+  chown root:audio "$PKG/usr/bin/$PRGNAM"
+  chmod 0750 "$PKG/usr/bin/$PRGNAM"
+fi
+
+cd "$PKG"
+/sbin/makepkg -l y -c n "$OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"

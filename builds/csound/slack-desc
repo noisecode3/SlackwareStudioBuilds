@@ -1,0 +1,19 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.
+# Line up the first '|' above the ':' following the base package name, and
+# the '|' on the right side marks the last column you can put a character in.
+# You must make exactly 11 lines for the formatting to be correct.  It's also
+# customary to leave one space after the ':' except on otherwise blank lines.
+
+      |-----handy-ruler------------------------------------------------------|
+csound: csound (A sound and music computing system)
+csound:
+csound: Csound was originally written at MIT by Barry Vercoe in 1985, based
+csound: on his earlier system called Music 11, which in its turn followed the
+csound: MUSIC-N model initiated by Max Mathews at the Bell Labs. Its
+csound: development continued throughout the 1990s and 2000s, led by John
+csound: Fitch at the University of Bath. 
+csound:
+csound:
+csound:
+csound:
