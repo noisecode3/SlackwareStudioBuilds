@@ -69,41 +69,51 @@ rm /tmp/slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.txz
 
 updateFun ()
 {
-echo ""
-echo "Do you want to upgrade slackware? (y/N)"
-read -r ANS
-if [ "$ANS" == "y" ] || [ "$ANS" == "Y" ]; then
-  slackpkg update gpg
-  slackpkg update
-  slackpkg upgrade-all
-  echo "!!Attention!! You may need to run lilo or setup you're boot loader and reboot !!Attention!!"
-fi
+  echo ""
+  echo "Do you want to upgrade slackware? (y/N)"
+  read -r ANS
+  if [ "$ANS" == "y" ] || [ "$ANS" == "Y" ]; then
+    slackpkg update gpg
+    slackpkg update
+    slackpkg upgrade-all
+    echo "!!Attention!! You may need to run lilo or setup you're boot loader and reboot !!Attention!!"
+  fi
 }
+
+echo ""
+echo "**************************************************************"
+echo " Need to do some testing in a VM wait for it now press ctrl-c"
+echo "***************************************************************"
+read -r
 
 # Setup bail chance
 echo ""
-echo "*************************************"
-echo " Setup slackpkg+ multilib, hit return"
-echo "*************************************"
+echo "*******************************************************"
+echo " Setup slackpkg+ multilib, hit return or ctrl-c to exit"
+echo "*******************************************************"
 read -r
 
 # Sed slackpkg mirror and run setupmultilib.sh
+BASE_URL="https://mirrors.slackware.com/slackware/slackware64"
+
 if grep -v ^\# /etc/slackpkg/mirrors 2>/dev/null; then
   echo "Found mirror"
-  updateFun
-  /usr/doc/slackpkg+-$slackpkg_version/setupmultilib.sh
 else
-  if [[ $(cat /etc/slackware-version) == "Slackware $SV" ]]; then
+  SLACKWARE_VERSION=$(cat /etc/slackware-version)
+
+  if [[ "$SLACKWARE_VERSION" == "Slackware $SV" ]]; then
     echo "Slackware $SV"
-    sed -i "s/# https:\/\/mirrors.slackware.com\/slackware\/slackware64-$SV\//https:\/\/mirrors.slackware.com\/slackware\/slackware64-$SV\//g" /etc/slackpkg/mirrors
-    updateFun
-    /usr/doc/slackpkg+-$slackpkg_version/setupmultilib.sh
-  elif [[ $(cat /etc/slackware-version) == "Slackware $SV+" ]]; then
+    sed -i "s|^# $BASE_URL-$SV/|$BASE_URL-$SV/|" /etc/slackpkg/mirrors
+    V="15"
+  elif [[ "$SLACKWARE_VERSION" == "Slackware $SV+" ]]; then
     echo "Slackware $SV+"
-    sed -i 's/# https:\/\/mirrors.slackware.com\/slackware\/slackware64-current\//https:\/\/mirrors.slackware.com\/slackware\/slackware64-current\//g' /etc/slackpkg/mirrors
-    updateFun
-    /usr/doc/slackpkg+-$slackpkg_version/setupmultilib.sh
+    sed -i "s|^# $BASE_URL-current/|$BASE_URL-current/|" /etc/slackpkg/mirrors
+    V=""
   fi
 fi
+
+sed -i "/^MIRRORPLUS\['slackpkgplus'\]=/s|https://slakfinder.org/slackpkg+15/|https://slackware.nl/slackpkgplus$V/|" /etc/slackpkg/slackpkgplus.conf
+updateFun
+/usr/doc/slackpkg+-$slackpkg_version/setupmultilib.sh
 
 exit 0
