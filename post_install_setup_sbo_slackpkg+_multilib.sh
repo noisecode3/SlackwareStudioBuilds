@@ -80,12 +80,6 @@ updateFun ()
   fi
 }
 
-echo ""
-echo "**************************************************************"
-echo " Need to do some testing in a VM wait for it now press ctrl-c"
-echo "***************************************************************"
-read -r
-
 # Setup bail chance
 echo ""
 echo "*******************************************************"
