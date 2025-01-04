@@ -65,11 +65,18 @@ if [ "$ARCH" != "x86_64" ]; then
   exit 1
 fi
 
+
 mkdir -p "$TMP"
-WINETMP="$( mktemp -d "$TMP/wine-test-XXXXXX" )"
+WINETMP="$(mktemp -d "$TMP/wine-test-XXXXXX")" || \
+  { echo "Failed to create temp directory"; exit 1; }
+
 echo "int main(void) {; return(0); }" > "$WINETMP/test.c"
-gcc -m32 "$WINETMP/test.c" -o /dev/null >/dev/null 2>&1 && WINE32TEST=${WINE32TEST:-yes}
-rm -rf "$WINETMP"
+if gcc -m32 "$WINETMP/test.c" -o "$WINETMP/test.out" >/dev/null 2>&1; then
+    WINE32TEST=${WINE32TEST:-yes}
+fi
+if [[ -n "$WINETMP" && -d "$WINETMP" ]]; then
+    rm -rf "$WINETMP"
+fi
 if [[ $WINE32TEST = "yes" ]]; then
     echo "The multilib test passed."
 else
@@ -80,7 +87,7 @@ fi
 set -e
 
 rm -rf "$PKG"
-mkdir -p "$TMP" "$PKG" "$OUTPUT"
+mkdir -p "$PKG" "$OUTPUT"
 cd "$TMP"
 rm -rf wine-tkg-git
 rm -rf /tmp/wine-tkg
