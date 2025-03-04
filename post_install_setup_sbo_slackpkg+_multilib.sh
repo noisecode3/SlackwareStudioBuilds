@@ -108,6 +108,6 @@ fi
 
 sed -i "/^MIRRORPLUS\['slackpkgplus'\]=/s|https://slakfinder.org/slackpkg+15/|https://slackware.nl/slackpkgplus$V/|" /etc/slackpkg/slackpkgplus.conf
 updateFun
-/usr/doc/slackpkg+-$slackpkg_version/setupmultilib.sh
+/usr/doc/slackpkg+-*/setupmultilib.sh
 
 exit 0
