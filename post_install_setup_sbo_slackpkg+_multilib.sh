@@ -19,19 +19,19 @@
 # Slackware version
 SV=15.0
 
-# check md5 for pkgs
-sbopkg_md5sum="df40c7c991a30c1129a612a40be9f590  /tmp/sbopkg-0.38.2-noarch-1_wsr.tgz"
-slackpkg_md5sum="769a2505230bbd709823ba4c35a9b29b  /tmp/slackpkg+-1.8.0-noarch-7mt.txz"
-
 # versions
 sbopkg_version=0.38.2
 sbopkg_tag=1_wsr
-slackpkg_version=1.8.0
-slackpkg_tag=7mt
+slackpkg_version=1.8.2
+slackpkg_tag=1alien
+
+# check md5 for pkgs
+sbopkg_md5sum="5a631da594a5f7b0710be2e7af63ebf7  /tmp/sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz"
+slackpkg_md5sum="fc070322e659ac55fa3cfcefee92f1ab  /tmp/slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.txz"
 
 # Download
 wget -c -P /tmp https://github.com/sbopkg/sbopkg/releases/download/$sbopkg_version/sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz
-wget -c -P /tmp https://sourceforge.net/projects/slackpkgplus/files/slackpkg%2B-$slackpkg_version-noarch-$slackpkg_tag.txz
+wget -c -P /tmp https://slakfinder.org/slackpkg+/pkg/slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.txz
 
 # Check
 sbopkg_md5sum_dl=$(md5sum /tmp/sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz)
@@ -106,7 +106,6 @@ else
   fi
 fi
 
-sed -i "/^MIRRORPLUS\['slackpkgplus'\]=/s|https://slakfinder.org/slackpkg+15/|https://slackware.nl/slackpkgplus$V/|" /etc/slackpkg/slackpkgplus.conf
 updateFun
 /usr/doc/slackpkg+-*/setupmultilib.sh
 
