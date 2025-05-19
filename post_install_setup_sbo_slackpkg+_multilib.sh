@@ -26,16 +26,16 @@ slackpkg_version=1.8.2
 slackpkg_tag=1alien
 
 # check md5 for pkgs
-sbopkg_md5sum="5a631da594a5f7b0710be2e7af63ebf7  /tmp/sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz"
-slackpkg_md5sum="fc070322e659ac55fa3cfcefee92f1ab  /tmp/slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.txz"
+sbopkg_md5sum="5a631da594a5f7b0710be2e7af63ebf7"
+slackpkg_md5sum="fc070322e659ac55fa3cfcefee92f1ab"
 
 # Download
 wget -c -P /tmp https://github.com/sbopkg/sbopkg/releases/download/$sbopkg_version/sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz
 wget -c -P /tmp https://slakfinder.org/slackpkg+/pkg/slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.txz
 
 # Check
-sbopkg_md5sum_dl=$(md5sum /tmp/sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz)
-slackpkg_md5sum_dl=$(md5sum /tmp/slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.txz)
+sbopkg_md5sum_dl=$(md5sum /tmp/sbopkg-$sbopkg_version-noarch-$sbopkg_tag.tgz | cut -d' ' -f1)
+slackpkg_md5sum_dl=$(md5sum /tmp/slackpkg+-$slackpkg_version-noarch-$slackpkg_tag.txz | cut -d' ' -f1)
 
 if [[ $sbopkg_md5sum == "$sbopkg_md5sum_dl" ]]
     then
