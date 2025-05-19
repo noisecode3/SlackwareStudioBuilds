@@ -20,7 +20,7 @@
 SV=15.0
 
 # versions
-sbopkg_version=0.38.2
+sbopkg_version=0.38.3
 sbopkg_tag=1_wsr
 slackpkg_version=1.8.2
 slackpkg_tag=1alien
