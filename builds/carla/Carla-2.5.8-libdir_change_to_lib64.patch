@@ -151,56 +151,6 @@ diff -ruN Carla-2.5.8.b/source/frontend/pluginlist/pluginlistdialog.cpp Carla-2.
             #endif
          }
  
-diff -ruN Carla-2.5.8.b/source/modules/juce_audio_processors/format_types/LV2_SDK/juce_lv2_config.h Carla-2.5.8.a/source/modules/juce_audio_processors/format_types/LV2_SDK/juce_lv2_config.h
---- Carla-2.5.8.b/source/modules/juce_audio_processors/format_types/LV2_SDK/juce_lv2_config.h	2024-01-02 22:53:23.000000000 +0100
-+++ Carla-2.5.8.a/source/modules/juce_audio_processors/format_types/LV2_SDK/juce_lv2_config.h	2024-04-20 13:31:09.724030938 +0200
-@@ -70,8 +70,8 @@
-  #elif JUCE_LINUX || JUCE_ANDROID
-   #define LILV_DEFAULT_LV2_PATH \
-     "~/.lv2"                        LILV_PATH_SEP \
--    "/usr/lib/lv2"                  LILV_PATH_SEP \
--    "/usr/local/lib/lv2"
-+    "/usr/lib64/lv2"                  LILV_PATH_SEP \
-+    "/usr/local/lib64/lv2"
-  #else
-   #error "Unsupported platform"
-  #endif
-diff -ruN Carla-2.5.8.b/source/modules/juce_audio_processors/format_types/juce_LADSPAPluginFormat.cpp Carla-2.5.8.a/source/modules/juce_audio_processors/format_types/juce_LADSPAPluginFormat.cpp
---- Carla-2.5.8.b/source/modules/juce_audio_processors/format_types/juce_LADSPAPluginFormat.cpp	2024-01-02 22:53:23.000000000 +0100
-+++ Carla-2.5.8.a/source/modules/juce_audio_processors/format_types/juce_LADSPAPluginFormat.cpp	2024-04-20 14:37:15.320385418 +0200
-@@ -714,7 +714,7 @@
- 
- FileSearchPath LADSPAPluginFormat::getDefaultLocationsToSearch()
- {
--    return  { SystemStats::getEnvironmentVariable ("LADSPA_PATH", "/usr/lib/ladspa;/usr/local/lib/ladspa;~/.ladspa").replace (":", ";") };
-+    return  { SystemStats::getEnvironmentVariable ("LADSPA_PATH", "/usr/lib64/ladspa;/usr/local/lib64/ladspa;~/.ladspa").replace (":", ";") };
- }
- 
- } // namespace juce
-diff -ruN Carla-2.5.8.b/source/modules/juce_audio_processors/format_types/juce_VST3PluginFormat.cpp Carla-2.5.8.a/source/modules/juce_audio_processors/format_types/juce_VST3PluginFormat.cpp
---- Carla-2.5.8.b/source/modules/juce_audio_processors/format_types/juce_VST3PluginFormat.cpp	2024-01-02 22:53:23.000000000 +0100
-+++ Carla-2.5.8.a/source/modules/juce_audio_processors/format_types/juce_VST3PluginFormat.cpp	2024-04-20 16:56:19.338131278 +0200
-@@ -3935,7 +3935,7 @@
-    #elif JUCE_MAC
-     return FileSearchPath ("~/Library/Audio/Plug-Ins/VST3;/Library/Audio/Plug-Ins/VST3");
-    #else
--    return FileSearchPath ("~/.vst3/;/usr/lib/vst3/;/usr/local/lib/vst3/");
-+    return FileSearchPath ("~/.vst3/;/usr/lib64/vst3/;/usr/local/lib64/vst3/");
-    #endif
- }
- 
-diff -ruN Carla-2.5.8.b/source/modules/juce_audio_processors/format_types/juce_VSTPluginFormat.cpp Carla-2.5.8.a/source/modules/juce_audio_processors/format_types/juce_VSTPluginFormat.cpp
---- Carla-2.5.8.b/source/modules/juce_audio_processors/format_types/juce_VSTPluginFormat.cpp	2024-01-02 22:53:23.000000000 +0100
-+++ Carla-2.5.8.a/source/modules/juce_audio_processors/format_types/juce_VSTPluginFormat.cpp	2024-04-20 14:05:48.275216737 +0200
-@@ -3604,7 +3604,7 @@
-     return FileSearchPath ("~/Library/Audio/Plug-Ins/VST;/Library/Audio/Plug-Ins/VST");
-    #elif JUCE_LINUX || JUCE_BSD || JUCE_ANDROID
-     return FileSearchPath (SystemStats::getEnvironmentVariable ("VST_PATH",
--                                                                "/usr/lib/vst;/usr/local/lib/vst;~/.vst")
-+                                                                "/usr/lib64/vst;/usr/local/lib64/vst;~/.vst")
-                              .replace (":", ";"));
-    #elif JUCE_WINDOWS
-     auto programFiles = File::getSpecialLocation (File::globalApplicationsDirectory).getFullPathName();
 diff -ruN Carla-2.5.8.b/source/plugin/Makefile Carla-2.5.8.a/source/plugin/Makefile
 --- Carla-2.5.8.b/source/plugin/Makefile	2024-01-02 22:53:23.000000000 +0100
 +++ Carla-2.5.8.a/source/plugin/Makefile	2024-04-20 16:35:41.352020616 +0200
