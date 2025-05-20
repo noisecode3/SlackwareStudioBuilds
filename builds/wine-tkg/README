@@ -36,11 +36,15 @@ All this can change so look out for what dependencies you need
 for your applications, some dependencies could be missing and
 it will still build.
 
-Install alienbobs multilib for Slackware 15
+Install alienbobs multilib for Slackware 15 and MinGW
+Without MinGW it will not compile dll's properly
+and some programs wont work.
+
 https://slackbuilds.org/repository/15.0/system/schedtool/
 http://www.slackware.com/~alien/slackbuilds/MinGW-w64/pkg64/15.0/
-https://mirrors.slackware.com/slackware/slackware-15.0/slackware/x/libXpresent-1.0.0-i586-4.txz
-command:convertpkg-compat32 -i libXpresent-1.0.0-i586-4.txz
+
+Wayland 34-bit development files not found, the Wayland driver won't be supported.
+Seem to be a problem on Slackware 15 :(
 
 OPTIONAL DEPENDENCIES
 
@@ -53,3 +57,4 @@ https://slackbuilds.org/repository/15.0/system/webcore-fonts/
 
 oss
 libcapi20
+pcsc-lite
