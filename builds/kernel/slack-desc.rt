@@ -15,5 +15,5 @@ kernel-xanmod1-rt: need to load one or more kernel modules using an initial ramd
 kernel-xanmod1-rt: or initrd. For more information about creating an initrd, see the
 kernel-xanmod1-rt: README.initrd file in the /boot directory.
 kernel-xanmod1-rt:
-kernel-xanmod1-rt: SMP is "Symmetric multiprocessing", or multiple CPU/core support.
+kernel-xanmod1-rt:
 kernel-xanmod1-rt:

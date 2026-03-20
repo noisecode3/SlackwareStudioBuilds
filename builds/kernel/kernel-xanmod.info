@@ -1,7 +1,7 @@
 PRGNAM="kernel-xanmod"
 VERSION="git"
 HOMEPAGE="https://xanmod.org/"
-DOWNLOAD="https://github.com/xanmod/linux"
+DOWNLOAD="https://gitlab.com/xanmod/linux"
 MD5SUM=""
 DOWNLOAD_x86_64=""
 MD5SUM_x86_64=""

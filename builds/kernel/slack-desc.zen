@@ -15,5 +15,5 @@ kernel-zen: need to load one or more kernel modules using an initial ramdisk,
 kernel-zen: or initrd. For more information about creating an initrd, see the
 kernel-zen: README.initrd file in the /boot directory.
 kernel-zen:
-kernel-zen: SMP is "Symmetric multiprocessing", or multiple CPU/core support.
+kernel-zen:
 kernel-zen:
