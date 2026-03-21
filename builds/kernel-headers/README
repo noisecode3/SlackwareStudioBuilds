@@ -1,14 +1,16 @@
-This makes a headers package if you really need it
+This makes a kernel-headers package
 
-You may only need this for wine or software targeting user space calls.
-Drivers targeting a newer headers matching you're kernel
+You may only need this for wine or software targeting kernel user space calls.
+Out-of-tree kernel modules (NVIDIA, VirtualBox, ZFS, custom drivers)
 
-ALL OTHER SOFTWARE EXCEPT WINE "SHOULD" BE BUILD WITH SLACKWARE'S
-DEFAULT HEADERS! NOT DOING SO COULD DAMAGE YOU SLACKWARE INSTALLATION!
+The kernel headers you use to build software should match the running kernel exactly.
+Pleas dont rebuild all slackware15 base software.
 
-You should not install this on top of the kernel-headers
+You should not install this on top of slackware kernel-headers
 
 upgradepkg --reinstall /tmp/kernel-headers
+
+blacklist kernel-headers from slackpkg
 
 If the source is /usr/src/linux-6.4.7-zen
 You may need to set VERSION to 6.4.7-zen

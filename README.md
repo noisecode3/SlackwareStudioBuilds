@@ -1,6 +1,6 @@
 # Slackware Studio Builds
 Configuration scripts and builds for Slackware music productions
-Slackware 15.1 on the road to an eventual beta
+This is for Slackware 15 and can work for current also but is not a priority.
 
 ## How
 Run post_install_setup_sbo_slackpkg+_multilib.sh after installing full
@@ -66,10 +66,6 @@ set sbopkg to SBo-git (current)
 * csound
 * libffado
 * guitarix
-### Will Probably Be Dropped
-* radium (broken)
-* kernel-headers (I have an idea of an overlay filesystem headers swap script)
-* futex-waitv-winesync-api
 
 ### Kernels
 * xanmod-rt (real time recording/live monitoring)
