@@ -96,13 +96,8 @@ git clone https://github.com/Frogging-Family/wine-tkg-git
 
 cd wine-tkg-git/wine-tkg-git
 
-if [ "$VERSION" != "git" ]; then
-    sed -i "s/_plain_version=\"\"/_plain_version=\"wine-$VERSION\"/" customization.cfg
-    sed -i "s/_staging_version=\"\"/_staging_version=\"v$VERSION\"/" customization.cfg
-else
-    sed -i "s/_plain_version=\"\"/_plain_version=\"$PLAIN_VERSION\"/" customization.cfg
-    sed -i "s/_staging_version=\"\"/_staging_version=\"$STAGING_VERSION\"/" customization.cfg
-fi
+sed -i "s/_plain_version=\"\"/_plain_version=\"$PLAIN_VERSION\"/" customization.cfg
+sed -i "s/_staging_version=\"\"/_staging_version=\"$STAGING_VERSION\"/" customization.cfg
 
 
 if [ "$USE_STAGING" == "NO" ]; then
@@ -125,12 +120,9 @@ if [ "$ALLOW_SERVER_RT_PRIO" == "YES" ]; then
     sed -i '/_allow_server_rt_prio=/ s/"false"/"true"/' wine-tkg-profiles/advanced-customization.cfg
 fi
 
-if [ "$DXVK_DXGI" == "NO" ]; then
-    sed -i '/_dxvk_dxgi=/ s/"true"/"false"/' customization.cfg
-fi
-
-if [ "$WAYLAND" == "YES" ]; then
-    sed -i '/_wayland_driver=/ s/"false"/"true"/' customization.cfg
+if [ "$WAYLAND" == "NO" ]; then
+    sed -i '/_wayland_driver=/ s/"true"/"false"/' customization.cfg
+    sed -i '/_GE_WAYLAND=/ s/"true"/"false"/' customization.cfg
 fi
 
 if [ "$NTSYNC" == "YES" ]; then
@@ -141,11 +133,11 @@ if [ "$FASTSYNC" == "YES" ]; then
     sed -i '/_use_fastsync=/ s/"false"/"true"/' customization.cfg
 fi
 
-if [ "$ESYNC" == "NO" ]; then
+if [ "$ESYNC" == "YES" ]; then
     sed -i '/_use_esync=/ s/"true"/"false"/' customization.cfg
 fi
 
-if [ "$FSYNC" == "NO" ]; then
+if [ "$FSYNC" == "YES" ]; then
     sed -i '/_use_fsync=/ s/"true"/"false"/' customization.cfg
 fi
 

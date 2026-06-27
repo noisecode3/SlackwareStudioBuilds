@@ -64,7 +64,7 @@ mkdir -p "$TMP" "$PKG/usr/src" "$PKG/boot" "$PKG/lib/modules" "$OUTPUT"
 
 cd "$PKG/usr/src"
 if [ "$KERNEL" = "-xanmod1" ]; then
-  git clone --depth 1 -b "$VERSION" https://gitlab.com/xanmod/linux
+  git clone --depth 1 -b "$VERSION" https://gitlab.com/xanmod/linux.git/
   cd linux
 elif [ "$KERNEL" = "-zen" ]; then
   git clone --depth 1 -b "$VERSION" https://github.com/zen-kernel/zen-kernel
