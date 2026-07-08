@@ -72,18 +72,18 @@ else
   git clone https://github.com/falkTX/Carla
 fi
 cd $SRCNAM
-VERSION=$(grep "^VERSION   := " Makefile | rev | cut -f 1 -d ' ' | rev)
-VERSION=$(echo $VERSION | tr '-' . )
 chown -R root:root .
 # upstream ships archive with broken symlinks, remove
 find -L . -type l -exec rm -f {} \+
 find -L .  -perm /111 -a \! -perm 755 -a -exec chmod 755 {} \+ -o \
         \! -perm /111 -a \! -perm 644 -a -exec chmod 644 {} \+
-
-if [ "$LIBDIRSUFFIX" == "64" ]; then
+if [ "$LIBDIRSUFFIX" == "64" ] && [ "$VERSION" != "git" ]; then
   patch -p1 <  $CWD/Carla-2.5.8-libdir_change_to_lib64.patch
   # if it's 2.6.0.alpha1 (when clap was added) or above add some extra patch
 fi
+VERSION=$(grep "^VERSION   := " Makefile | rev | cut -f 1 -d ' ' | rev)
+VERSION=$(echo $VERSION | tr '-' . )
+
 
 make PREFIX=/usr LIBDIR=/usr/lib$LIBDIRSUFFIX
 make install PREFIX=/usr LIBDIR=/usr/lib$LIBDIRSUFFIX DESTDIR=$PKG

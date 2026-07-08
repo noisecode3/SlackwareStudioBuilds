@@ -103,9 +103,9 @@ cd build
   cmake \
     -DCMAKE_C_FLAGS:STRING="$SLKCFLAGS" \
     -DCMAKE_CXX_FLAGS:STRING="$SLKCFLAGS" \
-    -DCMAKE_INSTALL_PREFIX=/usr/lib${LIBDIRSUFFIX}/REAPER \
+    -DCMAKE_INSTALL_PREFIX=/opt/reaper \
     -DCMAKE_BUILD_TYPE=Release \
-    -DUSE_SYSTEM_TAGLIB=YES ..
+    -DUSE_SYSTEM_TAGLIB=ON ..
   make
   make install/strip DESTDIR=$PKG
 cd ..

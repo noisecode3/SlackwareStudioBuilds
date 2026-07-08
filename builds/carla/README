@@ -12,5 +12,7 @@ dssi-vst.
 
 pyliblo is needed for user accessible carla-control
 
-Optional dependencies: linuxsampler, projectM, pyliblo
-build options: VERSION=v2.5.8 ./carla.SlackBuild
+Optional dependencies: jack linuxsampler, projectM, pyliblo
+This requires: liblo
+
+build options: VERSION=v2.5.10 ./carla.SlackBuild

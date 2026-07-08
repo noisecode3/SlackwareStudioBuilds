@@ -15,8 +15,7 @@ Make sure you have configured you're system with real-time priority.
 Don't forget WINEESYNC=1 or WINEFSYNC=1 environment variables.
 Read the documentation in /usr/doc/yabridge-*/
 
-IMPORTANT to understand is that you need an internet connection
-for these meson wrap subprojects:
+Note: these meson wrap subprojects require an internet connection.
 
 Asio
 bitsery
