@@ -36,11 +36,14 @@ set sbopkg to SBo-git (current)
 * bslizr
 * carla
 * cliconnect
+* csound
 * fabla
 * fasttracker2
 * geonkick
+* guitarix
 * jack-stdio
 * kernel
+* libffado
 * libwebsocketpp
 * lsp-plugins
 * luppp
@@ -58,14 +61,13 @@ set sbopkg to SBo-git (current)
 * xmonk-lv2
 * yabridge
 * wine-tkg
+
 ### Normal Download
 * perl-xml-parser
-* reaper
 * vst2sdk
+
 ### New
-* csound
-* libffado
-* guitarix
+* renoise
 
 ### Kernels
 * xanmod-rt (real time recording/live monitoring)

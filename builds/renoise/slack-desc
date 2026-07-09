@@ -1,0 +1,19 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.
+# Line up the first '|' above the ':' following the base package name, and
+# the '|' on the right side marks the last column you can put a character in.
+# You must make exactly 11 lines for the formatting to be correct.  It's also
+# customary to leave one space after the ':' except on otherwise blank lines.
+
+       |-----handy-ruler------------------------------------------------------|
+renoise: renoise (A music composition program)
+renoise:
+renoise: Renoise is a digital audio workstation (DAW) based upon the heritage 
+renoise: and development of tracker software. Its primary use is the 
+renoise: composition of music using sound samples, soft synths, and effects 
+renoise: plug-ins. It is also able to interface with MIDI and OSC equipment.
+renoise: The main difference between Renoise and other music software is the
+renoise: characteristic vertical timeline sequencer used by tracking software.
+renoise:
+renoise:
+renoise:
