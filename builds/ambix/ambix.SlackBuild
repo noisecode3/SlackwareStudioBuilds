@@ -22,13 +22,13 @@
 #  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cd $(dirname $0) ; CWD=$(pwd)
+cd "$(dirname "$0")"; CWD=$(pwd)
 
 PRGNAM=ambix
-VERSION=${VERSION:-git}
+VERSION=${VERSION:-0.4.5}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SSb}
-NUMJOBS=${NUMJOBS:-" -j$(nproc) "}
+NUMJOBS=${NUMJOBS:-"-j$(nproc)"}
 PKGTYPE=${PKGTYPE:-tgz}
 
 if [ -z "$ARCH" ]; then
@@ -44,42 +44,34 @@ PKG=$TMP/package-$PRGNAM
 OUTPUT=${OUTPUT:-/tmp}
 
 if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
-  mkdir -p $TMP
-  cd $TMP
+  mkdir -p "$TMP"
+  cd "$TMP"
   rm -rf ambix
   git clone https://github.com/kronihias/ambix
   cd ambix
+  git checkout "v$VERSION"
   VERSION=$(git describe --tags)
-  VERSION=$(echo $VERSION | tr '-' . )
+  VERSION=$(echo "$VERSION" | tr '-' . )
   echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
   exit 0
 fi
 
 set -e
 
-
-rm -rf $PKG
+rm -rf "$PKG"
 LIBDIR=lib
-if [ $ARCH == "x86_64" ]; then
+if [ "$ARCH" == "x86_64" ]; then
     LIBDIR="$LIBDIR"64
 fi
-mkdir -p $TMP $PKG $OUTPUT
-cd $TMP
+mkdir -p "$TMP" "$PKG" "$OUTPUT"
+cd "$TMP"
 rm -rf ambix
 git clone https://github.com/kronihias/ambix
 cd ambix
-git checkout v0.2.10
-git submodule update --init --recursive
+git checkout "v$VERSION"
 VERSION=$(git describe --tags)
-VERSION=$(echo $VERSION | tr '-' . )
-wget https://github.com/kronihias/ambix/commit/30d9e8df4501d2dd5c35a09a14dd705413de44e7.patch
-wget https://github.com/kronihias/ambix/commit/fa5849377b0eeddbedd1d99768cfc9ad9933d751.patch
-# set proper LV2 URIs:
-# https://github.com/kronihias/ambix/issues/27
-patch -Np1 -i ./fa5849377b0eeddbedd1d99768cfc9ad9933d751.patch
-# fix for gcc >= 9.1.0
-# https://github.com/kronihias/ambix/issues/26
-patch -Np1 -i ./30d9e8df4501d2dd5c35a09a14dd705413de44e7.patch
+VERSION=$(echo "$VERSION" | tr '-' . )
+git submodule update --init --recursive
 chown -R root:root .
 find -L . \
  \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \
@@ -87,80 +79,52 @@ find -L . \
  \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
   -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
 
+export PATH="/opt/cmake-opt/bin/:$PATH"
 cmake -B build \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX=/usr \
-  -DBUILD_LV2=ON \
+  -DCMAKE_AR="$(which gcc-ar)" \
+  -DCMAKE_RANLIB="$(which gcc-ranlib)" \
+  -DBUILD_STANDALONE=ON \
+  -DBUILD_VST3=ON \
+  -DBUILD_VST=ON \
+  -DVST2SDKPATH=/usr/include/vst2sdk \
+  -DBUILD_LV2=OFF \
   -DWITH_ZITA_CONVOLVER=ON \
-  -DOpenGL_GL_PREFERENCE=GLVND
-make -C build -j $NUMJOBS
-make -C ./lv2-ttl-generator
+  -Wno-dev
 
-for _plugin_dir in build/_bin/lv2/*.lv2; do
-  (
-  cd $_plugin_dir
-      for _plugin in *.so; do
-        $TMP/ambix/lv2-ttl-generator/lv2_ttl_generator "./$_plugin"
-      done
-  )
+make -C build "$NUMJOBS"
+
+# --- VST3 ---
+mkdir -p "$PKG/usr/$LIBDIR/vst3"
+find build -type d -iname "*.vst3" -exec cp -a {} "$PKG/usr/$LIBDIR/vst3/" \;
+
+# --- VST2 ---
+mkdir -p "$PKG/usr/$LIBDIR/vst"
+find build -type f -iname "libambix_*.so" -path "*/vst_o5/*" -print0 | while IFS= read -r -d '' f; do
+  base=$(basename "$f")          # libambix_binaural_o5.so
+  newname=${base#lib}            # ambix_binaural_o5.so
+  newname=${newname%_o5.so}      # ambix_binaural
+  newname="${newname}.so"        # ambix_binaural.so
+  cp -a "$f" "$PKG/usr/$LIBDIR/vst/$newname"
 done
 
-_plugin_names=(
-  ambix_binaural
-  ambix_converter
-  ambix_decoder
-  ambix_directional_loudness
-  ambix_encoder_i2
-  ambix_encoder_i4
-  ambix_encoder_i6
-  ambix_encoder_i8
-  ambix_encoder
-  ambix_maxre
-  ambix_mirror
-  ambix_rotator
-  ambix_rotator_z
-  ambix_vmic
-  ambix_warp
-  ambix_widening
-)
+# --- Standalone ---
+mkdir -p "$PKG/usr/bin"
+find build -type f \( -iname "ambix_*" -o -iname "ambix Visualizer" \) -path "*Standalone*" -perm -u+x \
+  -exec cp -a {} "$PKG/usr/bin/" \;
 
-_standalone_names=(
-  ambix_binaural
-  ambix_converter
-  ambix_decoder
-  ambix_directional_loudness
-  ambix_encoder
-  ambix_mirror
-  ambix_rotator
-  ambix_vmic
-)
-
-for _plugin in "${_plugin_names[@]}"; do
-    install -vDm 755 build/_bin/lv2/${_plugin}_o5.lv2/*.so -t "$PKG/usr/$LIBDIR/lv2/${_plugin}_o5.lv2/"
-    install -vDm 644 build/_bin/lv2/${_plugin}_o5.lv2/*.ttl -t "$PKG/usr/$LIBDIR/lv2/${_plugin}_o5.lv2/"
-done
-
-for _standalone in "${_standalone_names[@]}"; do
-    install -vDm 755 build/_bin/standalone/${_standalone}_standalone_o5 "$PKG/usr/bin/$_standalone"
-done
-#install -vDm 644 ./*.desktop -t "$PKG/usr/share/applications/"
-
-for _plugin in "${_plugin_names[@]}"; do
-    strip build/_bin/vst/${_plugin}_o5.so
-    install -vDm 755 build/_bin/vst/${_plugin}_o5.so "$PKG/usr/$LIBDIR/vst/$_plugin.so"
-done
-
-find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
+find "$PKG" -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
   | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
-mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+mkdir -p "$PKG/usr/doc/$PRGNAM-$VERSION"
 cp -a \
   COPYING \
-  $PKG/usr/doc/$PRGNAM-$VERSION
-cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
+  "$PKG/usr/doc/$PRGNAM-$VERSION"
+cat "$CWD/$PRGNAM.SlackBuild" > "$PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild"
 
-mkdir -p $PKG/install
-cat $CWD/slack-desc > $PKG/install/slack-desc
-#cat $CWD/doinst.sh > $PKG/install/doinst.sh
+mkdir -p "$PKG/install"
+cat "$CWD/slack-desc" > "$PKG/install/slack-desc"
+cat "$CWD/doinst.sh" > "$PKG/install/doinst.sh"
 
-cd $PKG
-/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE
+cd "$PKG"
+/sbin/makepkg -l y -c n "$OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"

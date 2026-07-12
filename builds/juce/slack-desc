@@ -1,0 +1,19 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.
+# Line up the first '|' above the ':' following the base package name, and
+# the '|' on the right side marks the last column you can put a character in.
+# You must make exactly 11 lines for the formatting to be correct.  It's also
+# customary to leave one space after the ':' except on otherwise blank lines.
+
+     |-----handy-ruler------------------------------------------------------|
+juce: juce (Cross-platform C++ framework)
+juce:
+juce: JUCE is an open-source cross-platform C++ application framework for
+juce: creating desktop and mobile applications, including VST, VST3, AU,
+juce: AUv3, AAX and LV2 audio plug-ins and plug-in hosts. JUCE can be easily
+juce: integrated with existing projects via CMake, or can be used as a
+juce: project generation tool via the Projucer, which supports exporting
+juce: projects for Xcode (macOS and iOS), Visual Studio, Android Studio,
+juce: and Linux Makefiles as well as containing a source code editor.
+juce:
+juce:

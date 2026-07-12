@@ -22,7 +22,7 @@
 #  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cd $(dirname $0) ; CWD=$(pwd)
+cd "$(dirname "$0")"; CWD=$(pwd)
 
 PRGNAM=aida-x
 VERSION=${VERSION:-git}
@@ -43,33 +43,33 @@ PKG=$TMP/package-$PRGNAM
 OUTPUT=${OUTPUT:-/tmp}
 
 if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
-  mkdir -p $TMP
-  cd $TMP
+  mkdir -p "$TMP"
+  cd "$TMP"
   rm -rf AIDA-X
   git clone https://github.com/AidaDSP/AIDA-X
   cd AIDA-X
   VERSION=$(git describe --tags)
-  VERSION=$(echo $VERSION | tr '-' . )
+  VERSION=$(echo "$VERSION" | tr '-' . )
   echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
   exit 0
 fi
 
 set -e
 
+rm -rf "$PKG"
 
-rm -rf $PKG
 LIBDIR=lib
-if [ $ARCH == "x86_64" ]; then
+if [ "$ARCH" == "x86_64" ]; then
     LIBDIR="$LIBDIR"64
 fi
-mkdir -p $TMP $PKG $OUTPUT $PKG/$LIBDIR
-cd $TMP
+mkdir -p "$TMP" "$PKG" "$OUTPUT" "$PKG"
+cd "$TMP"
 rm -rf AIDA-X
 git clone https://github.com/AidaDSP/AIDA-X
 cd AIDA-X
 git submodule update --init --recursive
 VERSION=$(git describe --tags)
-VERSION=$(echo $VERSION | tr '-' . )
+VERSION=$(echo "$VERSION" | tr '-' . )
 chown -R root:root .
 find -L . \
  \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \
@@ -88,20 +88,21 @@ install -vDm 755 build/bin/AIDA-X.lv2/*.so -t "$PKG/usr/$LIBDIR/lv2/AIDA-X.lv2/"
 install -vDm 644 build/bin/AIDA-X.lv2/*.ttl -t "$PKG/usr/$LIBDIR/lv2/AIDA-X.lv2/"
 install -vDm 755 build/bin/AIDA-X -t "$PKG/usr/bin/"
 install -vDm 755 build/bin/AIDA-X-vst2.so -t "$PKG/usr/$LIBDIR/vst/"
-install -vDm 755 build/bin/AIDA-X.vst3/Contents/$ARCH-linux/*.so -t "$PKG/usr/$LIBDIR/vst3/AIDA-X.vst3/Contents/$ARCH-linux/"
+install -vDm 755 build/bin/AIDA-X.vst3/Contents/"$ARCH-linux/"*.so -t \
+    "$PKG/usr/$LIBDIR/vst3/AIDA-X.vst3/Contents/$ARCH-linux/"
 
 
-find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
+find "$PKG" -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
   | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
-mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+mkdir -p "$PKG/usr/doc/$PRGNAM-$VERSION"
 cp -a \
   LICENSE \
-  $PKG/usr/doc/$PRGNAM-$VERSION
-cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
+  "$PKG/usr/doc/$PRGNAM-$VERSION"
+cat "$CWD/$PRGNAM.SlackBuild" > "$PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild"
 
-mkdir -p $PKG/install
-cat $CWD/slack-desc > $PKG/install/slack-desc
-cat $CWD/doinst.sh > $PKG/install/doinst.sh
+mkdir -p "$PKG/install"
+cat "$CWD/slack-desc" > "$PKG/install/slack-desc"
+cat "$CWD/doinst.sh" > "$PKG/install/doinst.sh"
 
-cd $PKG
-/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE
+cd "$PKG"
+/sbin/makepkg -l y -c n "$OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"

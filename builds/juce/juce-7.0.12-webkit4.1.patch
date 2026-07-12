@@ -1,0 +1,162 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: attila <attila@juce.com>
+Date: Mon, 10 Jun 2024 14:13:23 +0200
+Subject: [PATCH 1/2] WebBrowserComponent: Linux: Add support for
+ libwebkit2gtk-4.1
+
+(cherry picked from commit 2516ad808efad4ce27ce6070dfe0c4009742356f)
+
+ Conflicts:
+	modules/juce_gui_extra/native/juce_WebBrowserComponent_linux.cpp
+---
+ docs/Linux Dependencies.md                     | 11 +++++++++--
+ .../native/juce_WebBrowserComponent_linux.cpp  | 18 ++++++++++++++++--
+ 2 files changed, 25 insertions(+), 4 deletions(-)
+
+diff --git a/docs/Linux Dependencies.md b/docs/Linux Dependencies.md
+index 3dc1502c95..8b22e39667 100644
+--- a/docs/Linux Dependencies.md	
++++ b/docs/Linux Dependencies.md	
+@@ -44,7 +44,14 @@ or
+ - libxrender-dev (unless `JUCE_USE_XRENDER=0`)
+ 
+ #### juce_gui_extra
+-- libwebkit2gtk-4.0-dev (unless `JUCE_WEB_BROWSER=0`)
++- libwebkit2gtk-4.1-dev (unless `JUCE_WEB_BROWSER=0`)
++
++On older systems, where 4.1 is not available, you can also use
++
++- libwebkit2gtk-4.0-dev
++
++Compiled JUCE applications will dynamically load whichever library version is
++available during runtime.
+ 
+ #### juce_opengl
+ - libglu1-mesa-dev
+@@ -58,5 +65,5 @@ The full command is as follows:
+         libcurl4-openssl-dev  \
+         libfreetype6-dev \
+         libx11-dev libxcomposite-dev libxcursor-dev libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev \
+-        libwebkit2gtk-4.0-dev \
++        libwebkit2gtk-4.1-dev \
+         libglu1-mesa-dev mesa-common-dev
+diff --git a/modules/juce_gui_extra/native/juce_WebBrowserComponent_linux.cpp b/modules/juce_gui_extra/native/juce_WebBrowserComponent_linux.cpp
+index 436441f157..549f26b626 100644
+--- a/modules/juce_gui_extra/native/juce_WebBrowserComponent_linux.cpp
++++ b/modules/juce_gui_extra/native/juce_WebBrowserComponent_linux.cpp
+@@ -206,8 +206,22 @@ private:
+     }
+ 
+     //==============================================================================
+-    DynamicLibrary gtkLib { "libgtk-3.so" }, webkitLib { "libwebkit2gtk-4.0.so" };
+-    const bool webKitIsAvailable = loadWebkitSymbols() && loadGtkSymbols();
++    DynamicLibrary webkitLib, jsLib, soupLib;
++
++    DynamicLibrary gtkLib    { "libgtk-3.so" },
++                   glib      { "libglib-2.0.so" };
++
++    const bool webKitIsAvailable =    (   openWebKitAndDependencyLibraries ({ "libwebkit2gtk-4.1.so",
++                                                                              "libjavascriptcoregtk-4.1.so",
++                                                                              "libsoup-3.0.so" })
++                                       || openWebKitAndDependencyLibraries ({ "libwebkit2gtk-4.0.so",
++                                                                              "libjavascriptcoregtk-4.0.so",
++                                                                              "libsoup-2.4.so" }))
++                                   && loadWebkitSymbols()
++                                   && loadGtkSymbols()
++                                   && loadJsLibSymbols()
++                                   && loadSoupLibSymbols()
++                                   && loadGlibSymbols();
+ 
+     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WebKitSymbols)
+ };
+-- 
+2.48.1
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: attila <attila@juce.com>
+Date: Mon, 24 Jun 2024 15:12:36 +0200
+Subject: [PATCH 2/2] CMake: Fix package resolution on Linux
+
+This change ensures that instructions are straightforward on
+Ubuntu 24.04 and 22.04.
+
+(cherry picked from commit c057c0d55ef8344e953b526945cecec1aace4eac)
+
+ Conflicts:
+	extras/Build/CMake/JUCEUtils.cmake
+---
+ docs/Linux Dependencies.md                |  8 ++++++--
+ extras/Build/CMake/JUCEUtils.cmake        | 14 +++++++++++++-
+ modules/juce_gui_extra/juce_gui_extra.cpp |  2 +-
+ 3 files changed, 20 insertions(+), 4 deletions(-)
+
+diff --git a/docs/Linux Dependencies.md b/docs/Linux Dependencies.md
+index 8b22e39667..f3f5c02bbf 100644
+--- a/docs/Linux Dependencies.md	
++++ b/docs/Linux Dependencies.md	
+@@ -32,7 +32,11 @@ or
+ - libcurl4-openssl-dev (unless `JUCE_USE_CURL=0`)
+ 
+ #### juce_graphics
+-- libfreetype6-dev (unless `JUCE_USE_FREETYPE=0`)
++- libfontconfig1-dev (unless `JUCE_USE_FONTCONFIG=0`)
++- libfreetype-dev (unless `JUCE_USE_FREETYPE=0`)
++
++These packages are available on Ubuntu 22 and 24. If libfreetype-dev is not
++available you could try installing the libfreetype6-dev package.
+ 
+ #### juce_gui_basics
+ - libx11-dev
+@@ -63,7 +67,7 @@ The full command is as follows:
+     sudo apt install libasound2-dev libjack-jackd2-dev \
+         ladspa-sdk \
+         libcurl4-openssl-dev  \
+-        libfreetype6-dev \
++        libfreetype-dev libfontconfig1-dev \
+         libx11-dev libxcomposite-dev libxcursor-dev libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev \
+         libwebkit2gtk-4.1-dev \
+         libglu1-mesa-dev mesa-common-dev
+diff --git a/extras/Build/CMake/JUCEUtils.cmake b/extras/Build/CMake/JUCEUtils.cmake
+index 52f64c79ea..4a9b8d9621 100644
+--- a/extras/Build/CMake/JUCEUtils.cmake
++++ b/extras/Build/CMake/JUCEUtils.cmake
+@@ -84,9 +84,21 @@ define_property(TARGET PROPERTY JUCE_COPY_PLUGIN_AFTER_BUILD INHERITED
+     FULL_DOCS "Whether or not plugins should be copied after building")
+ set_property(GLOBAL PROPERTY JUCE_COPY_PLUGIN_AFTER_BUILD FALSE)
+ 
++function(_juce_available_pkgconfig_module_or_else out package alternative_package)
++    find_package(PkgConfig REQUIRED)
++    pkg_check_modules(package_to_be_found ${package} QUIET)
++
++    if(package_to_be_found_FOUND)
++        set(${out} ${package} PARENT_SCOPE)
++    else()
++        set(${out} ${alternative_package} PARENT_SCOPE)
++    endif()
++endfunction()
++
+ if((CMAKE_SYSTEM_NAME STREQUAL "Linux") OR (CMAKE_SYSTEM_NAME MATCHES ".*BSD"))
+     _juce_create_pkgconfig_target(JUCE_CURL_LINUX_DEPS libcurl)
+-    _juce_create_pkgconfig_target(JUCE_BROWSER_LINUX_DEPS webkit2gtk-4.0 gtk+-x11-3.0)
++    _juce_available_pkgconfig_module_or_else(webkit_package_name webkit2gtk-4.1 webkit2gtk-4.0)
++    _juce_create_pkgconfig_target(JUCE_BROWSER_LINUX_DEPS ${webkit_package_name} gtk+-x11-3.0)
+     _juce_create_pkgconfig_target(JUCE_IMG_LINUX_DEPS libpng libjpeg)
+ endif()
+ 
+diff --git a/modules/juce_gui_extra/juce_gui_extra.cpp b/modules/juce_gui_extra/juce_gui_extra.cpp
+index c34f12f574..e7ec6c8a0e 100644
+--- a/modules/juce_gui_extra/juce_gui_extra.cpp
++++ b/modules/juce_gui_extra/juce_gui_extra.cpp
+@@ -114,7 +114,7 @@
+ #elif (JUCE_LINUX || JUCE_BSD) && JUCE_WEB_BROWSER
+  JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE ("-Wzero-as-null-pointer-constant", "-Wparentheses", "-Wdeprecated-declarations")
+ 
+- // If you're missing this header, you need to install the webkit2gtk-4.0 package
++ // If you're missing this header, you need to install the webkit2gtk-4.1 or webkit2gtk-4.0 package
+  #include <gtk/gtk.h>
+  #include <gtk/gtkx.h>
+  #include <glib-unix.h>
+-- 
+2.48.1
+
