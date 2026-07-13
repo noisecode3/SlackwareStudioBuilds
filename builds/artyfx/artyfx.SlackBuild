@@ -27,7 +27,7 @@ cd "$(dirname "$0")"; CWD=$(pwd)
 PRGNAM=artyfx
 VERSION=${VERSION:-git}
 BUILD=${BUILD:-1}
-NUMJOBS=${NUMJOBS:-" -j$(nproc) "}
+NUMJOBS=${NUMJOBS:-"-j$(nproc)"}
 TAG=${TAG:-_SSb}
 PKGTYPE=${PKGTYPE:-tgz}
 
@@ -44,35 +44,33 @@ PKG=$TMP/package-$PRGNAM
 OUTPUT=${OUTPUT:-/tmp}
 
 if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
-  mkdir -p $TMP
-  cd $TMP
+  mkdir -p "$TMP"
+  cd "$TMP"
   rm -rf openAV-ArtyFX
   git clone https://github.com/openAVproductions/openAV-ArtyFX
   cd openAV-ArtyFX
-  VERSION=$(git describe --tags)
-  VERSION=$(echo $VERSION | tr '-' . )
+  VERSION=$(git describe --tags --always | sed s/v// | tr '-' '.' | cut -d'.' -f1-4)
   echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
   exit 0
 fi
 
 set -e
 
-rm -rf $PKG
-mkdir -p $TMP $PKG $OUTPUT $PKG
-cd $TMP
+rm -rf "$PKG"
+mkdir -p "$TMP" "$PKG" "$OUTPUT" "$PKG"
+cd "$TMP"
 rm -rf openAV-ArtyFX
 git clone https://github.com/openAVproductions/openAV-ArtyFX
 cd openAV-ArtyFX
-VERSION=$(git describe --tags)
-VERSION=$(echo $VERSION | tr '-' . )
+VERSION=$(git describe --tags --always | sed s/v// | tr '-' '.' | cut -d'.' -f1-4)
 chown -R root:root .
-find -L . \
+find . \
  \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \
   -o -perm 511 \) -exec chmod 755 {} \; -o \
  \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
   -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
 
-if [ $ARCH == "x86_64" ]; then
+if [ "$ARCH" == "x86_64" ]; then
     sed -i "s|lib/lv2/|lib64/lv2/|g" CMakeLists.txt
 fi
 
@@ -82,20 +80,20 @@ cmake -B build \
   -DBUILD_GUI=ON \
   -DBUILD_SSE=ON
 cd build
-  make $NUMJOBS
-  DESTDIR=$PKG make install
+  make "$NUMJOBS"
+  DESTDIR="$PKG" make install
 cd ..
 
-find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
+find "$PKG" -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
   | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
-mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+mkdir -p "$PKG/usr/doc/$PRGNAM-$VERSION"
 cp -a \
   LICENSE \
-  $PKG/usr/doc/$PRGNAM-$VERSION
-cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
+  "$PKG/usr/doc/$PRGNAM-$VERSION"
+cat "$CWD/$PRGNAM.SlackBuild" > "$PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild"
 
-mkdir -p $PKG/install
-cat $CWD/slack-desc > $PKG/install/slack-desc
+mkdir -p "$PKG/install"
+cat "$CWD/slack-desc" > "$PKG/install/slack-desc"
 
-cd $PKG
-/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE
+cd "$PKG"
+/sbin/makepkg -l y -c n "$OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"

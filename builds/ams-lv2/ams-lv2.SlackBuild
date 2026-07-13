@@ -48,8 +48,7 @@ if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
   rm -rf ams-lv2
   git clone https://github.com/blablack/ams-lv2
   cd ams-lv2
-  VERSION=$(git describe --tags)
-  VERSION=$(echo "$VERSION" | tr '-' . )
+  VERSION=$(git describe --tags --always | sed s/v// | tr '-' '.' | cut -d'.' -f1-4)
   echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
   exit 0
 fi
@@ -66,11 +65,10 @@ cd "$TMP"
 rm -rf ams-lv2
 git clone https://github.com/blablack/ams-lv2
 cd ams-lv2
+VERSION=$(git describe --tags --always | sed s/v// | tr '-' '.' | cut -d'.' -f1-4)
 git submodule update --init --recursive
-VERSION=$(git describe --tags)
-VERSION=$(echo "$VERSION" | tr '-' . )
 chown -R root:root .
-find -L . \
+find . \
  \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \
   -o -perm 511 \) -exec chmod 755 {} \; -o \
  \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
