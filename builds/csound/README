@@ -11,4 +11,6 @@ csound --output=test.wav oblivion.csd
 It creates some synth symphony 
 A lot of old csound example seem to not work anymore
 
+jack ladspa_sdk lua and OpenJDK should be optionial
+
 Build options: VERSION=git ./csound.SlackBuild # for latest git

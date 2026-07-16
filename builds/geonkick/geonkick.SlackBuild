@@ -22,12 +22,12 @@
 #  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cd $(dirname $0) ; CWD=$(pwd)
+cd "$(dirname "$0")"; CWD=$(pwd)
 
 PRGNAM=geonkick
 VERSION=${VERSION:-git}
 BUILD=${BUILD:-1}
-NUMJOBS=${NUMJOBS:-" -j$(nproc) "}
+NUMJOBS=${NUMJOBS:-"-j$(nproc)"}
 TAG=${TAG:-_SSb}
 PKGTYPE=${PKGTYPE:-tgz}
 
@@ -44,38 +44,36 @@ PKG=$TMP/package-$PRGNAM
 OUTPUT=${OUTPUT:-/tmp}
 
 if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
-  mkdir -p $TMP
-  cd $TMP
+  mkdir -p "$TMP"
+  cd "$TMP"
   rm -rf geonkick
   if [ "$VERSION" != "git" ]; then
-    git clone --depth 1 -b $VERSION https://github.com/Geonkick-Synthesizer/geonkick
+    git clone --depth 1 -b "$VERSION" https://github.com/Geonkick-Synthesizer/geonkick
   else
     git clone https://github.com/Geonkick-Synthesizer/geonkick
   fi
   cd geonkick
-  VERSION=$(git describe --tags)
-  VERSION=$(echo $VERSION | tr '-' . )
+  VERSION=$(git describe --tags --always | sed s/v// | tr '-' '.' | cut -d'.' -f1-4)
   echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
   exit 0
 fi
 
 set -e
 
-rm -rf $PKG
-mkdir -p $TMP $PKG $OUTPUT $PKG
-cd $TMP
+rm -rf "$PKG"
+mkdir -p "$TMP" "$PKG" "$OUTPUT" "$PKG"
+cd "$TMP"
 rm -rf geonkick
 
 if [ "$VERSION" != "git" ]; then
-  git clone --depth 1 -b $VERSION https://github.com/Geonkick-Synthesizer/geonkick
+  git clone --depth 1 -b "$VERSION" https://github.com/Geonkick-Synthesizer/geonkick
 else
   git clone https://github.com/Geonkick-Synthesizer/geonkick
 fi
 
 cd geonkick
+VERSION=$(git describe --tags --always | sed s/v// | tr '-' '.' | cut -d'.' -f1-4)
 git submodule update --init --recursive
-VERSION=$(git describe --tags)
-VERSION=$(echo $VERSION | tr '-' . )
 chown -R root:root .
 find . \
  \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \
@@ -83,45 +81,54 @@ find . \
  \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
   -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
 
+export PATH="/opt/cmake-opt/bin/:$PATH"
+export CC=/opt/gcc14-14.2.0/bin/gcc-14.2.0
+export CPP=/opt/gcc14-14.2.0/bin/cpp-14.2.0
+export CXX=/opt/gcc14-14.2.0/bin/g++-gcc-14.2.0
+export AR=/opt/gcc14-14.2.0/bin/gcc-ar-14.2.0
+export NM=/opt/gcc14-14.2.0/bin/gcc-nm-14.2.0
+export RANLIB=/opt/gcc14-14.2.0/bin/gcc-ranlib-14.2.0
+
 cmake -B build \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX=/usr \
   -DCMAKE_INSTALL_MANDIR=/usr/man \
-  -DCMAKE_INSTALL_SYSCONFDIR=/etc
+  -DCMAKE_INSTALL_SYSCONFDIR=/etc \
+  -DVST3_SDK_PATH=/usr/include/vst3sdk \
+  -Wno-dev
 
 cd build
-  make $NUMJOBS
-  make install DESTDIR=$PKG
+  make "$NUMJOBS"
+  make install DESTDIR="$PKG"
 cd ..
 
-if [ $ARCH == "x86_64" ]; then
-  LIBDIRSUFFIX=64
-fi
-
-mv $PKG/usr/share/man/ $PKG/usr/man/
+mv "$PKG/usr/share/man/" "$PKG/usr/man/"
 
 # Add 'X-DAW' category to the desktop file (for liveslak):
-for DESKTOPF in $PKG/usr/share/applications/*.desktop ; do
-  if ! grep -q X-DAW $DESKTOPF ; then
-    sed -i $DESKTOPF -e "s/^Categories=\(.*\)/Categories=X-DAW;\1/"
+for DESKTOPF in "$PKG/usr/share/applications/"*.desktop ; do
+  if ! grep -q X-DAW "$DESKTOPF" ; then
+    sed -i "$DESKTOPF" -e "s/^Categories=\(.*\)/Categories=X-DAW;\1/"
   fi
 done
 
-find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
+find "$PKG" -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
   | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
-mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
 
-find $PKG/usr/man -type f -exec gzip -9 {} \;
-for i in $( find $PKG/usr/man -type l ) ; do ln -s $( readlink $i ).gz $i.gz ; rm $i ; done
+find "$PKG/usr/man" -type f -exec gzip -9 {} \;
+while IFS= read -r i; do
+  ln -s "$(readlink "$i").gz" "$i.gz"
+  rm "$i"
+done < <(find "$PKG/usr/man" -type l)
 
+mkdir -p "$PKG/usr/doc/$PRGNAM-$VERSION"
 cp -a \
   LICENSE \
-  $PKG/usr/doc/$PRGNAM-$VERSION
-cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
+  "$PKG/usr/doc/$PRGNAM-$VERSION"
+cat "$CWD/$PRGNAM.SlackBuild" > "$PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild"
 
-mkdir -p $PKG/install
-cat $CWD/slack-desc > $PKG/install/slack-desc
-cat $CWD/doinst.sh > $PKG/install/doinst.sh
+mkdir -p "$PKG/install"
+cat "$CWD/slack-desc" > "$PKG/install/slack-desc"
+cat "$CWD/doinst.sh" > "$PKG/install/doinst.sh"
 
-cd $PKG
-/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE
+cd "$PKG"
+/sbin/makepkg -l y -c n "$OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"

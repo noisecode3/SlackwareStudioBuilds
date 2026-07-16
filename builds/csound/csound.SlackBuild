@@ -65,8 +65,8 @@ cd "$TMP"
 rm -rf "$PRGNAM"
 
 if [ "$VERSION" != "git" ]; then
-  git clone --depth 1 -b "$VERSION" -c advice.detachedHead=false \
-    https://github.com/csound/csound
+  git clone --depth 1 -b "$VERSION" \
+    -c advice.detachedHead=false https://github.com/csound/csound
 else
   git clone https://github.com/csound/csound
 fi
@@ -79,29 +79,19 @@ find . \
  \( -perm 666 -o -perm 664 -o -perm 600 -o -perm 444 -o -perm 440 -o -perm 400 \) \
  ! -type l -exec chmod 644 {} \;
 
-git submodule update --init --recursive
-
 mkdir -p build
 cd build
   cmake \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DUSE_LIB64="$LIBDIRSUFFIX" \
-    -W no-dev \
+    -Wno-dev \
     -DCMAKE_BUILD_TYPE=Release ..
   make
   make install DESTDIR="$PKG"
 cd ..
-    #-D BUILD_SCANSYN_OPCODES=OFF
-    #-D BUILD_STATIC_LIBRARY=ON
 
 find "$PKG" -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
   | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
-
-#find "$PKG/usr/man" -type f -exec gzip -9 {} \;
-#while IFS= read -r i; do
-#    ln -s "$(readlink "$i").gz" "$i.gz"
-#    rm "$i"
-#done < <(find "$PKG/usr/man" -type l)
 
 mkdir -p "$PKG/usr/doc/$PRGNAM-$VERSION"
 cp -a \

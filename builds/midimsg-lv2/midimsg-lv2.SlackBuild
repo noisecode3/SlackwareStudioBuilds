@@ -22,7 +22,7 @@
 #  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cd $(dirname $0) ; CWD=$(pwd)
+cd "$(dirname "$0")"; CWD=$(pwd)
 
 PRGNAM=midimsg-lv2
 VERSION=${VERSION:-git}
@@ -43,33 +43,32 @@ PKG=$TMP/package-$PRGNAM
 OUTPUT=${OUTPUT:-/tmp}
 
 if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
-  mkdir -p $TMP
-  cd $TMP
+  mkdir -p "$TMP"
+  cd "$TMP"
   rm -rf midimsg-lv2
   git clone https://github.com/blablack/midimsg-lv2
   cd midimsg-lv2
   VERSION=$(git describe --tags)
-  VERSION=$(echo $VERSION | tr '-' . )
+  VERSION=$(echo "$VERSION" | tr '-' . )
   echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
   exit 0
 fi
 
 set -e
 
-
-rm -rf $PKG
+rm -rf "$PKG"
 LIBDIR=lib
-if [ $ARCH == "x86_64" ]; then
+if [ "$ARCH" == "x86_64" ]; then
     LIBDIR="$LIBDIR"64
 fi
-mkdir -p $TMP $PKG $OUTPUT $PKG/usr/$LIBDIR
-cd $TMP
+mkdir -p "$TMP" "$PKG" "$OUTPUT" "$PKG/usr/$LIBDIR"
+cd "$TMP"
 rm -rf midimsg-lv2
 git clone https://github.com/blablack/midimsg-lv2
 cd midimsg-lv2
 git submodule update --init --recursive
 VERSION=$(git describe --tags)
-VERSION=$(echo $VERSION | tr '-' . )
+VERSION=$(echo "$VERSION" | tr '-' . )
 chown -R root:root .
 find . \
  \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \
@@ -79,18 +78,19 @@ find . \
 
 ./waf configure --prefix=/usr --libdir=/usr/$LIBDIR
 ./waf
-./waf install --destdir=$PKG
+./waf install --destdir="$PKG"
 
-find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
+find "$PKG" -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
   | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
-mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+
+mkdir -p "$PKG/usr/doc/$PRGNAM-$VERSION"
 cp -a \
   LICENSE \
-  $PKG/usr/doc/$PRGNAM-$VERSION
-cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
+  "$PKG/usr/doc/$PRGNAM-$VERSION"
+cat "$CWD/$PRGNAM.SlackBuild" > "$PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild"
 
-mkdir -p $PKG/install
-cat $CWD/slack-desc > $PKG/install/slack-desc
+mkdir -p "$PKG/install"
+cat "$CWD/slack-desc" > "$PKG/install/slack-desc"
 
-cd $PKG
-/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE
+cd "$PKG"
+/sbin/makepkg -l y -c n "$OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"

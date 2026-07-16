@@ -82,13 +82,6 @@ LIBDIR="/usr/lib${LIBDIRSUFFIX}"
   --ldflags="-ldl"
 
 
-  #--optimization \
-  #--mod-lv2 \
-  #--includeresampler \
-  #--includeconvolver \
-  #--enable-nls \
-  #--faust \
-
 ./waf build
 ./waf install --destdir="$PKG"
 

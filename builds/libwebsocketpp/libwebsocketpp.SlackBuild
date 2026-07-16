@@ -22,7 +22,7 @@
 #  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cd $(dirname $0) ; CWD=$(pwd)
+cd "$(dirname "$0")"; CWD=$(pwd)
 
 PRGNAM=libwebsocketpp
 VERSION=${VERSION:-git}
@@ -43,18 +43,16 @@ PKG=$TMP/package-$PRGNAM
 OUTPUT=${OUTPUT:-/tmp}
 
 if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
-  mkdir -p $TMP
-  cd $TMP
+  mkdir -p "$TMP"
+  cd "$TMP"
   rm -rf websocketpp
   if [ "$VERSION" != "git" ]; then
-    git clone --depth 1 -b $VERSION https://github.com/zaphoyd/websocketpp/
+    git clone --depth 1 -b "$VERSION" https://github.com/zaphoyd/websocketpp.git
   else
-    git clone https://github.com/zaphoyd/websocketpp/
+    git clone https://github.com/zaphoyd/websocketpp.git
   fi
   cd websocketpp
-  VERSION=$(git describe --tags)
-  VERSION=$(echo $VERSION | cut -d " " -f2-)
-  VERSION=$(echo $VERSION | tr '-' . )
+  VERSION=$(git describe --tags --always | sed s/v// | tr '-' '.' | cut -d'.' -f1-3)
   echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
   exit 0
 fi
@@ -75,20 +73,18 @@ fi
 
 set -e
 
-rm -rf $PKG
-mkdir -p $TMP $PKG $OUTPUT $PKG
-cd $TMP
+rm -rf "$PKG"
+mkdir -p "$TMP" "$PKG" "$OUTPUT" "$PKG"
+cd "$TMP"
 rm -rf websocketpp
 if [ "$VERSION" != "git" ]; then
-  git clone --depth 1 -b $VERSION https://github.com/zaphoyd/websocketpp/
+  git clone --depth 1 -b "$VERSION" https://github.com/zaphoyd/websocketpp.git
 else
-  git clone https://github.com/zaphoyd/websocketpp/
+  git clone https://github.com/zaphoyd/websocketpp.git
 fi
 cd websocketpp
+VERSION=$(git describe --tags --always | sed s/v// | tr '-' '.' | cut -d'.' -f1-3)
 git submodule update --init --recursive
-VERSION=$(git describe --tags)
-VERSION=$(echo $VERSION | cut -d " " -f2-)
-VERSION=$(echo $VERSION | tr '-' . )
 chown -R root:root .
 find . \
  \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \
@@ -103,21 +99,19 @@ cd build
     -DCMAKE_C_FLAGS:STRING="$SLKCFLAGS" \
     -DCMAKE_CXX_FLAGS:STRING="$SLKCFLAGS" \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DLIB_SUFFIX=${LIBDIRSUFFIX} \
-    -DMAN_INSTALL_DIR=/usr/man \
     -DCMAKE_BUILD_TYPE=Release ..
 make
-make install DESTDIR=$PKG
+make install DESTDIR="$PKG"
 cd ..
 
-mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+mkdir -p "$PKG/usr/doc/$PRGNAM-$VERSION"
 cp -a \
   COPYING changelog.md readme.md roadmap.md \
-  $PKG/usr/doc/$PRGNAM-$VERSION
-cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
+  "$PKG/usr/doc/$PRGNAM-$VERSION"
+cat "$CWD/$PRGNAM.SlackBuild" > "$PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild"
 
-mkdir -p $PKG/install
-cat $CWD/slack-desc > $PKG/install/slack-desc
+mkdir -p "$PKG/install"
+cat "$CWD/slack-desc" > "$PKG/install/slack-desc"
 
-cd $PKG
-/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE
+cd "$PKG"
+/sbin/makepkg -l y -c n "$OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"

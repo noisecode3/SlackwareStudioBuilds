@@ -55,19 +55,18 @@ fi
 
 set -e
 
-
 rm -rf "$PKG"
 LIBDIR=lib
 if [ "$ARCH" == "x86_64" ]; then
     LIBDIR="$LIBDIR"64
 fi
 mkdir -p "$TMP" "$PKG" "$OUTPUT" "$PKG/usr/$LIBDIR"
-cd $TMP
+cd "$TMP"
 rm -rf BJumblr
 git clone https://github.com/sjaehn/BJumblr
 cd BJumblr
-git submodule update --init --recursive
 VERSION=$(git describe --tags --always | sed s/v// | tr '-' '.' | cut -d'.' -f1-4)
+git submodule update --init --recursive
 chown -R root:root .
 find . \
  \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \
@@ -76,18 +75,19 @@ find . \
   -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
 
 make PREFIX=/usr
-make DESTDIR=$PKG PREFIX=/usr LV2DIR=/usr/$LIBDIR/lv2  install
+make DESTDIR="$PKG" PREFIX=/usr LV2DIR=/usr/$LIBDIR/lv2 install
 
-find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
+find "$PKG" -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
   | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
-mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+
+mkdir -p "$PKG/usr/doc/$PRGNAM-$VERSION"
 cp -a \
   LICENSE \
-  $PKG/usr/doc/$PRGNAM-$VERSION
-cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
+  "$PKG/usr/doc/$PRGNAM-$VERSION"
+cat "$CWD/$PRGNAM.SlackBuild" > "$PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild"
 
-mkdir -p $PKG/install
-cat $CWD/slack-desc > $PKG/install/slack-desc
+mkdir -p "$PKG/install"
+cat "$CWD/slack-desc" > "$PKG/install/slack-desc"
 
-cd $PKG
-/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE
+cd "$PKG"
+/sbin/makepkg -l y -c n "$OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"

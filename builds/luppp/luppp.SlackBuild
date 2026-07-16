@@ -22,12 +22,12 @@
 #  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cd $(dirname $0) ; CWD=$(pwd)
+cd "$(dirname "$0")"; CWD=$(pwd)
 
 PRGNAM=luppp
-VERSION=${VERSION:-git}
+VERSION=${VERSION:-1.2.1}
 BUILD=${BUILD:-1}
-NUMJOBS=${NUMJOBS:-" -j$(nproc) "}
+NUMJOBS=${NUMJOBS:-"-j$(nproc)"}
 TAG=${TAG:-_SSb}
 PKGTYPE=${PKGTYPE:-tgz}
 
@@ -44,27 +44,23 @@ PKG=$TMP/package-$PRGNAM
 OUTPUT=${OUTPUT:-/tmp}
 
 if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
-  mkdir -p $TMP
-  cd $TMP
+  mkdir -p "$TMP"
+  cd "$TMP"
   rm -rf openAV-Luppp
   git clone https://github.com/openAVproductions/openAV-Luppp
   cd openAV-Luppp
-  VERSION=$(git describe --tags)
-  VERSION=$(echo $VERSION | tr '-' . )
   echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
   exit 0
 fi
 
 set -e
 
-rm -rf $PKG
-mkdir -p $TMP $PKG $OUTPUT $PKG
-cd $TMP
+rm -rf "$PKG"
+mkdir -p "$TMP" "$PKG" "$OUTPUT" "$PKG"
+cd "$TMP"
 rm -rf openAV-Luppp
 git clone https://github.com/openAVproductions/openAV-Luppp
 cd openAV-Luppp
-VERSION=$(git describe --tags)
-VERSION=$(echo $VERSION | tr '-' . )
 chown -R root:root .
 find . \
  \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \
@@ -72,30 +68,32 @@ find . \
  \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
   -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
 
-cmake -B build \
-  -DCMAKE_BUILD_TYPE=release \
-  -DRELEASE_BUILD=1 \
-  -DCMAKE_INSTALL_PREFIX=/usr
-cd build
-  make $NUMJOBS
-  DESTDIR=$PKG make install
+mkdir -p build; cd build
+  cmake \
+    -DCMAKE_BUILD_TYPE=release \
+    -DRELEASE_BUILD=1 \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    ..
+  make "$NUMJOBS"
+  DESTDIR="$PKG" make install
 cd ..
 
 install -vDm 644 resources/icons/luppp.svg        -t "$PKG/usr/share/icons/hicolor/scalable/apps/"
 install -vDm 644 resources/metadata/luppp.desktop -t "$PKG/usr/share/applications/"
 install -vDm 644 resources/controllers/*.ctlr     -t "$PKG/usr/share/luppp/controllers/"
 
-find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
+find "$PKG" -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
   | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
-mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+
+mkdir -p "$PKG/usr/doc/$PRGNAM-$VERSION"
 cp -a \
   LICENSE \
-  $PKG/usr/doc/$PRGNAM-$VERSION
-cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
+  "$PKG/usr/doc/$PRGNAM-$VERSION"
+cat "$CWD/$PRGNAM.SlackBuild" > "$PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild"
 
-mkdir -p $PKG/install
-cat $CWD/slack-desc > $PKG/install/slack-desc
-cat $CWD/doinst.sh > $PKG/install/doinst.sh
+mkdir -p "$PKG/install"
+cat "$CWD/slack-desc" > "$PKG/install/slack-desc"
+cat "$CWD/doinst.sh" > "$PKG/install/doinst.sh"
 
-cd $PKG
-/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE
+cd "$PKG"
+/sbin/makepkg -l y -c n "$OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
