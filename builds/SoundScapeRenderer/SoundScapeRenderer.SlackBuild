@@ -52,8 +52,7 @@ if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
     git clone --depth 1 https://github.com/SoundScapeRenderer/ssr
   fi
   cd srr
-  VERSION=$(git describe --tags)
-  VERSION=$(echo "$VERSION" | tr '-' . )
+  VERSION=$(git describe --tags --always | sed s/v// | tr '-' '.' | cut -d'.' -f1-4)
   echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
   exit 0
 fi
@@ -87,9 +86,8 @@ else
   git clone https://github.com/SoundScapeRenderer/ssr
 fi
 cd ssr
+VERSION=$(git describe --tags --always | sed s/v// | tr '-' '.' | cut -d'.' -f1-4)
 git submodule update --init --recursive
-VERSION=$(git describe --tags)
-VERSION=$(echo "$VERSION" | tr '-' . )
 chown -R root:root .
 find . \
  \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \
@@ -104,6 +102,7 @@ CXXFLAGS="$SLKCFLAGS" \
   --prefix=/usr \
   --libdir=/usr/lib${LIBDIRSUFFIX} \
   --mandir=/usr/man \
+  --docdir="/usr/doc/$PRGNAM-$VERSION" \
   --disable-dynamic-asdf \
   --disable-vrpn \
   --build="$ARCH-slackware-linux"
@@ -115,6 +114,9 @@ make install DESTDIR="$PKG"
 #install -vDm 644 $CWD/SoundScapeRenderer.desktop -t "$PKG/usr/share/applications/"
 #install -vDm 644 "$PKG/usr/share/SoundScapeRenderer/images/SoundScapeRenderer_logo.png" "$PKG/usr/share/icons/hicolor/64x64/apps/SoundScapeRenderer.png"
 
+# there is an empty pdf ?? and its not so sexy
+find "$PKG/usr/doc/${PRGNAM}-${VERSION}"* -name "*-manual.pdf" -size 0 -delete
+
 find "$PKG" -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
   | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
 
@@ -125,12 +127,7 @@ while IFS= read -r i; do
 done < <(find "$PKG/usr/man" -type l)
 
 mkdir -p "$PKG/usr/doc/$PRGNAM-$VERSION"
-cp -a \
-  COPYING \
-  AUTHORS \
-  NEWS \
-  README \
-  "$PKG/usr/doc/$PRGNAM-$VERSION"
+cp -a README "$PKG/usr/doc/$PRGNAM-$VERSION"
 cat "$CWD/$PRGNAM.SlackBuild" > "$PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild"
 
 mkdir -p "$PKG/install"
