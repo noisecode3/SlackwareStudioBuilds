@@ -98,15 +98,20 @@ else
   if [[ "$SLACKWARE_VERSION" == "Slackware $SV" ]]; then
     echo "Slackware $SV"
     sed -i "s|^# $BASE_URL-$SV/|$BASE_URL-$SV/|" /etc/slackpkg/mirrors
-    V="15"
   elif [[ "$SLACKWARE_VERSION" == "Slackware $SV+" ]]; then
     echo "Slackware $SV+"
     sed -i "s|^# $BASE_URL-current/|$BASE_URL-current/|" /etc/slackpkg/mirrors
-    V=""
   fi
 fi
 
 updateFun
-/usr/doc/slackpkg+-*/setupmultilib.sh
+
+script=(/usr/doc/slackpkg+-*/setupmultilib.sh)
+if [ -x "${script[0]}" ]; then
+    "${script[0]}"
+else
+    echo "Could not find setupmultilib.sh" >&2
+    exit 1
+fi
 
 exit 0
