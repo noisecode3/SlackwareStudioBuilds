@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=SoundScape Renderer
+GenericName=Spatial Audio Renderer
+Comment=A tool for real-time spatial audio reproduction
+Exec=ssr
+Icon=SoundScapeRenderer
+Terminal=false
+StartupNotify=false
+Categories=AudioVideo;Audio;

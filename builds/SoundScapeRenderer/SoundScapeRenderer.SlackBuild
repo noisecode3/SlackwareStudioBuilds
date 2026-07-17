@@ -111,8 +111,8 @@ CXXFLAGS="$SLKCFLAGS" \
 make
 make install DESTDIR="$PKG"
 
-#install -vDm 644 $CWD/SoundScapeRenderer.desktop -t "$PKG/usr/share/applications/"
-#install -vDm 644 "$PKG/usr/share/SoundScapeRenderer/images/SoundScapeRenderer_logo.png" "$PKG/usr/share/icons/hicolor/64x64/apps/SoundScapeRenderer.png"
+install -vDm 644 "$CWD/SoundScapeRenderer.desktop" -t "$PKG/usr/share/applications/"
+install -vDm 644 "$PKG/usr/share/ssr/images/ssr_logo.png" "$PKG/usr/share/icons/hicolor/64x64/apps/SoundScapeRenderer.png"
 
 # there is an empty pdf ?? and its not so sexy
 find "$PKG/usr/doc/${PRGNAM}-${VERSION}"* -name "*-manual.pdf" -size 0 -delete

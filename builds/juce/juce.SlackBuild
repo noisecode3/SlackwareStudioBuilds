@@ -79,16 +79,6 @@ find -L . \
  \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
   -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
 
-gendesk \
-  -n \
-  --pkgname "com.juce_projucer" \
-  --name "Projucer" \
-  --pkgdesc "Cross-platform project manager and C++ code editor" \
-  --exec "Projucer" \
-  --icon "Projucer" \
-  --genericname "Code manager and editor" \
-  --categories "Development"
-
 # extract licenses from vendored sources
 sed -n '42,69p' modules/juce_opengl/opengl/juce_gl.h > glew.BSD-3-Clause.txt
 sed -n '72,92p' modules/juce_opengl/opengl/juce_gl.h > mesa.MIT.txt
@@ -135,7 +125,7 @@ install -vDm 755 build/extras/Projucer/Projucer_artefacts/Release/Projucer -t "$
 # install custom vst2 handling from juce < 5.4.1
 install -vDm 644 "$CWD/juce_VSTInterface.h" -t "$PKG/usr/share/juce/modules/juce_audio_processors/format_types/"
 # xdg desktop integration
-install -vDm 644 ./*.desktop -t "$PKG/usr/share/applications/"
+install -vDm 644 "$CWD/com.juce_projucer.desktop" -t "$PKG/usr/share/applications/"
 install -vDm 644 examples/Assets/juce_icon.png "$PKG/usr/share/icons/hicolor/512x512/apps/Projucer.png"
 
 find "$PKG" -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \

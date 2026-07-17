@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Projucer
+GenericName=Code manager and editor
+Comment=Cross-platform project manager and C++ code editor
+Exec=Projucer
+Icon=Projucer
+Terminal=false
+StartupNotify=false
+Categories=Development;
