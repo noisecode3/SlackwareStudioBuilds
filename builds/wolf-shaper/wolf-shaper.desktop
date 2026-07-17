@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=wolf-shaper
+GenericName=Wave Shaper
+Comment=A waveshaper plugin with a graph editor
+Exec=wolf-shaper
+Icon=wolf-shaper
+Terminal=false
+StartupNotify=false
+Categories=AudioVideo;Audio;

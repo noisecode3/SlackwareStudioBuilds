@@ -1,0 +1,19 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.
+# Line up the first '|' above the ':' following the base package name, and
+# the '|' on the right side marks the last column you can put a character in.
+# You must make exactly 11 lines for the formatting to be correct.  It's also
+# customary to leave one space after the ':' except on otherwise blank lines.
+
+           |-----handy-ruler------------------------------------------------------|
+wolf-shaper: wolf-shaper (Waveshaper plugin with a spline-based graph editor)
+wolf-shaper:
+wolf-shaper: Wolf Shaper is a free and open source distortion/waveshaper plugin.
+wolf-shaper: Rather than tweaking abstract knobs, you draw the shaping curve
+wolf-shaper: directly on an interactive spline-based graph, giving instant
+wolf-shaper: visual feedback on how the waveform will be transformed.
+wolf-shaper:
+wolf-shaper: Built with the DISTRHO Plugin Framework (DPF), this package
+wolf-shaper: provides CLAP, DSSI, LV2, VST2 and VST3 plugin formats plus a
+wolf-shaper: standalone JACK application.
+wolf-shaper: 

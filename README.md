@@ -68,6 +68,7 @@ set sbopkg to SBo-git (current)
 ### New
 * renoise
 * juce
+* wolf-shaper
 
 ### Kernels
 * xanmod-rt (real time recording/live monitoring)

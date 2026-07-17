@@ -1,0 +1,109 @@
+#!/bin/bash
+
+# Slackware build script for wolf-shaper
+
+# Copyright 2023 Martin Bångens Sweden
+# All rights reserved.
+#
+# Redistribution and use of this script, with or without modification, is
+# permitted provided that the following conditions are met:
+#
+# 1. Redistributions of this script must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
+#  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+#  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO
+#  EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+#  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+#  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+#  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+#  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+cd "$(dirname "$0")"; CWD=$(pwd)
+
+PRGNAM=wolf-shaper
+VERSION=${VERSION:-git}
+BUILD=${BUILD:-1}
+TAG=${TAG:-_SSb}
+PKGTYPE=${PKGTYPE:-tgz}
+
+if [ -z "$ARCH" ]; then
+  case "$( uname -m )" in
+    i?86) ARCH=i586 ;;
+    arm*) ARCH=arm ;;
+       *) ARCH=$( uname -m ) ;;
+  esac
+fi
+
+TMP=${TMP:-/tmp/SSb}
+PKG=$TMP/package-$PRGNAM
+OUTPUT=${OUTPUT:-/tmp}
+
+if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
+  mkdir -p "$TMP"
+  cd "$TMP"
+  rm -rf wolf-shaper
+  git clone https://github.com/wolf-plugins/wolf-shaper
+  cd wolf-shaper
+  VERSION=$(git describe --tags --always | sed s/v// | tr '-' '.' | cut -d'.' -f1-4)
+  echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
+  exit 0
+fi
+
+set -e
+
+rm -rf "$PKG"
+mkdir -p "$TMP" "$PKG" "$OUTPUT" "$PKG"
+cd "$TMP"
+rm -rf wolf-shaper
+git clone https://github.com/wolf-plugins/wolf-shaper
+cd wolf-shaper
+VERSION=$(git describe --tags --always | sed s/v// | tr '-' '.' | cut -d'.' -f1-4)
+git submodule update --init --recursive
+chown -R root:root .
+find . \
+ \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \
+  -o -perm 511 \) -exec chmod 755 {} \; -o \
+ \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
+  -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
+
+LIBDIR=lib
+if [ "$ARCH" == "x86_64" ]; then
+    LIBDIR="$LIBDIR"64
+fi
+
+BUILD_CLAP=true BUILD_DSSI=true BUILD_JACK=true BUILD_LV2=true BUILD_VST2=true BUILD_VST3=true make
+
+install -vDm 755 "bin/$PRGNAM" -t "$PKG/usr/bin/"
+install -vDm 644 "$CWD/wolf-shaper.desktop" -t "$PKG/usr/share/applications/"
+install -vDm 644 "$CWD/wolf-shaper.png" -t "$PKG/usr/share/icons/hicolor/192x192/"
+
+install -vDm 755 "bin/$PRGNAM.clap" -t "$PKG/usr/$LIBDIR/clap/"
+
+install -vDm 755 "bin/$PRGNAM-dssi.so" -t "$PKG/usr/$LIBDIR/dssi/"
+install -vDm 755 "bin/$PRGNAM-dssi/"* -t "$PKG/usr/$LIBDIR/dssi/$PRGNAM-dssi/"
+
+install -vDm 755 "bin/$PRGNAM.lv2/"*.so -t "$PKG/usr/$LIBDIR/lv2/$PRGNAM.lv2/"
+install -vDm 644 "bin/$PRGNAM.lv2/"*.ttl -t "$PKG/usr/$LIBDIR/lv2/$PRGNAM.lv2/"
+
+install -vDm 755 "bin/$PRGNAM-vst.so" -t "$PKG/usr/$LIBDIR/vst/"
+install -vDm 755 "bin/$PRGNAM.vst3/Contents/$ARCH-linux/"*.so -t "$PKG/usr/$LIBDIR/vst3/$PRGNAM.vst3/Contents/$ARCH-linux/"
+
+find "$PKG" -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
+  | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
+
+mkdir -p "$PKG/usr/doc/$PRGNAM-$VERSION"
+cp -a \
+  LICENSE \
+  "$PKG/usr/doc/$PRGNAM-$VERSION"
+cat "$CWD/$PRGNAM.SlackBuild" > "$PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild"
+
+mkdir -p "$PKG/install"
+cat "$CWD/slack-desc" > "$PKG/install/slack-desc"
+cat "$CWD/doinst.sh" > "$PKG/install/doinst.sh"
+
+cd "$PKG"
+/sbin/makepkg -l y -c n "$OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"

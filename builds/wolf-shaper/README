@@ -1,0 +1,10 @@
+wolf-shaper (Waveshaper plugin with a spline-based graph editor)
+
+Wolf Shaper is a free and open source distortion/waveshaper plugin.
+Rather than tweaking abstract knobs, you draw the shaping curve
+directly on an interactive spline-based graph, giving instant
+visual feedback on how the waveform will be transformed.
+
+Built with the DISTRHO Plugin Framework (DPF), this package
+provides CLAP, DSSI, LV2, VST2 and VST3 plugin formats plus a
+standalone JACK application.
