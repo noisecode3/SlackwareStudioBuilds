@@ -52,7 +52,6 @@ set sbopkg to SBo-git (current)
 * ninjas2
 * reaper-sws
 * reapack
-* sherlock-lv2
 * sfizz
 * sorcer
 * SoundScapeRenderer

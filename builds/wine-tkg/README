@@ -1,18 +1,27 @@
-This scrip download the source from git
-The generated package will be installed in /usr
+This script downloads the source code from Git.
 
-This package wont be recognized as distinct builds from git repositories.
+The generated package will be installed in /usr.
+
+Packages built from Git are not recognized as separate versions by Slackware's
+package tools. To reinstall or upgrade a Git build, use:
+
 upgradepkg --install-new --reinstall /tmp/wine-tkg...
 
-Remember that if an installer generate a desktop shortcut
-that .desktop file will use the path to the used wine-tkg binary path.
-wine puts those classic windows menu application launchers in:
+Remember that if an installer creates a desktop shortcut, the generated
+.desktop file will contain the path to the Wine binary that was used
+during installation.
+
+Wine stores Windows application launchers here:
+
 ~/.local/share/applications/wine/Programs/
 
-TODO: more options is on the way
+TODO: More build options will be added.
 
-Build Options:
-Example
+Build options
+-------------
+
+Example:
+
 PLAIN_VERSION=wine-11.9 STAGING_VERSION=v11.9 ./wine-tkg.SlackBuild
 
 PLAIN_VERSION           Default=
@@ -30,30 +39,44 @@ FASTSYNC                Default=NO
 ESYNC                   Default=YES
 FSYNC                   Default=YES
 
-Dependencies:
-All this can change so look out for what dependencies you need
-for your applications, some dependencies could be missing and
-it will still build.
+Dependencies
+------------
 
-Install alienbobs multilib for Slackware 15 and MinGW
-Without MinGW it will not compile dll's properly
-and some programs wont work.
+Dependencies may change over time, so check what your applications
+require. Some optional dependencies may be missing while the build
+still completes successfully.
+
+For Slackware 15, install AlienBOB's multilib packages and MinGW.
+
+Without MinGW, Wine cannot build DLLs correctly, and some Windows
+applications may not work. Reboot after installing MinGW.
 
 https://slackbuilds.org/repository/15.0/system/schedtool/
 http://www.slackware.com/~alien/slackbuilds/MinGW-w64/pkg64/15.0/
 
-Wayland 34-bit development files not found, the Wayland driver won't be supported.
-Seem to be a problem on Slackware 15 :(
+Wayland 32-bit development files were not found.
+The Wayland driver will not be built.
+This appears to be a Slackware 15 limitation.
 
-OPTIONAL DEPENDENCIES
+Optional dependencies
+---------------------
 
-fontforge: To build tahoma, tahomabd, and marlett fonts.
+fontforge
+
+Builds the tahoma, tahomabd, and marlett fonts.
+
 http://www.slackware.com/~alien/slackbuilds/fontforge/pkg64/15.0/
-or https://slackbuilds.org/repository/15.0/graphics/fontforge/
+or
+https://slackbuilds.org/repository/15.0/graphics/fontforge/
 
-webcore-fonts: For MS fonts for the web and Windows Vista.
+webcore-fonts
+
+Provides Microsoft's core web fonts and Windows Vista fonts.
+
 https://slackbuilds.org/repository/15.0/system/webcore-fonts/
 
-oss
-libcapi20
-pcsc-lite
+The following missing components are common and usually not needed:
+
+OSS sound system found, but it is too old (OSSv4 required). OSS support will be disabled.
+libcapi20 not found. Smart card support will be disabled.
+pcsc-lite 64-bit development files not found. ISDN support will be disabled.
